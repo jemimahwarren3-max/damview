@@ -1,11 +1,11 @@
 import type { GymPackage } from "@/types";
 
-/** Pricing not yet confirmed by the client — shown as "TBC" until provided. */
+/** Starting price confirmed by the client ($10); specific package tiers above that are not yet confirmed. */
 export const GYM_PACKAGES: GymPackage[] = [
   {
     id: "day-pass",
     name: "Day Pass",
-    price: null,
+    price: 10,
     billingPeriod: "session",
     features: ["Full gym access for one visit", "Open 24/7"],
   },

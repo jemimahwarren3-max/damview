@@ -3,16 +3,15 @@ import Link from "next/link";
 import { ArrowUpRight, MapPin } from "lucide-react";
 import { Container } from "@/components/shared/Container";
 import { SectionHeading } from "@/components/shared/SectionHeading";
-import { ExperienceCard } from "@/components/shared/ExperienceCard";
 import { StickerBadge } from "@/components/shared/StickerBadge";
 import { ChevronDivider } from "@/components/shared/ChevronDivider";
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
+import { EditorialSection } from "@/components/website/EditorialSection";
 import {
   SITE_NAME,
   TAGLINE,
   LOCATION,
   CONTACT_NUMBERS,
-  HOME_FACILITIES,
   EVENT_CATEGORIES,
   GALLERY_PREVIEW,
 } from "@/lib/constants";
@@ -20,7 +19,7 @@ import {
 export default function HomePage() {
   return (
     <>
-      {/* Hero */}
+      {/* Welcome to Damview */}
       <section className="relative flex min-h-[640px] items-end">
         <Image
           src="https://images.pexels.com/photos/36567120/pexels-photo-36567120.jpeg?auto=compress&cs=tinysrgb&w=1920"
@@ -70,42 +69,69 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Intro / story */}
-      <section className="py-20">
-        <Container className="max-w-3xl">
-          <SectionHeading
-            eyebrow="The Dam View Social Escape"
-            title="Chitungwiza's water, the way locals have always used it."
-            subtitle="Long before anyone called it a resort, this stretch of dam country in Chikwanha was where Chitungwiza came to fish, braai and cool off on a hot Sunday. Dam View keeps that same spirit — just with a pool, cold drinks and somewhere comfortable to sit, right along Seke Road."
-          />
-        </Container>
-      </section>
-
       <ChevronDivider />
 
-      {/* Facilities preview */}
-      <section className="bg-dv-forest py-20">
-        <Container>
-          <SectionHeading
-            eyebrow="Everything in one place"
-            title="One entrance fee, a whole day of things to do."
-            className="[&_h2]:text-dv-ivory [&_p]:text-dv-cream/80"
-          />
-          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {HOME_FACILITIES.map((facility) => (
-              <ExperienceCard
-                key={facility.href}
-                image={facility.image}
-                title={facility.title}
-                description={facility.description}
-                href={facility.href}
-              />
-            ))}
-          </div>
-        </Container>
-      </section>
+      {/* Accommodation & Lodges */}
+      <EditorialSection
+        eyebrow="Accommodation & Lodges"
+        title="Stay the night, wake up by the water."
+        description="32 rooms across A, B, F and R blocks, from $25 a stay. Simple, comfortable lodges for a proper break from the everyday."
+        image="https://images.pexels.com/photos/33613748/pexels-photo-33613748.jpeg?auto=compress&cs=tinysrgb&w=900"
+        href="/accommodation"
+        ctaLabel="Book Your Lodge"
+        imagePosition="left"
+        tone="cream"
+      />
 
-      {/* Events & promotions */}
+      {/* Damview Gym */}
+      <EditorialSection
+        eyebrow="Damview Gym"
+        title="Open 24/7. No excuses."
+        description="A full gym on-site, packages starting from $10. Train early, train late — we're always open."
+        image="https://images.pexels.com/photos/40006615/pexels-photo-40006615.jpeg?auto=compress&cs=tinysrgb&w=900"
+        href="/gym"
+        ctaLabel="Book Now"
+        imagePosition="right"
+        tone="black"
+      />
+
+      {/* Bar & Restaurant */}
+      <EditorialSection
+        eyebrow="Bar & Restaurant"
+        title="Dam Food Bar."
+        description="Country-style plates, cold drinks and a braai that doesn't stop. Come hungry, leave happy."
+        image="https://images.pexels.com/photos/8021129/pexels-photo-8021129.jpeg?auto=compress&cs=tinysrgb&w=900"
+        href="/restaurant"
+        ctaLabel="See Menu"
+        imagePosition="left"
+        tone="ivory"
+      />
+
+      {/* Damside Experience */}
+      <EditorialSection
+        eyebrow="Damside Experience"
+        title="Slow afternoons on the water."
+        description="Braai by the dam, boat cruises from $5pp, pedal boats from $3pp. Friends, family, and a view worth staying for."
+        image="https://images.pexels.com/photos/36593940/pexels-photo-36593940.jpeg?auto=compress&cs=tinysrgb&w=900"
+        href="/damside"
+        ctaLabel="Come Join Us"
+        imagePosition="right"
+        tone="cream"
+      />
+
+      {/* Recreational Activities */}
+      <EditorialSection
+        eyebrow="Recreational Activities"
+        title="Find your fun."
+        description="Quad bikes, horse riding, zip lines, trampolines and pool tables — something for every age, every visit."
+        image="https://images.pexels.com/photos/15490742/pexels-photo-15490742.jpeg?auto=compress&cs=tinysrgb&w=900"
+        href="/activities"
+        ctaLabel="Explore Activities"
+        imagePosition="left"
+        tone="black"
+      />
+
+      {/* Events & Functions */}
       <section className="relative py-24">
         <Image
           src="https://images.pexels.com/photos/35516036/pexels-photo-35516036.jpeg?auto=compress&cs=tinysrgb&w=1600"
@@ -113,7 +139,7 @@ export default function HomePage() {
           fill
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-dv-black/70" />
+        <div className="absolute inset-0 bg-dv-forest/85" />
         <Container className="relative max-w-2xl text-center mx-auto flex flex-col items-center gap-5">
           <span className="font-promo text-sm tracking-widest text-dv-sunshine">
             Events &amp; Functions
@@ -131,16 +157,16 @@ export default function HomePage() {
               </span>
             ))}
           </div>
-          <WhatsAppButton
-            variant="inline"
-            label="Enquire about your event"
-            message="Hi, I'd like to enquire about hosting an event at Dam View Resort."
-            className="mt-2"
-          />
+          <Link
+            href="/events"
+            className="mt-2 inline-flex items-center gap-2 rounded-full bg-dv-gold px-7 py-3.5 text-sm font-bold text-dv-forest hover:bg-dv-sunshine"
+          >
+            Enquire About Your Event <ArrowUpRight size={16} />
+          </Link>
         </Container>
       </section>
 
-      {/* Gallery preview */}
+      {/* Gallery & customer experiences */}
       <section className="py-20">
         <Container>
           <div className="flex flex-wrap items-end justify-between gap-4">
@@ -149,7 +175,7 @@ export default function HomePage() {
               href="/gallery"
               className="inline-flex items-center gap-1 text-sm font-semibold text-dv-pool hover:underline"
             >
-              See the full gallery <ArrowUpRight size={15} />
+              See the full gallery &amp; reviews <ArrowUpRight size={15} />
             </Link>
           </div>
           <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -170,7 +196,7 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Location & final CTA */}
+      {/* Contact & Location */}
       <section className="bg-dv-forest py-20">
         <Container className="flex flex-col items-center gap-5 text-center">
           <h2 className="font-serif text-3xl text-dv-ivory sm:text-4xl">

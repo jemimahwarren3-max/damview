@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { PageHero } from "@/components/shared/PageHero";
 import { Container } from "@/components/shared/Container";
 import { GalleryGrid } from "@/components/website/GalleryGrid";
+import { ReviewsSection } from "@/components/website/ReviewsSection";
 import { GALLERY_ITEMS } from "@/lib/data/gallery";
+import { SAMPLE_REVIEWS } from "@/lib/data/reviews";
 import { SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -26,6 +28,12 @@ export default function GalleryPage() {
             Shown here are sourced reference photos and real Dam View flyer crops, until our own
             photography is uploaded through the admin dashboard.
           </p>
+        </Container>
+      </section>
+
+      <section className="bg-dv-cream py-20">
+        <Container>
+          <ReviewsSection reviews={SAMPLE_REVIEWS} />
         </Container>
       </section>
     </>

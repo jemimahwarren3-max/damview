@@ -25,7 +25,11 @@ export default function AccommodationPage() {
 
       <section className="py-20">
         <Container>
-          <SectionHeading eyebrow="Our Lodges" title="Choose your block." />
+          <SectionHeading
+            eyebrow="Our Lodges"
+            title="Choose your block."
+            subtitle="Rates are per 12-hour stay. An hourly rate is also available — ask on WhatsApp for current pricing while we confirm the exact figure here."
+          />
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
             {ROOM_BLOCKS.map((block) => (
               <div key={block.id} className="flex items-center justify-between gap-6 rounded-2xl border border-border bg-card p-6">
