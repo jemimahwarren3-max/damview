@@ -28,7 +28,7 @@ export function ReviewsSection({ reviews }: { reviews: GuestReview[] }) {
                 ))}
               </div>
               <p className="text-sm italic text-muted-foreground">&quot;{review.quote}&quot;</p>
-              <span className="text-xs font-semibold text-muted-foreground">— {review.guestName}</span>
+              <span className="text-xs font-semibold text-muted-foreground">{review.guestName}</span>
             </div>
           </div>
         ))}
@@ -37,7 +37,7 @@ export function ReviewsSection({ reviews }: { reviews: GuestReview[] }) {
       <div className="mt-10 flex justify-center">
         <WhatsAppButton
           label="Add your experience"
-          message="Hi, I'd like to share a photo and review of my Dam View visit."
+          message="Hi, I'd like to share a photo and review of my Damview visit."
         />
       </div>
     </div>

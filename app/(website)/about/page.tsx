@@ -1,23 +1,27 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Waves, Dumbbell, UtensilsCrossed, Tent, PartyPopper, Bike } from "lucide-react";
+import { ArrowUpRight, Waves, Dumbbell, UtensilsCrossed, Tent, PartyPopper, Bike, Trophy, Camera, Music, Wine } from "lucide-react";
 import { PageHero } from "@/components/shared/PageHero";
 import { Container } from "@/components/shared/Container";
-import { LOCATION, SITE_NAME } from "@/lib/constants";
+import { LOCATION, SITE_NAME, ENTRANCE_FEE } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: `About — ${SITE_NAME}`,
+  title: `About, ${SITE_NAME}`,
   description:
-    "The story behind Dam View Resort, a dam-side social escape in Chikwanha, Chitungwiza.",
+    "The story behind Damview Resort, a dam-side social escape in Chikwanha, Chitungwiza.",
 };
 
 const ON_SITE = [
   { icon: Waves, label: "Swimming pool & waterfront" },
   { icon: Dumbbell, label: "Gym, open 24/7" },
-  { icon: UtensilsCrossed, label: "Dam Food Bar" },
+  { icon: Wine, label: "Fully stocked bars & wine specials" },
+  { icon: UtensilsCrossed, label: "Dam Food Bar: butcher & braai" },
   { icon: Bike, label: "Quad bikes, horse riding, zip lines" },
+  { icon: Trophy, label: "Soccer field" },
   { icon: Tent, label: "Lodges & camping" },
+  { icon: Camera, label: "Scenic photo spots" },
+  { icon: Music, label: "Resident DJ & dance floor" },
   { icon: PartyPopper, label: "Weddings & functions" },
 ];
 
@@ -25,7 +29,7 @@ const REASONS = [
   {
     number: "01",
     title: "One fee, a full day",
-    body: "A single entrance fee opens up the pool, the gym, the games and the grounds — no extra tickets to juggle.",
+    body: "A single entrance fee opens up the pool, the gym, the games and the grounds, no extra tickets to juggle.",
   },
   {
     number: "02",
@@ -49,13 +53,13 @@ export default function AboutPage() {
         image="https://images.pexels.com/photos/36567120/pexels-photo-36567120.jpeg?auto=compress&cs=tinysrgb&w=1600"
       />
 
-      {/* Story — overlapping split layout */}
+      {/* Story: overlapping split layout */}
       <section className="py-20 sm:py-28">
         <Container className="relative">
           <div className="relative aspect-[16/10] w-full overflow-hidden rounded-sm sm:aspect-[16/9]">
             <Image
               src="https://images.pexels.com/photos/137569/pexels-photo-137569.jpeg?auto=compress&cs=tinysrgb&w=1400"
-              alt="The pool and pavilion at Dam View Resort"
+              alt="The pool and pavilion at Damview Resort"
               fill
               className="object-cover"
             />
@@ -67,8 +71,8 @@ export default function AboutPage() {
             </h2>
             <p className="mt-4 text-dv-black/75">
               Long before anyone called it a resort, this stretch of dam country in Chikwanha was
-              where Chitungwiza came to fish, braai and cool off on a hot Sunday. Dam View grew out
-              of that same spirit — a proper pool, cold drinks and somewhere comfortable to sit,
+              where Chitungwiza came to fish, braai and cool off on a hot Sunday. Damview grew out
+              of that same spirit, a proper pool, cold drinks and somewhere comfortable to sit,
               right along Seke Road, next to Zuva Service Station.
             </p>
           </div>
@@ -116,7 +120,7 @@ export default function AboutPage() {
       <section className="relative py-24">
         <Image
           src="https://images.pexels.com/photos/35516036/pexels-photo-35516036.jpeg?auto=compress&cs=tinysrgb&w=1600"
-          alt="Dam View Resort grounds"
+          alt="Damview Resort grounds"
           fill
           className="object-cover"
         />
@@ -125,7 +129,10 @@ export default function AboutPage() {
           <h2 className="font-serif text-3xl text-dv-ivory sm:text-4xl">
             Right where Chitungwiza already comes to unwind.
           </h2>
-          <p className="max-w-lg text-dv-cream/85">{LOCATION}. Open 24 hours, every day.</p>
+          <p className="max-w-lg text-dv-cream/85">
+            {LOCATION}. Open 24 hours, every day. Entrance ${ENTRANCE_FEE.weekday} weekdays, $
+            {ENTRANCE_FEE.weekend} weekends &amp; public holidays.
+          </p>
           <Link
             href="/accommodation"
             className="mt-2 inline-flex items-center gap-2 rounded-full bg-dv-gold px-7 py-3.5 text-sm font-bold text-dv-forest hover:bg-dv-sunshine"

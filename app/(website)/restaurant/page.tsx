@@ -9,8 +9,8 @@ import { getMenu, RESTAURANT_IMAGE } from "@/lib/data/menu";
 import { SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: `Bar & Restaurant — ${SITE_NAME}`,
-  description: "The Dam Food Bar menu at Dam View Resort, Chitungwiza.",
+  title: `Bar & Restaurant, ${SITE_NAME}`,
+  description: "The Dam Food Bar menu at Damview Resort, Chitungwiza.",
 };
 
 export default async function RestaurantPage() {
@@ -21,7 +21,7 @@ export default async function RestaurantPage() {
       <PageHero
         eyebrow="Bar & Restaurant"
         title="Dam Food Bar"
-        subtitle="Country-style plates, cold drinks and a braai that doesn't stop."
+        subtitle="Fully stocked bars, wine specials and a braai that doesn't stop."
         image={RESTAURANT_IMAGE}
       />
 
@@ -48,7 +48,7 @@ export default async function RestaurantPage() {
               A few favourites to start with.
             </h2>
             <p className="mt-3 max-w-md text-dv-black/70">
-              This is a sample of our menu — the full breakfast, lunch and supper list is coming soon.
+              This is a sample of our menu. The full breakfast, lunch and supper list is coming soon.
             </p>
 
             <div className="mt-10 flex flex-col gap-10">
@@ -65,6 +65,25 @@ export default async function RestaurantPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      <section className="py-16">
+        <Container>
+          <div className="grid grid-cols-1 gap-6 rounded-2xl border border-border bg-card p-6 sm:grid-cols-3">
+            <div>
+              <h3 className="font-serif text-lg text-dv-forest">Bar</h3>
+              <p className="mt-1 text-sm text-dv-black/70">Fully stocked, with regular wine specials.</p>
+            </div>
+            <div>
+              <h3 className="font-serif text-lg text-dv-forest">Butchery</h3>
+              <p className="mt-1 text-sm text-dv-black/70">Fresh cuts, ready for the braai.</p>
+            </div>
+            <div>
+              <h3 className="font-serif text-lg text-dv-forest">Braai Stand &amp; Charcoal</h3>
+              <p className="mt-1 text-sm text-dv-black/70">Everything provided, from $10.</p>
             </div>
           </div>
         </Container>

@@ -27,9 +27,9 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "Dam View Resort",
+  title: "Damview Resort",
   description:
-    "Dam View Resort, Chitungwiza — lodges, swimming pool, restaurant, gym and outdoor activities on the water in Chikwanha.",
+    "Damview Resort, Chitungwiza: lodges, swimming pool, restaurant, gym and outdoor activities on the water in Chikwanha.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

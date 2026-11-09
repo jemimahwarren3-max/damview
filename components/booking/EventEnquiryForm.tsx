@@ -49,7 +49,7 @@ export function EventEnquiryForm() {
       EVENT_TYPE_OPTIONS.find((option) => option.value === values.eventType)?.label ?? values.eventType;
 
     const lines = [
-      "Hi, I'd like a quotation for an event at Dam View Resort.",
+      "Hi, I'd like a quotation for an event at Damview Resort.",
       `Name: ${values.name}`,
       `Phone: ${values.phone}`,
       `Event type: ${eventTypeLabel}`,
@@ -142,7 +142,7 @@ export function EventEnquiryForm() {
         Request a quotation on WhatsApp
       </button>
       <span className="text-xs text-muted-foreground">
-        This sends an enquiry for a custom quotation — not a confirmed booking.
+        This sends an enquiry for a custom quotation, not a confirmed booking.
       </span>
     </form>
   );

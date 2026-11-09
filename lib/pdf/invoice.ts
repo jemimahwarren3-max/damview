@@ -124,7 +124,7 @@ export function generateInvoicePdf(data: InvoiceData) {
 
     y += 18;
     doc.setFont("helvetica", "italic");
-    doc.text("Dam View Resort — Thank you for your business.", marginX, y);
+    doc.text("Damview Resort — Thank you for your business.", marginX, y);
   } else {
     doc.setFont("helvetica", "bold");
     doc.text("Total", 148, y);

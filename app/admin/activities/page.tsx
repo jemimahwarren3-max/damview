@@ -14,7 +14,7 @@ export default function AdminActivitiesPage() {
   return (
     <AdminShell title="Activities">
       <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
-        Sample enquiries — local to your browser only, not saved yet.
+        Sample enquiries, local to your browser only, not saved yet.
       </div>
 
       <div className="flex flex-col gap-3">

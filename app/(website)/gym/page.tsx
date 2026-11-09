@@ -7,8 +7,8 @@ import { getGymPackages, GYM_IMAGE } from "@/lib/data/gym";
 import { SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: `Damview Gym — ${SITE_NAME}`,
-  description: "A fully equipped gym at Dam View Resort, open 24/7, packages from $10.",
+  title: `Damview Gym, ${SITE_NAME}`,
+  description: "A fully equipped gym at Damview Resort, open 24/7, packages from $10.",
 };
 
 export default async function GymPage() {
@@ -19,7 +19,7 @@ export default async function GymPage() {
       <PageHero
         eyebrow="Damview Gym"
         title="Train any time. We never close."
-        subtitle="A full gym on-site, open 24 hours a day — packages from $10."
+        subtitle="A full gym on-site, open 24 hours a day, packages from $10."
         image={GYM_IMAGE}
       />
 
@@ -28,7 +28,7 @@ export default async function GymPage() {
           <SectionHeading
             eyebrow="Memberships"
             title="Starting from $10."
-            subtitle="Fitness classes and full equipment access are part of the gym experience — specific package tiers above the entry price are still being finalised."
+            subtitle="Fitness classes and full equipment access are part of the gym experience. Specific package tiers above the entry price are still being finalised."
             className="[&_h2]:text-dv-ivory [&_p]:text-dv-cream/75"
           />
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -53,7 +53,7 @@ export default async function GymPage() {
         <Container className="max-w-xl">
           <SectionHeading eyebrow="Membership Enquiry" title="Ask about a membership." />
           <div className="mt-8">
-            <SimpleEnquiryForm intro="Hi, I'd like to enquire about a gym membership at Dam View Resort." submitLabel="Book Now on WhatsApp" />
+            <SimpleEnquiryForm intro="Hi, I'd like to enquire about a gym membership at Damview Resort." submitLabel="Book Now on WhatsApp" />
           </div>
         </Container>
       </section>

@@ -10,8 +10,8 @@ import { getDamsideActivities } from "@/lib/data/activities";
 import { SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: `Damside Experience — ${SITE_NAME}`,
-  description: "Waterfront relaxation, boat cruises and pedal boats at Dam View Resort.",
+  title: `Damside Experience, ${SITE_NAME}`,
+  description: "Waterfront relaxation, boat cruises and pedal boats at Damview Resort.",
 };
 
 export default async function DamsidePage() {
@@ -42,7 +42,7 @@ export default async function DamsidePage() {
           </h2>
           <WhatsAppButton
             label="Come Join Us"
-            message="Hi, I'd like to plan a Damside visit at Dam View Resort."
+            message="Hi, I'd like to plan a Damside visit at Damview Resort."
             className="mt-3 bg-dv-gold text-dv-forest hover:bg-dv-sunshine"
           />
         </Container>
@@ -56,7 +56,7 @@ export default async function DamsidePage() {
               <ExperienceCard
                 key={activity.id}
                 image={activity.image ?? ""}
-                title={`${activity.name} — $${activity.pricing?.amount}pp`}
+                title={`${activity.name}, $${activity.pricing?.amount}pp`}
                 description={activity.description}
               />
             ))}
@@ -72,7 +72,7 @@ export default async function DamsidePage() {
             className="[&_h2]:text-dv-ivory [&_span]:text-dv-sunshine"
           />
           <div className="mt-8">
-            <SimpleEnquiryForm intro="Hi, I'd like to enquire about the Damside experience at Dam View Resort." />
+            <SimpleEnquiryForm intro="Hi, I'd like to enquire about the Damside experience at Damview Resort." />
           </div>
         </Container>
       </section>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Staff — Dam View Resort",
+  title: "Staff, Damview Resort",
   robots: { index: false, follow: false },
 };
 

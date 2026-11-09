@@ -8,8 +8,8 @@ import { getRecreationalActivities } from "@/lib/data/activities";
 import { SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: `Recreational Activities — ${SITE_NAME}`,
-  description: "Quad biking, horse riding, zip lines, trampolines and pool tables at Dam View Resort.",
+  title: `Recreational Activities, ${SITE_NAME}`,
+  description: "Quad biking, horse riding, zip lines, trampolines and pool tables at Damview Resort.",
 };
 
 export default async function ActivitiesPage() {
@@ -20,7 +20,7 @@ export default async function ActivitiesPage() {
       <PageHero
         eyebrow="Recreational Activities"
         title="Find your fun."
-        subtitle="From quad bikes to pool tables — something for every age, every visit."
+        subtitle="From quad bikes to pool tables, something for every age, every visit."
         image="https://images.pexels.com/photos/15490742/pexels-photo-15490742.jpeg?auto=compress&cs=tinysrgb&w=1600"
       />
 
@@ -46,7 +46,7 @@ export default async function ActivitiesPage() {
               <h2 className="mt-2 font-serif text-3xl text-dv-forest sm:text-4xl">{activity.name}</h2>
               <p className="mt-3 max-w-md text-dv-black/75">{activity.description}</p>
               <p className="mt-3 text-sm font-medium text-dv-pool">
-                {activity.pricing ? `$${activity.pricing.amount} ${activity.pricing.unit.replace("_", " ")}` : "Pricing to be confirmed — enquire below"}
+                {activity.pricing ? `$${activity.pricing.amount} ${activity.pricing.unit.replace("_", " ")}` : "Pricing to be confirmed, enquire below"}
               </p>
             </div>
           </Container>
@@ -61,7 +61,7 @@ export default async function ActivitiesPage() {
             className="[&_h2]:text-dv-ivory [&_span]:text-dv-sunshine"
           />
           <div className="mt-8">
-            <SimpleEnquiryForm intro="Hi, I'd like to enquire about activities at Dam View Resort." />
+            <SimpleEnquiryForm intro="Hi, I'd like to enquire about activities at Damview Resort." />
           </div>
         </Container>
       </section>

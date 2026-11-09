@@ -27,7 +27,7 @@ export default function AdminInvoicesPage() {
   return (
     <AdminShell title="Invoices">
       <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
-        Sample documents — real invoice records and numbering will come with the backend (Stage 10). The
+        Sample documents. Real invoice records and numbering will come with the backend (Stage 10). The
         PDF generation itself is real and working now.
       </div>
 

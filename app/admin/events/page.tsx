@@ -6,7 +6,7 @@ export default function AdminEventsPage() {
   return (
     <AdminShell title="Events">
       <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
-        Sample event enquiries — local to your browser only, not saved yet.
+        Sample event enquiries, local to your browser only, not saved yet.
       </div>
 
       <div className="flex flex-col gap-3">
@@ -24,7 +24,7 @@ export default function AdminEventsPage() {
             <dl className="mt-3 grid grid-cols-2 gap-2 text-sm text-muted-foreground sm:grid-cols-4">
               <div>
                 <dt className="font-medium text-dv-black">Facilities</dt>
-                <dd>{enquiry.facilitiesRequired.join(", ") || "—"}</dd>
+                <dd>{enquiry.facilitiesRequired.join(", ") || "None listed"}</dd>
               </div>
               <div>
                 <dt className="font-medium text-dv-black">Catering</dt>

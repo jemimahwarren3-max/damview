@@ -1,4 +1,4 @@
--- Dam View Resort — Stage 10 database schema
+-- Damview Resort — Stage 10 database schema
 --
 -- Maps directly onto the TypeScript interfaces already defined in types/
 -- and the mock data in lib/data/. Not applied anywhere yet — this is ready
@@ -14,7 +14,8 @@ create extension if not exists pgcrypto;
 
 create table room_blocks (
   id text primary key,
-  name text not null,
+  name text not null, -- internal code (e.g. "A Block") — admin/staff only, never shown to guests
+  display_name text not null, -- guest-facing name (e.g. "Garden Rooms") — what the public site shows
   rate_per_stay numeric(10, 2) not null,
   stay_duration_hours integer not null
 );

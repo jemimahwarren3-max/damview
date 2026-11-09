@@ -26,7 +26,7 @@ export default function AdminBookingsPage() {
   return (
     <AdminShell title="Bookings">
       <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
-        Sample enquiries — changes here are local to your browser and not saved anywhere yet.
+        Sample enquiries. Changes here are local to your browser and not saved anywhere yet.
       </div>
 
       <div className="flex flex-col gap-3">

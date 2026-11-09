@@ -12,7 +12,7 @@ export default function AdminGalleryPage() {
   return (
     <AdminShell title="Gallery">
       <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
-        Removing here only updates your browser&apos;s view — photo storage/upload needs the backend
+        Removing here only updates your browser&apos;s view. Photo storage/upload needs the backend
         (Stage 10), so uploading is disabled for now.
       </div>
 

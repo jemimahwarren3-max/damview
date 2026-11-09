@@ -19,6 +19,8 @@ import {
   CONTACT_NUMBERS,
   EVENT_CATEGORIES,
   GALLERY_PREVIEW,
+  ENTRANCE_FEE,
+  LODGE_HOURLY_RATE,
 } from "@/lib/constants";
 import { getRoomBlocks } from "@/lib/data/rooms";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
@@ -80,7 +82,7 @@ export default async function HomePage() {
         <div className="absolute inset-0">
           <Image
             src="/images/resort/damview-sunset.jpg"
-            alt="A real Chitungwiza sunset near Dam View Resort"
+            alt="A real Chitungwiza sunset near Damview Resort"
             fill
             priority
             className="hero-zoom object-cover"
@@ -101,7 +103,7 @@ export default async function HomePage() {
             </h1>
 
             <p className="reveal reveal-delay-2 mt-6 max-w-xl text-base leading-relaxed text-cream-100/90 sm:text-lg">
-              {TAGLINE} Good food, outdoor adventure, relaxation and unforgettable moments —
+              {TAGLINE} Good food, outdoor adventure, relaxation and unforgettable moments,
               just off Seke Road, on the water.
             </p>
 
@@ -170,7 +172,7 @@ export default async function HomePage() {
                 <div className="reveal reveal-delay-1 col-span-5 row-span-1 overflow-hidden rounded-sm lg:col-span-3 lg:row-span-2">
                   <Image
                     src="https://images.pexels.com/photos/137569/pexels-photo-137569.jpeg?auto=compress&cs=tinysrgb&w=1280"
-                    alt="The pool deck and pavilion at Dam View"
+                    alt="The pool deck and pavilion at Damview"
                     width={900}
                     height={1100}
                     className="h-full w-full object-cover transition-transform duration-[1.2s] hover:scale-105"
@@ -188,7 +190,7 @@ export default async function HomePage() {
                 <div className="reveal reveal-delay-3 col-span-2 row-span-1 overflow-hidden rounded-sm lg:col-span-2">
                   <Image
                     src="https://images.pexels.com/photos/14455480/pexels-photo-14455480.jpeg?auto=compress&cs=tinysrgb&w=900"
-                    alt="Friends enjoying Dam View, Harare"
+                    alt="Friends enjoying Damview, Harare"
                     width={700}
                     height={700}
                     className="h-full w-full object-cover transition-transform duration-[1.2s] hover:scale-105"
@@ -200,7 +202,7 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* Experience — bento */}
+      {/* Experience bento grid */}
       <section className="bg-green-900 py-24 lg:py-36">
         <Container>
           <div className="mb-14">
@@ -222,7 +224,7 @@ export default async function HomePage() {
                 href={exp.href}
                 className={`reveal group relative overflow-hidden rounded-sm ${exp.span} ${exp.h}`}
               >
-                <Image src={exp.img} alt={`${exp.title} at Dam View Resort`} fill className="object-cover transition-transform duration-[1.3s] ease-out group-hover:scale-110" />
+                <Image src={exp.img} alt={`${exp.title} at Damview Resort`} fill className="object-cover transition-transform duration-[1.3s] ease-out group-hover:scale-110" />
                 <div className="absolute inset-0 bg-gradient-to-t from-green-900/85 via-green-900/20 to-transparent" />
                 <div className="relative flex h-full flex-col justify-end p-7 lg:p-8">
                   <span className="mb-2 font-serif text-sm font-light tracking-widest text-cream-100/70">{exp.no}</span>
@@ -253,9 +255,8 @@ export default async function HomePage() {
                 Stay a little longer.
               </h2>
               <p className="reveal reveal-delay-2 mt-6 text-[1.02rem] leading-[1.75] text-charcoal/75">
-                32 rooms across {roomBlocks.map((b) => b.name.replace(" Block", "")).join(", ")} blocks,
-                from ${Math.min(...roomBlocks.map((b) => b.ratePerStay))} a stay. A welcoming place to
-                unwind, whether it&apos;s a short break or an overnight visit.
+                32 rooms, from ${Math.min(...roomBlocks.map((b) => b.ratePerStay))} a stay or ${LODGE_HOURLY_RATE} an
+                hour. A welcoming place to unwind, whether it&apos;s a short break or an overnight visit.
               </p>
               <Link
                 href="/accommodation"
@@ -269,13 +270,13 @@ export default async function HomePage() {
             <div className="lg:col-span-7">
               <div className="grid grid-cols-2 gap-4">
                 <div className="reveal reveal-delay-1 col-span-2 overflow-hidden rounded-sm">
-                  <Image src={ROOM_SHOTS[0]} alt="A Dam View lodge room" width={1280} height={500} className="h-64 w-full object-cover transition-transform duration-[1.2s] hover:scale-105 sm:h-72" />
+                  <Image src={ROOM_SHOTS[0]} alt="A Damview lodge room" width={1280} height={500} className="h-64 w-full object-cover transition-transform duration-[1.2s] hover:scale-105 sm:h-72" />
                 </div>
                 <div className="reveal reveal-delay-2 overflow-hidden rounded-sm">
-                  <Image src={ROOM_SHOTS[1]} alt="A Dam View lodge room, alternate view" width={640} height={400} className="h-52 w-full object-cover transition-transform duration-[1.2s] hover:scale-105" />
+                  <Image src={ROOM_SHOTS[1]} alt="A Damview lodge room, alternate view" width={640} height={400} className="h-52 w-full object-cover transition-transform duration-[1.2s] hover:scale-105" />
                 </div>
                 <div className="reveal reveal-delay-3 overflow-hidden rounded-sm">
-                  <Image src={ROOM_SHOTS[2]} alt="A Dam View lodge room, rustic interior" width={640} height={400} className="h-52 w-full object-cover transition-transform duration-[1.2s] hover:scale-105" />
+                  <Image src={ROOM_SHOTS[2]} alt="A Damview lodge room, rustic interior" width={640} height={400} className="h-52 w-full object-cover transition-transform duration-[1.2s] hover:scale-105" />
                 </div>
               </div>
             </div>
@@ -307,7 +308,7 @@ export default async function HomePage() {
                 Dam Food Bar.
               </h2>
               <p className="reveal reveal-delay-2 mt-6 text-[1.02rem] leading-[1.75] text-charcoal/75">
-                Country-style plates, cold drinks and a braai that doesn&apos;t stop — Rib Burger,
+                Fully stocked bars, wine specials and a braai that doesn&apos;t stop: Rib Burger,
                 1/4 Chicken &amp; Chips, Sadza &amp; Chicken, and more.
               </p>
               <Link
@@ -362,7 +363,7 @@ export default async function HomePage() {
       <section id="events" className="relative py-24 lg:py-36">
         <Image
           src="https://images.pexels.com/photos/35516036/pexels-photo-35516036.jpeg?auto=compress&cs=tinysrgb&w=1600"
-          alt="A celebration at Dam View Resort"
+          alt="A celebration at Damview Resort"
           fill
           className="object-cover"
         />
@@ -493,7 +494,7 @@ export default async function HomePage() {
                   <li className="flex items-center gap-4">
                     <MessageCircle size={18} className="shrink-0 text-sunset-500" />
                     <a
-                      href={buildWhatsAppUrl(CONTACT_NUMBERS.secondary, "Hi, I'd like to enquire about Dam View Resort.")}
+                      href={buildWhatsAppUrl(CONTACT_NUMBERS.secondary, "Hi, I'd like to enquire about Damview Resort.")}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-sm text-cream-50 transition-colors hover:text-sunset-500"
@@ -507,7 +508,9 @@ export default async function HomePage() {
                   </li>
                   <li className="flex items-center gap-4">
                     <CalendarCheck size={18} className="shrink-0 text-sunset-500" />
-                    <span className="text-sm text-cream-50">Entrance $3 per person</span>
+                    <span className="text-sm text-cream-50">
+                      Entrance ${ENTRANCE_FEE.weekday} weekdays, ${ENTRANCE_FEE.weekend} weekends &amp; holidays
+                    </span>
                   </li>
                 </ul>
               </div>

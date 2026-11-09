@@ -14,7 +14,7 @@ export default function AdminPaymentsPage() {
   return (
     <AdminShell title="Payments">
       <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
-        Sample balances — real payment records come with the backend (Stage 10).
+        Sample balances. Real payment records come with the backend (Stage 10).
       </div>
 
       <div className="mb-6 rounded-2xl border border-border bg-background p-5">

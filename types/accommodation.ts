@@ -4,7 +4,10 @@ export type RoomStatus = "available" | "booked" | "maintenance";
 
 export interface RoomBlock {
   id: string;
+  /** Internal code, e.g. "A Block" — for admin/staff use, never shown to guests. */
   name: string;
+  /** Guest-facing name, e.g. "Garden Rooms" — this is what the public site shows. */
+  displayName: string;
   roomNumbers: string[];
   ratePerStay: number;
   stayDurationHours: number;

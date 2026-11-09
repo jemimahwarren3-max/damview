@@ -12,7 +12,7 @@ import type { RoomBlock } from "@/types";
 const schema = z.object({
   name: z.string().min(1, "Please enter your name"),
   phone: z.string().min(1, "Please enter a phone number"),
-  blockId: z.string().min(1, "Please choose a block"),
+  blockId: z.string().min(1, "Please choose a room type"),
   checkIn: z.string().min(1, "Please choose a date"),
   guests: z.coerce.number().min(1, "At least 1 guest"),
   message: z.string().optional(),
@@ -31,10 +31,10 @@ export function AccommodationEnquiryForm({ blocks }: { blocks: RoomBlock[] }) {
   const onSubmit = async (values: FormOutput) => {
     const block = blocks.find((b) => b.id === values.blockId);
     const lines = [
-      "Hi, I'd like to enquire about a lodge booking at Dam View Resort.",
+      "Hi, I'd like to enquire about a lodge booking at Damview Resort.",
       `Name: ${values.name}`,
       `Phone: ${values.phone}`,
-      `Preferred block: ${block?.name ?? values.blockId}`,
+      `Preferred room type: ${block?.displayName ?? values.blockId}`,
       `Check-in date: ${values.checkIn}`,
       `Guests: ${values.guests}`,
       values.message ? `Note: ${values.message}` : null,
@@ -68,14 +68,14 @@ export function AccommodationEnquiryForm({ blocks }: { blocks: RoomBlock[] }) {
         <FormField label="Phone number" name="phone" error={errors.phone?.message}>
           <input id="phone" {...register("phone")} className="w-full rounded-lg border border-border bg-background px-3 py-2.5" />
         </FormField>
-        <FormField label="Preferred block" name="blockId" error={errors.blockId?.message}>
+        <FormField label="Preferred room type" name="blockId" error={errors.blockId?.message}>
           <select id="blockId" {...register("blockId")} defaultValue="" className="w-full rounded-lg border border-border bg-background px-3 py-2.5">
             <option value="" disabled>
-              Choose a block
+              Choose a room type
             </option>
             {blocks.map((block) => (
               <option key={block.id} value={block.id}>
-                {block.name} — from ${block.ratePerStay}
+                {block.displayName}, from ${block.ratePerStay}
               </option>
             ))}
           </select>
@@ -97,7 +97,7 @@ export function AccommodationEnquiryForm({ blocks }: { blocks: RoomBlock[] }) {
         Send enquiry on WhatsApp
       </button>
       <span className="text-xs text-muted-foreground">
-        This sends an enquiry, not a confirmed booking — our team will confirm availability with you directly.
+        This sends an enquiry, not a confirmed booking. Our team will confirm availability with you directly.
       </span>
     </form>
   );

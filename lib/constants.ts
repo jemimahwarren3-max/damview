@@ -1,4 +1,4 @@
-export const SITE_NAME = "Dam View Resort";
+export const SITE_NAME = "Damview Resort";
 
 export const TAGLINE = "Good times. Great views. Unforgettable moments.";
 
@@ -10,13 +10,20 @@ export const CONTACT_NUMBERS = {
 export const LOCATION =
   "Damview, Chikwanha, along Seke Road, next to Zuva Service Station, Chitungwiza";
 
+export const ENTRANCE_FEE = {
+  weekday: 2,
+  weekend: 3,
+} as const;
+
+export const LODGE_HOURLY_RATE = 5;
+
 export const WEBSITE_NAV = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Accommodation", href: "/accommodation" },
   { label: "Gym", href: "/gym" },
   { label: "Restaurant", href: "/restaurant" },
-  { label: "Dam Side", href: "/damside" },
+  { label: "Damside", href: "/damside" },
   { label: "Activities", href: "/activities" },
   { label: "Events", href: "/events" },
   { label: "Gallery", href: "/gallery" },
@@ -26,7 +33,7 @@ export const WEBSITE_NAV = [
 export const HOME_FACILITIES = [
   {
     title: "Accommodation & Lodges",
-    description: "32 rooms across A, B, F and R blocks, from $25 per 12-hour stay.",
+    description: "32 rooms in a range of styles, from $25 per 12-hour stay or $5 per hour.",
     href: "/accommodation",
     image: "https://images.pexels.com/photos/33613748/pexels-photo-33613748.jpeg?auto=compress&cs=tinysrgb&w=800",
   },
@@ -38,7 +45,7 @@ export const HOME_FACILITIES = [
   },
   {
     title: "Bar & Restaurant",
-    description: "Dam Food Bar — country-style plates, cold drinks and a braai that doesn't stop.",
+    description: "Fully stocked bars, wine specials, burgers and chips, and a braai that doesn't stop.",
     href: "/restaurant",
     image: "https://images.pexels.com/photos/8021129/pexels-photo-8021129.jpeg?auto=compress&cs=tinysrgb&w=800",
   },
@@ -50,7 +57,7 @@ export const HOME_FACILITIES = [
   },
   {
     title: "Recreational Activities",
-    description: "Quad bikes, horse riding, zip lines, trampolines and pool tables — something for everyone.",
+    description: "Quad bikes, horse riding, zip lines, trampolines and pool tables, from $3 per person.",
     href: "/activities",
     image: "https://images.pexels.com/photos/15490742/pexels-photo-15490742.jpeg?auto=compress&cs=tinysrgb&w=800",
   },

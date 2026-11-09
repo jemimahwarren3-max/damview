@@ -12,7 +12,7 @@ export async function getRoomBlocks(): Promise<RoomBlock[]> {
 
   const { data: blocks, error: blocksError } = await supabase
     .from("room_blocks")
-    .select("id, name, rate_per_stay, stay_duration_hours")
+    .select("id, name, display_name, rate_per_stay, stay_duration_hours")
     .order("id");
   if (blocksError) return FALLBACK_ROOM_BLOCKS;
 
@@ -22,6 +22,7 @@ export async function getRoomBlocks(): Promise<RoomBlock[]> {
   return blocks.map((block) => ({
     id: block.id,
     name: block.name,
+    displayName: block.display_name,
     ratePerStay: Number(block.rate_per_stay),
     stayDurationHours: block.stay_duration_hours,
     roomNumbers: rooms.filter((r) => r.block_id === block.id).map((r) => r.number),

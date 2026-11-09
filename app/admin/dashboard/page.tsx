@@ -13,13 +13,13 @@ export default function AdminDashboardPage() {
     { label: "Today's enquiries", value: SAMPLE_LODGE_ENQUIRIES.length, icon: CalendarCheck },
     { label: "Pending review", value: pending, icon: Clock3 },
     { label: "Rooms (total)", value: TOTAL_ROOMS, icon: BedDouble },
-    { label: "Outstanding", value: "—", icon: CircleDollarSign },
+    { label: "Outstanding", value: "$0", icon: CircleDollarSign },
   ];
 
   return (
     <AdminShell title="Dashboard">
       <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
-        Showing sample data — this connects to real bookings once the backend is built (Stage 10).
+        Showing sample data. This connects to real bookings once the backend is built (Stage 10).
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

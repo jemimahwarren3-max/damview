@@ -4,12 +4,12 @@ import { PageHero } from "@/components/shared/PageHero";
 import { Container } from "@/components/shared/Container";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 import { SimpleEnquiryForm } from "@/components/booking/SimpleEnquiryForm";
-import { CONTACT_NUMBERS, LOCATION, SITE_NAME } from "@/lib/constants";
+import { CONTACT_NUMBERS, LOCATION, SITE_NAME, ENTRANCE_FEE } from "@/lib/constants";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
-  title: `Contact & Location — ${SITE_NAME}`,
-  description: "Find and contact Dam View Resort in Chikwanha, Chitungwiza.",
+  title: `Contact & Location, ${SITE_NAME}`,
+  description: "Find and contact Damview Resort in Chikwanha, Chitungwiza.",
 };
 
 export default function ContactPage() {
@@ -36,7 +36,7 @@ export default function ContactPage() {
               ].map(({ number, display }) => (
                 <a
                   key={number}
-                  href={buildWhatsAppUrl(number, "Hi, I'd like to enquire about Dam View Resort.")}
+                  href={buildWhatsAppUrl(number, "Hi, I'd like to enquire about Damview Resort.")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-between rounded-xl border border-dv-ivory/15 bg-dv-ivory/5 px-5 py-4 text-dv-ivory hover:bg-dv-ivory/10"
@@ -53,8 +53,11 @@ export default function ContactPage() {
             <p className="mt-2 flex items-center gap-2 text-dv-cream/80">
               <Clock3 size={16} /> Open 24 hours, every day
             </p>
+            <p className="mt-2 text-dv-cream/80">
+              Entrance ${ENTRANCE_FEE.weekday} weekdays, ${ENTRANCE_FEE.weekend} weekends &amp; public holidays
+            </p>
             <p className="mt-6 text-sm text-dv-cream/50">
-              Facebook / Instagram — social links coming soon
+              Facebook / Instagram, social links coming soon
             </p>
           </Container>
         </section>
@@ -63,7 +66,7 @@ export default function ContactPage() {
           <Container className="max-w-md lg:ml-0 lg:mr-auto">
             <SectionHeading eyebrow="General Enquiry" title="Send us a message." />
             <div className="mt-8">
-              <SimpleEnquiryForm intro="Hi, I have a general enquiry for Dam View Resort." submitLabel="Send on WhatsApp" />
+              <SimpleEnquiryForm intro="Hi, I have a general enquiry for Damview Resort." submitLabel="Send on WhatsApp" />
             </div>
           </Container>
         </section>
@@ -71,7 +74,7 @@ export default function ContactPage() {
 
       <div className="h-[380px] w-full">
         <iframe
-          title="Dam View Resort location"
+          title="Damview Resort location"
           src={`https://maps.google.com/maps?q=${encodeURIComponent(LOCATION)}&z=15&output=embed`}
           className="h-full w-full"
           loading="lazy"

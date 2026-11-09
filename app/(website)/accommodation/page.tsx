@@ -6,11 +6,11 @@ import { SectionHeading } from "@/components/shared/SectionHeading";
 import { PriceDisplay } from "@/components/shared/PriceDisplay";
 import { AccommodationEnquiryForm } from "@/components/booking/AccommodationEnquiryForm";
 import { getRoomBlocks, ROOM_IMAGE } from "@/lib/data/rooms";
-import { SITE_NAME } from "@/lib/constants";
+import { SITE_NAME, LODGE_HOURLY_RATE } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: `Accommodation & Lodges — ${SITE_NAME}`,
-  description: "32 rooms across A, B, F and R blocks at Dam View Resort, Chitungwiza.",
+  title: `Accommodation & Lodges, ${SITE_NAME}`,
+  description: "32 comfortable rooms at Damview Resort, Chitungwiza.",
 };
 
 export default async function AccommodationPage() {
@@ -20,8 +20,8 @@ export default async function AccommodationPage() {
     <>
       <PageHero
         eyebrow="Accommodation & Lodges"
-        title="A, B, F and R blocks."
-        subtitle="32 rooms, simple and comfortable, for a proper break from the everyday."
+        title="32 rooms, simple and comfortable."
+        subtitle="For a proper break from the everyday."
         image={ROOM_IMAGE}
       />
 
@@ -29,17 +29,16 @@ export default async function AccommodationPage() {
         <Container>
           <SectionHeading
             eyebrow="Our Lodges"
-            title="Choose your block."
-            subtitle="Rates are per 12-hour stay. An hourly rate is also available — ask on WhatsApp for current pricing while we confirm the exact figure here."
+            title="Choose your room."
+            subtitle={`Day rates are per 12-hour stay. An hourly rate of $${LODGE_HOURLY_RATE} is also available.`}
           />
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
             {roomBlocks.map((block) => (
               <div key={block.id} className="flex items-center justify-between gap-6 rounded-2xl border border-border bg-card p-6">
                 <div>
-                  <h3 className="font-serif text-xl text-dv-forest">{block.name}</h3>
+                  <h3 className="font-serif text-xl text-dv-forest">{block.displayName}</h3>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Rooms {block.roomNumbers[0]} – {block.roomNumbers[block.roomNumbers.length - 1]} ·{" "}
-                    {block.stayDurationHours}-hour stay
+                    {block.roomNumbers.length} rooms · {block.stayDurationHours}-hour stay
                   </p>
                 </div>
                 <PriceDisplay amount={block.ratePerStay} unit={`${block.stayDurationHours}hr stay`} />
@@ -52,7 +51,7 @@ export default async function AccommodationPage() {
       <section className="bg-dv-cream py-20">
         <Container className="flex flex-wrap gap-12">
           <div className="relative h-[360px] flex-1 min-w-[280px] overflow-hidden rounded-2xl">
-            <Image src={ROOM_IMAGE} alt="A Dam View lodge room" fill className="object-cover" />
+            <Image src={ROOM_IMAGE} alt="A Damview lodge room" fill className="object-cover" />
           </div>
           <div className="flex-1 min-w-[280px]">
             <SectionHeading

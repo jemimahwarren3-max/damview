@@ -14,7 +14,7 @@ export default function AdminMenuPage() {
   return (
     <AdminShell title="Menu">
       <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
-        Edits here are local to your browser only — connecting this to the live site needs the backend
+        Edits here are local to your browser only. Connecting this to the live site needs the backend
         (Stage 10).
       </div>
 

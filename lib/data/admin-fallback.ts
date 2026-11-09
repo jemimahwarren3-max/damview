@@ -8,10 +8,10 @@
 import type { RoomBlock, GymPackage, MenuCategory, MenuItem, Activity, GalleryItem } from "@/types";
 
 export const ROOM_BLOCKS: RoomBlock[] = [
-  { id: "a", name: "A Block", roomNumbers: ["A1", "A2", "A3", "A4", "A5", "A6"], ratePerStay: 25, stayDurationHours: 12 },
-  { id: "b", name: "B Block", roomNumbers: ["B1", "B2", "B3", "B4", "B5", "B6"], ratePerStay: 30, stayDurationHours: 12 },
-  { id: "f", name: "F Block", roomNumbers: ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10"], ratePerStay: 35, stayDurationHours: 12 },
-  { id: "r", name: "R Block", roomNumbers: ["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10"], ratePerStay: 25, stayDurationHours: 12 },
+  { id: "a", name: "A Block", displayName: "Garden Rooms", roomNumbers: ["A1", "A2", "A3", "A4", "A5", "A6"], ratePerStay: 25, stayDurationHours: 12 },
+  { id: "b", name: "B Block", displayName: "Poolside Rooms", roomNumbers: ["B1", "B2", "B3", "B4", "B5", "B6"], ratePerStay: 30, stayDurationHours: 12 },
+  { id: "f", name: "F Block", displayName: "Premier Rooms", roomNumbers: ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10"], ratePerStay: 35, stayDurationHours: 12 },
+  { id: "r", name: "R Block", displayName: "Riverside Rooms", roomNumbers: ["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10"], ratePerStay: 25, stayDurationHours: 12 },
 ];
 
 export const GYM_PACKAGES: GymPackage[] = [
@@ -36,7 +36,7 @@ export const DAMSIDE_ACTIVITIES: Activity[] = [
     id: "boat-cruise",
     category: "damside",
     name: "Boat Cruise",
-    description: "A scenic cruise along the water — a relaxed way to see Dam View from the dam itself.",
+    description: "A scenic cruise along the water — a relaxed way to see Damview from the dam itself.",
     pricing: { amount: 5, unit: "per_person" },
     image: "https://images.pexels.com/photos/36593940/pexels-photo-36593940.jpeg?auto=compress&cs=tinysrgb&w=1200",
   },
@@ -56,6 +56,7 @@ export const RECREATIONAL_ACTIVITIES: Activity[] = [
     category: "recreational",
     name: "Quad Biking",
     description: "Off-road quad trails around the resort grounds.",
+    pricing: { amount: 3, unit: "per_person" },
     image: "https://images.pexels.com/photos/15490742/pexels-photo-15490742.jpeg?auto=compress&cs=tinysrgb&w=1200",
   },
   {
@@ -63,6 +64,7 @@ export const RECREATIONAL_ACTIVITIES: Activity[] = [
     category: "recreational",
     name: "Horse Riding",
     description: "Guided horse rides, suited to first-timers and experienced riders alike.",
+    pricing: { amount: 3, unit: "per_person" },
     image: "https://images.pexels.com/photos/38492716/pexels-photo-38492716.jpeg?auto=compress&cs=tinysrgb&w=1200",
   },
   {
@@ -70,13 +72,15 @@ export const RECREATIONAL_ACTIVITIES: Activity[] = [
     category: "recreational",
     name: "Zip Line",
     description: "A zip line ride across the resort grounds.",
+    pricing: { amount: 3, unit: "per_person" },
     image: "https://images.pexels.com/photos/28263612/pexels-photo-28263612.jpeg?auto=compress&cs=tinysrgb&w=1200",
   },
   {
     id: "trampolines",
     category: "recreational",
     name: "Trampolines",
-    description: "A bounce house area for the kids — and the kids at heart.",
+    description: "A bounce house area for the kids, and the kids at heart.",
+    pricing: { amount: 3, unit: "per_person" },
     image: "https://images.pexels.com/photos/4964542/pexels-photo-4964542.jpeg?auto=compress&cs=tinysrgb&w=1200",
   },
   {
@@ -84,7 +88,16 @@ export const RECREATIONAL_ACTIVITIES: Activity[] = [
     category: "recreational",
     name: "Pool Tables",
     description: "Pool tables and recreational games at the bar.",
+    pricing: { amount: 3, unit: "per_person" },
     image: "https://images.pexels.com/photos/5055427/pexels-photo-5055427.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  },
+  {
+    id: "soccer-field",
+    category: "recreational",
+    name: "Soccer Field",
+    description: "An open field for a proper game, bring your own team or join one already playing.",
+    pricing: { amount: 3, unit: "per_person" },
+    image: "https://images.pexels.com/photos/29440634/pexels-photo-29440634.jpeg?auto=compress&cs=tinysrgb&w=1200",
   },
 ];
 

@@ -43,7 +43,7 @@ export function AdminShell({ title, children }: { title: string; children: React
       {/* Desktop sidebar */}
       <aside className="hidden w-64 shrink-0 flex-col gap-6 border-r border-border bg-background p-5 lg:flex">
         <Link href="/admin/dashboard" className="flex items-center gap-2">
-          <Image src="/images/brand/logo.png" alt="Dam View Resort" width={140} height={47} className="h-9 w-auto" />
+          <Image src="/images/brand/logo.png" alt="Damview Resort" width={140} height={47} className="h-9 w-auto" />
         </Link>
         <NavList />
       </aside>
@@ -72,7 +72,7 @@ export function AdminShell({ title, children }: { title: string; children: React
           <div className="absolute inset-0 bg-dv-black/50" onClick={() => setMenuOpen(false)} />
           <div className="relative flex w-72 flex-col gap-6 bg-background p-5">
             <div className="flex items-center justify-between">
-              <Image src="/images/brand/logo.png" alt="Dam View Resort" width={140} height={47} className="h-9 w-auto" />
+              <Image src="/images/brand/logo.png" alt="Damview Resort" width={140} height={47} className="h-9 w-auto" />
               <button
                 type="button"
                 onClick={() => setMenuOpen(false)}

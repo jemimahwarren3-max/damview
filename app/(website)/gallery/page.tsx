@@ -8,8 +8,8 @@ import { getApprovedReviews } from "@/lib/data/reviews";
 import { SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: `Gallery — ${SITE_NAME}`,
-  description: "Photos from across Dam View Resort — accommodation, pool, restaurant, gym, waterfront, activities and events.",
+  title: `Gallery, ${SITE_NAME}`,
+  description: "Photos from across Damview Resort, accommodation, pool, restaurant, gym, waterfront, activities and events.",
 };
 
 export default async function GalleryPage() {
@@ -27,7 +27,7 @@ export default async function GalleryPage() {
         <Container>
           <GalleryGrid items={galleryItems} />
           <p className="mt-10 text-sm text-muted-foreground">
-            Shown here are sourced reference photos and real Dam View flyer crops, until our own
+            Shown here are sourced reference photos and real Damview flyer crops, until our own
             photography is uploaded through the admin dashboard.
           </p>
         </Container>

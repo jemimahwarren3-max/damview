@@ -7,8 +7,8 @@ import { EventEnquiryForm } from "@/components/booking/EventEnquiryForm";
 import { EVENT_CATEGORIES, SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: `Events & Functions — ${SITE_NAME}`,
-  description: "Weddings, birthdays, private parties and corporate functions at Dam View Resort.",
+  title: `Events & Functions, ${SITE_NAME}`,
+  description: "Weddings, birthdays, private parties and corporate functions at Damview Resort.",
 };
 
 const SHOWCASE = [
@@ -57,15 +57,21 @@ export default function EventsPage() {
       </section>
 
       <section className="py-12">
-        <Container className="flex flex-wrap justify-center gap-2">
-          {EVENT_CATEGORIES.map((category) => (
-            <span
-              key={category}
-              className="rounded-full border border-dv-gold/50 px-4 py-1.5 text-sm font-medium text-dv-forest"
-            >
-              {category}
-            </span>
-          ))}
+        <Container className="flex flex-col items-center gap-6">
+          <div className="flex flex-wrap justify-center gap-2">
+            {EVENT_CATEGORIES.map((category) => (
+              <span
+                key={category}
+                className="rounded-full border border-dv-gold/50 px-4 py-1.5 text-sm font-medium text-dv-forest"
+              >
+                {category}
+              </span>
+            ))}
+          </div>
+          <p className="max-w-lg text-center text-sm text-dv-black/70">
+            Gazebos and outdoor seating, a resident DJ and dance floor, and scenic spots for your
+            photos, all part of hosting with us.
+          </p>
         </Container>
       </section>
 

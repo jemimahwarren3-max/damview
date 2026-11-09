@@ -24,7 +24,7 @@ export default function AdminRoomsPage() {
   return (
     <AdminShell title="Rooms">
       <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
-        Tap a room to cycle its status — local to your browser only, not saved yet.
+        Tap a room to cycle its status, local to your browser only, not saved yet.
       </div>
 
       {ROOM_BLOCKS.map((block) => (

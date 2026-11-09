@@ -11,7 +11,7 @@ interface WhatsAppButtonProps {
   className?: string;
 }
 
-const DEFAULT_MESSAGE = "Hi, I'd like to enquire about Dam View Resort.";
+const DEFAULT_MESSAGE = "Hi, I'd like to enquire about Damview Resort.";
 
 export function WhatsAppButton({
   phone = CONTACT_NUMBERS.primary,

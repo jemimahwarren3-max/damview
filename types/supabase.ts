@@ -410,9 +410,9 @@ export type Database = {
         ];
       };
       room_blocks: {
-        Row: { id: string; name: string; rate_per_stay: number; stay_duration_hours: number };
-        Insert: { id: string; name: string; rate_per_stay: number; stay_duration_hours: number };
-        Update: { id?: string; name?: string; rate_per_stay?: number; stay_duration_hours?: number };
+        Row: { id: string; name: string; display_name: string; rate_per_stay: number; stay_duration_hours: number };
+        Insert: { id: string; name: string; display_name: string; rate_per_stay: number; stay_duration_hours: number };
+        Update: { id?: string; name?: string; display_name?: string; rate_per_stay?: number; stay_duration_hours?: number };
         Relationships: [];
       };
       rooms: {

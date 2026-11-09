@@ -20,7 +20,7 @@ export function SiteFooter() {
               {[CONTACT_NUMBERS.primary, CONTACT_NUMBERS.secondary].map((number) => (
                 <a
                   key={number}
-                  href={buildWhatsAppUrl(number, "Hi, I'd like to enquire about Dam View Resort.")}
+                  href={buildWhatsAppUrl(number, "Hi, I'd like to enquire about Damview Resort.")}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="WhatsApp"
