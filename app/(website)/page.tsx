@@ -79,8 +79,8 @@ export default async function HomePage() {
       <section id="home" className="relative h-[100svh] min-h-[640px] w-full overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://images.pexels.com/photos/36567120/pexels-photo-36567120.jpeg?auto=compress&cs=tinysrgb&w=1920"
-            alt="Dam View Resort at golden hour"
+            src="/images/resort/damview-sunset.jpg"
+            alt="A real Chitungwiza sunset near Dam View Resort"
             fill
             priority
             className="hero-zoom object-cover"
@@ -178,8 +178,8 @@ export default async function HomePage() {
                 </div>
                 <div className="reveal reveal-delay-2 col-span-3 row-span-1 overflow-hidden rounded-sm lg:col-span-2">
                   <Image
-                    src="https://images.pexels.com/photos/8021129/pexels-photo-8021129.jpeg?auto=compress&cs=tinysrgb&w=900"
-                    alt="Friends sharing a meal at Dam View"
+                    src="https://images.pexels.com/photos/35706767/pexels-photo-35706767.jpeg?auto=compress&cs=tinysrgb&w=900"
+                    alt="A calm dam framed by open lawns and trees"
                     width={700}
                     height={700}
                     className="h-full w-full object-cover transition-transform duration-[1.2s] hover:scale-105"
