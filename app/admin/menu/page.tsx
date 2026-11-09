@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AdminShell } from "@/components/admin/AdminShell";
-import { MENU_CATEGORIES, MENU_ITEMS } from "@/lib/data/menu";
+import { MENU_CATEGORIES, MENU_ITEMS } from "@/lib/data/admin-fallback";
 
 export default function AdminMenuPage() {
   const [items, setItems] = useState(MENU_ITEMS);

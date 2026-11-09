@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { StatusBadge } from "@/components/shared/StatusBadge";
-import { ROOM_BLOCKS } from "@/lib/data/rooms";
+import { ROOM_BLOCKS } from "@/lib/data/admin-fallback";
 import type { RoomStatus } from "@/types";
 
 const ALL_ROOMS = ROOM_BLOCKS.flatMap((block) =>

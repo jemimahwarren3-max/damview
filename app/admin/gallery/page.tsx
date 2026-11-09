@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { X, Upload } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
-import { GALLERY_ITEMS } from "@/lib/data/gallery";
+import { GALLERY_ITEMS } from "@/lib/data/admin-fallback";
 
 export default function AdminGalleryPage() {
   const [items, setItems] = useState(GALLERY_ITEMS);

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { SAMPLE_LODGE_ENQUIRIES } from "@/lib/data/admin-mock";
-import { ROOM_BLOCKS } from "@/lib/data/rooms";
+import { ROOM_BLOCKS } from "@/lib/data/admin-fallback";
 import type { EnquiryStatus } from "@/types";
 
 const STATUS_FLOW: EnquiryStatus[] = ["new", "contacted", "confirmed"];

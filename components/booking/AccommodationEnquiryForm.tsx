@@ -6,6 +6,7 @@ import { z } from "zod";
 import { FormField } from "@/components/shared/FormField";
 import { CONTACT_NUMBERS } from "@/lib/constants";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import type { RoomBlock } from "@/types";
 
 const schema = z.object({
@@ -27,7 +28,7 @@ export function AccommodationEnquiryForm({ blocks }: { blocks: RoomBlock[] }) {
     formState: { errors },
   } = useForm<FormInput, unknown, FormOutput>({ resolver: zodResolver(schema) });
 
-  const onSubmit = (values: FormOutput) => {
+  const onSubmit = async (values: FormOutput) => {
     const block = blocks.find((b) => b.id === values.blockId);
     const lines = [
       "Hi, I'd like to enquire about a lodge booking at Dam View Resort.",
@@ -38,6 +39,20 @@ export function AccommodationEnquiryForm({ blocks }: { blocks: RoomBlock[] }) {
       `Guests: ${values.guests}`,
       values.message ? `Note: ${values.message}` : null,
     ].filter(Boolean);
+
+    try {
+      const supabase = getSupabaseClient();
+      await supabase.from("lodge_enquiries").insert({
+        name: values.name,
+        phone: values.phone,
+        block_id: values.blockId,
+        check_in: values.checkIn,
+        guests: values.guests,
+        message: values.message || null,
+      });
+    } catch {
+      // Don't block the enquiry on a database hiccup — WhatsApp still goes through below.
+    }
 
     window.open(buildWhatsAppUrl(CONTACT_NUMBERS.primary, lines.join("\n")), "_blank", "noopener,noreferrer");
   };

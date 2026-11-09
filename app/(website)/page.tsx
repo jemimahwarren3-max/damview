@@ -20,7 +20,7 @@ import {
   EVENT_CATEGORIES,
   GALLERY_PREVIEW,
 } from "@/lib/constants";
-import { ROOM_BLOCKS } from "@/lib/data/rooms";
+import { getRoomBlocks } from "@/lib/data/rooms";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 const EXPERIENCES = [
@@ -70,7 +70,9 @@ const ACTIVITY_SHOTS = [
   { img: "https://images.pexels.com/photos/28263612/pexels-photo-28263612.jpeg?auto=compress&cs=tinysrgb&w=1100", label: "Zip line" },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const roomBlocks = await getRoomBlocks();
+
   return (
     <>
       {/* Hero */}
@@ -251,8 +253,8 @@ export default function HomePage() {
                 Stay a little longer.
               </h2>
               <p className="reveal reveal-delay-2 mt-6 text-[1.02rem] leading-[1.75] text-charcoal/75">
-                32 rooms across {ROOM_BLOCKS.map((b) => b.name.replace(" Block", "")).join(", ")} blocks,
-                from ${Math.min(...ROOM_BLOCKS.map((b) => b.ratePerStay))} a stay. A welcoming place to
+                32 rooms across {roomBlocks.map((b) => b.name.replace(" Block", "")).join(", ")} blocks,
+                from ${Math.min(...roomBlocks.map((b) => b.ratePerStay))} a stay. A welcoming place to
                 unwind, whether it&apos;s a short break or an overnight visit.
               </p>
               <Link

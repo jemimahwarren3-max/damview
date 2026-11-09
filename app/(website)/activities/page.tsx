@@ -4,7 +4,7 @@ import { PageHero } from "@/components/shared/PageHero";
 import { Container } from "@/components/shared/Container";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 import { SimpleEnquiryForm } from "@/components/booking/SimpleEnquiryForm";
-import { RECREATIONAL_ACTIVITIES } from "@/lib/data/activities";
+import { getRecreationalActivities } from "@/lib/data/activities";
 import { SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -12,7 +12,9 @@ export const metadata: Metadata = {
   description: "Quad biking, horse riding, zip lines, trampolines and pool tables at Dam View Resort.",
 };
 
-export default function ActivitiesPage() {
+export default async function ActivitiesPage() {
+  const recreationalActivities = await getRecreationalActivities();
+
   return (
     <>
       <PageHero
@@ -22,7 +24,7 @@ export default function ActivitiesPage() {
         image="https://images.pexels.com/photos/15490742/pexels-photo-15490742.jpeg?auto=compress&cs=tinysrgb&w=1600"
       />
 
-      {RECREATIONAL_ACTIVITIES.map((activity, index) => (
+      {recreationalActivities.map((activity, index) => (
         <section
           key={activity.id}
           className={index % 2 === 0 ? "bg-background" : "bg-dv-cream"}

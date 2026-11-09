@@ -5,7 +5,7 @@ import { Container } from "@/components/shared/Container";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 import { PriceDisplay } from "@/components/shared/PriceDisplay";
 import { AccommodationEnquiryForm } from "@/components/booking/AccommodationEnquiryForm";
-import { ROOM_BLOCKS, ROOM_IMAGE } from "@/lib/data/rooms";
+import { getRoomBlocks, ROOM_IMAGE } from "@/lib/data/rooms";
 import { SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -13,7 +13,9 @@ export const metadata: Metadata = {
   description: "32 rooms across A, B, F and R blocks at Dam View Resort, Chitungwiza.",
 };
 
-export default function AccommodationPage() {
+export default async function AccommodationPage() {
+  const roomBlocks = await getRoomBlocks();
+
   return (
     <>
       <PageHero
@@ -31,7 +33,7 @@ export default function AccommodationPage() {
             subtitle="Rates are per 12-hour stay. An hourly rate is also available — ask on WhatsApp for current pricing while we confirm the exact figure here."
           />
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
-            {ROOM_BLOCKS.map((block) => (
+            {roomBlocks.map((block) => (
               <div key={block.id} className="flex items-center justify-between gap-6 rounded-2xl border border-border bg-card p-6">
                 <div>
                   <h3 className="font-serif text-xl text-dv-forest">{block.name}</h3>
@@ -59,7 +61,7 @@ export default function AccommodationPage() {
               subtitle="No account needed. Our team will reply directly to confirm your stay."
             />
             <div className="mt-8">
-              <AccommodationEnquiryForm blocks={ROOM_BLOCKS} />
+              <AccommodationEnquiryForm blocks={roomBlocks} />
             </div>
           </div>
         </Container>

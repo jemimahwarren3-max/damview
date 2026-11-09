@@ -3,7 +3,7 @@ import { PageHero } from "@/components/shared/PageHero";
 import { Container } from "@/components/shared/Container";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 import { SimpleEnquiryForm } from "@/components/booking/SimpleEnquiryForm";
-import { GYM_PACKAGES, GYM_IMAGE } from "@/lib/data/gym";
+import { getGymPackages, GYM_IMAGE } from "@/lib/data/gym";
 import { SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -11,7 +11,9 @@ export const metadata: Metadata = {
   description: "A fully equipped gym at Dam View Resort, open 24/7, packages from $10.",
 };
 
-export default function GymPage() {
+export default async function GymPage() {
+  const gymPackages = await getGymPackages();
+
   return (
     <>
       <PageHero
@@ -30,7 +32,7 @@ export default function GymPage() {
             className="[&_h2]:text-dv-ivory [&_p]:text-dv-cream/75"
           />
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
-            {GYM_PACKAGES.map((pkg) => (
+            {gymPackages.map((pkg) => (
               <div key={pkg.id} className="rounded-2xl border border-dv-ivory/15 bg-dv-forest/40 p-6">
                 <h3 className="font-serif text-xl text-dv-sunshine">{pkg.name}</h3>
                 <p className="mt-1 font-promo text-sm tracking-wide text-dv-gold">

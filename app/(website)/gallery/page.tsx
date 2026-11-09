@@ -3,8 +3,8 @@ import { PageHero } from "@/components/shared/PageHero";
 import { Container } from "@/components/shared/Container";
 import { GalleryGrid } from "@/components/website/GalleryGrid";
 import { ReviewsSection } from "@/components/website/ReviewsSection";
-import { GALLERY_ITEMS } from "@/lib/data/gallery";
-import { SAMPLE_REVIEWS } from "@/lib/data/reviews";
+import { getGalleryItems } from "@/lib/data/gallery";
+import { getApprovedReviews } from "@/lib/data/reviews";
 import { SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -12,7 +12,9 @@ export const metadata: Metadata = {
   description: "Photos from across Dam View Resort — accommodation, pool, restaurant, gym, waterfront, activities and events.",
 };
 
-export default function GalleryPage() {
+export default async function GalleryPage() {
+  const [galleryItems, reviews] = await Promise.all([getGalleryItems(), getApprovedReviews()]);
+
   return (
     <>
       <PageHero
@@ -23,7 +25,7 @@ export default function GalleryPage() {
 
       <section className="py-20">
         <Container>
-          <GalleryGrid items={GALLERY_ITEMS} />
+          <GalleryGrid items={galleryItems} />
           <p className="mt-10 text-sm text-muted-foreground">
             Shown here are sourced reference photos and real Dam View flyer crops, until our own
             photography is uploaded through the admin dashboard.
@@ -33,7 +35,7 @@ export default function GalleryPage() {
 
       <section className="bg-dv-cream py-20">
         <Container>
-          <ReviewsSection reviews={SAMPLE_REVIEWS} />
+          <ReviewsSection reviews={reviews} />
         </Container>
       </section>
     </>

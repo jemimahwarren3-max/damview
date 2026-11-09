@@ -6,7 +6,7 @@ import { SectionHeading } from "@/components/shared/SectionHeading";
 import { ExperienceCard } from "@/components/shared/ExperienceCard";
 import { SimpleEnquiryForm } from "@/components/booking/SimpleEnquiryForm";
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
-import { DAMSIDE_ACTIVITIES } from "@/lib/data/activities";
+import { getDamsideActivities } from "@/lib/data/activities";
 import { SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -14,7 +14,9 @@ export const metadata: Metadata = {
   description: "Waterfront relaxation, boat cruises and pedal boats at Dam View Resort.",
 };
 
-export default function DamsidePage() {
+export default async function DamsidePage() {
+  const damsideActivities = await getDamsideActivities();
+
   return (
     <>
       <PageHero
@@ -50,7 +52,7 @@ export default function DamsidePage() {
         <Container>
           <SectionHeading eyebrow="On the Water" title="Boat cruises and pedal boats." />
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
-            {DAMSIDE_ACTIVITIES.map((activity) => (
+            {damsideActivities.map((activity) => (
               <ExperienceCard
                 key={activity.id}
                 image={activity.image ?? ""}

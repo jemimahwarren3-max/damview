@@ -6,6 +6,7 @@ import { z } from "zod";
 import { FormField } from "@/components/shared/FormField";
 import { CONTACT_NUMBERS } from "@/lib/constants";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import type { EventType } from "@/types";
 
 const EVENT_TYPE_OPTIONS: { value: EventType; label: string }[] = [
@@ -43,7 +44,7 @@ export function EventEnquiryForm() {
     defaultValues: { cateringRequired: false, accommodationRequired: false },
   });
 
-  const onSubmit = (values: FormOutput) => {
+  const onSubmit = async (values: FormOutput) => {
     const eventTypeLabel =
       EVENT_TYPE_OPTIONS.find((option) => option.value === values.eventType)?.label ?? values.eventType;
 
@@ -59,6 +60,25 @@ export function EventEnquiryForm() {
       `Accommodation required: ${values.accommodationRequired ? "Yes" : "No"}`,
       values.additionalInfo ? `Additional info: ${values.additionalInfo}` : null,
     ].filter(Boolean);
+
+    try {
+      const supabase = getSupabaseClient();
+      await supabase.from("event_enquiries").insert({
+        name: values.name,
+        phone: values.phone,
+        event_type: values.eventType,
+        proposed_date: values.proposedDate,
+        expected_guests: values.expectedGuests,
+        facilities_required: values.facilitiesRequired
+          ? values.facilitiesRequired.split(",").map((f) => f.trim()).filter(Boolean)
+          : [],
+        catering_required: values.cateringRequired,
+        accommodation_required: values.accommodationRequired,
+        message: values.additionalInfo || null,
+      });
+    } catch {
+      // Don't block the enquiry on a database hiccup — WhatsApp still goes through below.
+    }
 
     window.open(buildWhatsAppUrl(CONTACT_NUMBERS.primary, lines.join("\n")), "_blank", "noopener,noreferrer");
   };

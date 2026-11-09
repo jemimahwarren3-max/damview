@@ -5,7 +5,7 @@ import { Container } from "@/components/shared/Container";
 import { PriceDisplay } from "@/components/shared/PriceDisplay";
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 import { StickerBadge } from "@/components/shared/StickerBadge";
-import { MENU_CATEGORIES, MENU_ITEMS, RESTAURANT_IMAGE } from "@/lib/data/menu";
+import { getMenu, RESTAURANT_IMAGE } from "@/lib/data/menu";
 import { SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -13,7 +13,9 @@ export const metadata: Metadata = {
   description: "The Dam Food Bar menu at Dam View Resort, Chitungwiza.",
 };
 
-export default function RestaurantPage() {
+export default async function RestaurantPage() {
+  const { categories, items } = await getMenu();
+
   return (
     <>
       <PageHero
@@ -50,11 +52,11 @@ export default function RestaurantPage() {
             </p>
 
             <div className="mt-10 flex flex-col gap-10">
-              {MENU_CATEGORIES.map((category) => (
+              {categories.map((category) => (
                 <div key={category.id}>
                   <h3 className="font-serif text-lg text-dv-forest">{category.name}</h3>
                   <div className="mt-4 flex flex-col divide-y divide-dv-terracotta/15">
-                    {MENU_ITEMS.filter((item) => item.categoryId === category.id).map((item) => (
+                    {items.filter((item) => item.categoryId === category.id).map((item) => (
                       <div key={item.id} className="flex items-center justify-between py-3">
                         <span className="font-medium">{item.name}</span>
                         <PriceDisplay amount={item.price} />

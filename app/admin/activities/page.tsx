@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { SAMPLE_ACTIVITY_ENQUIRIES } from "@/lib/data/admin-mock";
-import { DAMSIDE_ACTIVITIES, RECREATIONAL_ACTIVITIES } from "@/lib/data/activities";
+import { DAMSIDE_ACTIVITIES, RECREATIONAL_ACTIVITIES } from "@/lib/data/admin-fallback";
 
 const ALL_ACTIVITIES = [...DAMSIDE_ACTIVITIES, ...RECREATIONAL_ACTIVITIES];
 

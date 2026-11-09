@@ -2,7 +2,7 @@ import { CalendarCheck, BedDouble, Clock3, CircleDollarSign } from "lucide-react
 import { AdminShell } from "@/components/admin/AdminShell";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { SAMPLE_LODGE_ENQUIRIES } from "@/lib/data/admin-mock";
-import { ROOM_BLOCKS } from "@/lib/data/rooms";
+import { ROOM_BLOCKS } from "@/lib/data/admin-fallback";
 
 const TOTAL_ROOMS = ROOM_BLOCKS.reduce((sum, block) => sum + block.roomNumbers.length, 0);
 
