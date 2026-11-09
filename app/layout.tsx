@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
-import { DM_Serif_Display, Plus_Jakarta_Sans, Bebas_Neue, Caveat } from "next/font/google";
+import { Fraunces, Inter, Bebas_Neue, Caveat } from "next/font/google";
 import "./globals.css";
 
-const dmSerifDisplay = DM_Serif_Display({
+const fraunces = Fraunces({
   variable: "--font-serif-display",
   subsets: ["latin"],
-  weight: "400",
+  weight: "variable",
+  style: ["normal", "italic"],
+  axes: ["opsz"],
 });
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const inter = Inter({
   variable: "--font-body",
   subsets: ["latin"],
 });
@@ -34,7 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${dmSerifDisplay.variable} ${plusJakartaSans.variable} ${bebasNeue.variable} ${caveat.variable} h-full antialiased`}
+      className={`${fraunces.variable} ${inter.variable} ${bebasNeue.variable} ${caveat.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
