@@ -3,10 +3,11 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Menu, X, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ADMIN_NAV } from "@/lib/admin-nav";
+import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
@@ -37,6 +38,16 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
 
 export function AdminShell({ title, children }: { title: string; children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
+
+  const signOut = async () => {
+    const supabase = getSupabaseBrowserClient();
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
+    router.push("/admin");
+    router.refresh();
+  };
 
   return (
     <div className="flex min-h-screen bg-dv-cream">
@@ -60,7 +71,13 @@ export function AdminShell({ title, children }: { title: string; children: React
             <Menu size={24} />
           </button>
           <h1 className="font-serif text-lg text-dv-forest">{title}</h1>
-          <span className="hidden text-sm text-muted-foreground sm:block">Staff</span>
+          <button
+            type="button"
+            onClick={signOut}
+            className="hidden items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-dv-forest sm:flex"
+          >
+            <LogOut size={15} /> Sign out
+          </button>
         </header>
 
         <main className="flex-1 p-4 lg:p-8">{children}</main>
