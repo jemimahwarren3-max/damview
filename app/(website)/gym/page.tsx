@@ -53,7 +53,11 @@ export default async function GymPage() {
         <Container className="max-w-xl">
           <SectionHeading eyebrow="Membership Enquiry" title="Ask about a membership." />
           <div className="mt-8">
-            <SimpleEnquiryForm intro="Hi, I'd like to enquire about a gym membership at Damview Resort." submitLabel="Book Now on WhatsApp" />
+            <SimpleEnquiryForm
+              intro="Hi, I'd like to enquire about a gym membership at Damview Resort."
+              submitLabel="Book Now on WhatsApp"
+              insertTarget={{ table: "gym_enquiries" }}
+            />
           </div>
         </Container>
       </section>

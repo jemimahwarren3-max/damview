@@ -62,7 +62,10 @@ export default async function ActivityDetailPage({ params }: { params: Promise<{
         <Container className="max-w-xl">
           <SectionHeading eyebrow="Enquire" title={`Ask about ${activity.name}.`} />
           <div className="mt-8">
-            <SimpleEnquiryForm intro={`Hi, I'd like to enquire about ${activity.name} at Damview Resort.`} />
+            <SimpleEnquiryForm
+              intro={`Hi, I'd like to enquire about ${activity.name} at Damview Resort.`}
+              insertTarget={{ table: "activity_enquiries", activityId: activity.id }}
+            />
           </div>
         </Container>
       </section>

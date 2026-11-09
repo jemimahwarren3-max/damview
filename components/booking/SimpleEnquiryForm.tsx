@@ -6,6 +6,7 @@ import { z } from "zod";
 import { FormField } from "@/components/shared/FormField";
 import { CONTACT_NUMBERS } from "@/lib/constants";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import { getSupabaseClient } from "@/lib/supabase/client";
 
 const schema = z.object({
   name: z.string().min(1, "Please enter your name"),
@@ -15,25 +16,53 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
+type InsertTarget =
+  | { table: "activity_enquiries"; activityId: string }
+  | { table: "gym_enquiries"; packageId?: string };
+
 interface SimpleEnquiryFormProps {
   intro: string;
   submitLabel?: string;
+  insertTarget?: InsertTarget;
 }
 
-export function SimpleEnquiryForm({ intro, submitLabel = "Send enquiry on WhatsApp" }: SimpleEnquiryFormProps) {
+export function SimpleEnquiryForm({ intro, submitLabel = "Send enquiry on WhatsApp", insertTarget }: SimpleEnquiryFormProps) {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
-  const onSubmit = (values: FormValues) => {
+  const onSubmit = async (values: FormValues) => {
     const lines = [
       intro,
       `Name: ${values.name}`,
       `Phone: ${values.phone}`,
       values.message ? `Note: ${values.message}` : null,
     ].filter(Boolean);
+
+    try {
+      const supabase = getSupabaseClient();
+      if (supabase && insertTarget) {
+        if (insertTarget.table === "activity_enquiries") {
+          await supabase.from("activity_enquiries").insert({
+            name: values.name,
+            phone: values.phone,
+            message: values.message || null,
+            activity_id: insertTarget.activityId,
+          });
+        } else {
+          await supabase.from("gym_enquiries").insert({
+            name: values.name,
+            phone: values.phone,
+            message: values.message || null,
+            package_id: insertTarget.packageId ?? null,
+          });
+        }
+      }
+    } catch {
+      // Don't block the enquiry on a database hiccup — WhatsApp still goes through below.
+    }
 
     window.open(buildWhatsAppUrl(CONTACT_NUMBERS.primary, lines.join("\n")), "_blank", "noopener,noreferrer");
   };
