@@ -21,12 +21,21 @@ const schema = z.object({
 type FormInput = z.input<typeof schema>;
 type FormOutput = z.output<typeof schema>;
 
-export function AccommodationEnquiryForm({ blocks }: { blocks: RoomBlock[] }) {
+export function AccommodationEnquiryForm({
+  blocks,
+  defaultBlockId,
+}: {
+  blocks: RoomBlock[];
+  defaultBlockId?: string;
+}) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormInput, unknown, FormOutput>({ resolver: zodResolver(schema) });
+  } = useForm<FormInput, unknown, FormOutput>({
+    resolver: zodResolver(schema),
+    defaultValues: defaultBlockId ? { blockId: defaultBlockId } : undefined,
+  });
 
   const onSubmit = async (values: FormOutput) => {
     const block = blocks.find((b) => b.id === values.blockId);
@@ -69,7 +78,7 @@ export function AccommodationEnquiryForm({ blocks }: { blocks: RoomBlock[] }) {
           <input id="phone" {...register("phone")} className="w-full rounded-lg border border-border bg-background px-3 py-2.5" />
         </FormField>
         <FormField label="Preferred room type" name="blockId" error={errors.blockId?.message}>
-          <select id="blockId" {...register("blockId")} defaultValue="" className="w-full rounded-lg border border-border bg-background px-3 py-2.5">
+          <select id="blockId" {...register("blockId")} defaultValue={defaultBlockId ?? ""} className="w-full rounded-lg border border-border bg-background px-3 py-2.5">
             <option value="" disabled>
               Choose a room type
             </option>

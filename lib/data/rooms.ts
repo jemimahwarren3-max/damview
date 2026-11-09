@@ -28,3 +28,9 @@ export async function getRoomBlocks(): Promise<RoomBlock[]> {
     roomNumbers: rooms.filter((r) => r.block_id === block.id).map((r) => r.number),
   }));
 }
+
+export async function getRoomBlockById(id: string): Promise<RoomBlock | undefined> {
+  "use cache";
+  const blocks = await getRoomBlocks();
+  return blocks.find((block) => block.id === id);
+}

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { PageHero } from "@/components/shared/PageHero";
 import { Container } from "@/components/shared/Container";
 import { SectionHeading } from "@/components/shared/SectionHeading";
@@ -34,15 +36,22 @@ export default async function AccommodationPage() {
           />
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
             {roomBlocks.map((block) => (
-              <div key={block.id} className="flex items-center justify-between gap-6 rounded-2xl border border-border bg-card p-6">
+              <Link
+                key={block.id}
+                href={`/accommodation/${block.id}`}
+                className="flex items-center justify-between gap-6 rounded-2xl border border-border bg-card p-6 transition-colors hover:border-dv-pool"
+              >
                 <div>
                   <h3 className="font-serif text-xl text-dv-forest">{block.displayName}</h3>
                   <p className="mt-1 text-sm text-muted-foreground">
                     {block.roomNumbers.length} rooms · {block.stayDurationHours}-hour stay
                   </p>
+                  <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-dv-pool">
+                    View details <ArrowRight size={12} />
+                  </span>
                 </div>
                 <PriceDisplay amount={block.ratePerStay} unit={`${block.stayDurationHours}hr stay`} />
-              </div>
+              </Link>
             ))}
           </div>
         </Container>

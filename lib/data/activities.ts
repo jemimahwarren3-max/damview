@@ -46,3 +46,15 @@ export async function getRecreationalActivities(): Promise<Activity[]> {
   if (error) return FALLBACK_RECREATIONAL;
   return data.map(mapActivity);
 }
+
+export async function getAllActivities(): Promise<Activity[]> {
+  "use cache";
+  const [damside, recreational] = await Promise.all([getDamsideActivities(), getRecreationalActivities()]);
+  return [...damside, ...recreational];
+}
+
+export async function getActivityById(id: string): Promise<Activity | undefined> {
+  "use cache";
+  const all = await getAllActivities();
+  return all.find((activity) => activity.id === id);
+}

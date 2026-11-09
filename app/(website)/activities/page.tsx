@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { PageHero } from "@/components/shared/PageHero";
 import { Container } from "@/components/shared/Container";
 import { SectionHeading } from "@/components/shared/SectionHeading";
@@ -48,6 +50,12 @@ export default async function ActivitiesPage() {
               <p className="mt-3 text-sm font-medium text-dv-pool">
                 {activity.pricing ? `$${activity.pricing.amount} ${activity.pricing.unit.replace("_", " ")}` : "Pricing to be confirmed, enquire below"}
               </p>
+              <Link
+                href={`/activities/${activity.id}`}
+                className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-dv-forest hover:underline"
+              >
+                View details <ArrowRight size={14} />
+              </Link>
             </div>
           </Container>
         </section>

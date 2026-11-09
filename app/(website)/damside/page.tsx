@@ -58,6 +58,7 @@ export default async function DamsidePage() {
                 image={activity.image ?? ""}
                 title={`${activity.name}, $${activity.pricing?.amount}pp`}
                 description={activity.description}
+                href={`/activities/${activity.id}`}
               />
             ))}
           </div>
