@@ -30,7 +30,7 @@ export function SiteHeader() {
     <header
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-500",
-        scrolled ? "bg-street-ink/95 shadow-[0_1px_0_rgba(0,0,0,0.3)] backdrop-blur-md" : "bg-transparent"
+        scrolled ? "bg-cream-50/95 shadow-[0_1px_0_rgba(0,0,0,0.06)] backdrop-blur-md" : "bg-transparent"
       )}
     >
       <Container className="flex h-16 items-center justify-between lg:h-20">
@@ -38,7 +38,7 @@ export function SiteHeader() {
           href="/"
           className={cn(
             "flex items-center gap-2 rounded-full transition-all",
-            !scrolled && "bg-street-cream/95 px-3 py-1.5 shadow-sm"
+            !scrolled && "bg-cream-50/95 px-3 py-1.5 shadow-sm"
           )}
           onClick={() => setMenuOpen(false)}
         >
@@ -59,7 +59,7 @@ export function SiteHeader() {
               href={item.href}
               className={cn(
                 "link-underline text-[0.82rem] font-medium tracking-wide transition-colors",
-                scrolled ? "text-street-cream/85 hover:text-street-lime" : "text-cream-50/90 hover:text-white"
+                scrolled ? "text-charcoal/80 hover:text-green-800" : "text-cream-50/90 hover:text-white"
               )}
             >
               {item.label}
@@ -72,7 +72,7 @@ export function SiteHeader() {
             href="/accommodation"
             className={cn(
               "hidden rounded-full px-6 py-2.5 text-[0.82rem] font-semibold tracking-wide transition-all duration-300 lg:inline-flex",
-              scrolled ? "bg-street-lime text-street-ink hover:bg-white" : "bg-street-cream text-street-ink hover:bg-white"
+              scrolled ? "bg-green-800 text-cream-50 hover:bg-green-700" : "bg-cream-50 text-green-900 hover:bg-white"
             )}
           >
             Make a Booking
@@ -85,8 +85,8 @@ export function SiteHeader() {
             aria-expanded={menuOpen}
             className={cn(
               "flex size-10 items-center justify-center rounded-full transition-colors lg:hidden",
-              scrolled ? "text-street-cream" : "text-cream-50",
-              menuOpen && "bg-street-lime text-street-ink"
+              scrolled ? "text-charcoal" : "text-cream-50",
+              menuOpen && "bg-green-800 text-cream-50"
             )}
           >
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -97,7 +97,7 @@ export function SiteHeader() {
       {/* Mobile drawer */}
       <div
         className={cn(
-          "overflow-hidden bg-street-ink transition-[max-height,opacity] duration-500 lg:hidden",
+          "overflow-hidden bg-cream-50 transition-[max-height,opacity] duration-500 lg:hidden",
           menuOpen ? "max-h-[80vh] opacity-100" : "max-h-0 opacity-0"
         )}
       >
@@ -107,7 +107,7 @@ export function SiteHeader() {
               <Link
                 href={item.href}
                 onClick={() => setMenuOpen(false)}
-                className="block border-b border-street-cream/10 py-3.5 font-serif text-lg text-street-cream"
+                className="block border-b border-charcoal/10 py-3.5 font-serif text-lg text-charcoal"
               >
                 {item.label}
               </Link>
@@ -117,7 +117,7 @@ export function SiteHeader() {
             <Link
               href="/accommodation"
               onClick={() => setMenuOpen(false)}
-              className="block rounded-full bg-street-lime px-6 py-3.5 text-center text-sm font-semibold text-street-ink"
+              className="block rounded-full bg-green-800 px-6 py-3.5 text-center text-sm font-semibold text-cream-50"
             >
               Make a Booking
             </Link>

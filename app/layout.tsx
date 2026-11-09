@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter, Bebas_Neue, Caveat, Anton, Permanent_Marker } from "next/font/google";
+import { Fraunces, Inter, Bebas_Neue, Caveat } from "next/font/google";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -26,18 +26,6 @@ const caveat = Caveat({
   subsets: ["latin"],
 });
 
-const anton = Anton({
-  variable: "--font-street-display",
-  subsets: ["latin"],
-  weight: "400",
-});
-
-const permanentMarker = Permanent_Marker({
-  variable: "--font-marker",
-  subsets: ["latin"],
-  weight: "400",
-});
-
 export const metadata: Metadata = {
   title: "Damview Resort",
   description:
@@ -48,7 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${inter.variable} ${bebasNeue.variable} ${caveat.variable} ${anton.variable} ${permanentMarker.variable} h-full antialiased`}
+      className={`${fraunces.variable} ${inter.variable} ${bebasNeue.variable} ${caveat.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
