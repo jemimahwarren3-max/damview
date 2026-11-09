@@ -42,14 +42,16 @@ export function AccommodationEnquiryForm({ blocks }: { blocks: RoomBlock[] }) {
 
     try {
       const supabase = getSupabaseClient();
-      await supabase.from("lodge_enquiries").insert({
-        name: values.name,
-        phone: values.phone,
-        block_id: values.blockId,
-        check_in: values.checkIn,
-        guests: values.guests,
-        message: values.message || null,
-      });
+      if (supabase) {
+        await supabase.from("lodge_enquiries").insert({
+          name: values.name,
+          phone: values.phone,
+          block_id: values.blockId,
+          check_in: values.checkIn,
+          guests: values.guests,
+          message: values.message || null,
+        });
+      }
     } catch {
       // Don't block the enquiry on a database hiccup — WhatsApp still goes through below.
     }

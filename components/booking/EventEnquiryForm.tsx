@@ -63,19 +63,21 @@ export function EventEnquiryForm() {
 
     try {
       const supabase = getSupabaseClient();
-      await supabase.from("event_enquiries").insert({
-        name: values.name,
-        phone: values.phone,
-        event_type: values.eventType,
-        proposed_date: values.proposedDate,
-        expected_guests: values.expectedGuests,
-        facilities_required: values.facilitiesRequired
-          ? values.facilitiesRequired.split(",").map((f) => f.trim()).filter(Boolean)
-          : [],
-        catering_required: values.cateringRequired,
-        accommodation_required: values.accommodationRequired,
-        message: values.additionalInfo || null,
-      });
+      if (supabase) {
+        await supabase.from("event_enquiries").insert({
+          name: values.name,
+          phone: values.phone,
+          event_type: values.eventType,
+          proposed_date: values.proposedDate,
+          expected_guests: values.expectedGuests,
+          facilities_required: values.facilitiesRequired
+            ? values.facilitiesRequired.split(",").map((f) => f.trim()).filter(Boolean)
+            : [],
+          catering_required: values.cateringRequired,
+          accommodation_required: values.accommodationRequired,
+          message: values.additionalInfo || null,
+        });
+      }
     } catch {
       // Don't block the enquiry on a database hiccup — WhatsApp still goes through below.
     }

@@ -1,5 +1,6 @@
 import type { RoomBlock } from "@/types";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { ROOM_BLOCKS as FALLBACK_ROOM_BLOCKS } from "@/lib/data/admin-fallback";
 
 export const ROOM_IMAGE =
   "https://images.pexels.com/photos/33613748/pexels-photo-33613748.jpeg?auto=compress&cs=tinysrgb&w=1200";
@@ -7,14 +8,16 @@ export const ROOM_IMAGE =
 export async function getRoomBlocks(): Promise<RoomBlock[]> {
   "use cache";
   const supabase = getSupabaseClient();
+  if (!supabase) return FALLBACK_ROOM_BLOCKS;
+
   const { data: blocks, error: blocksError } = await supabase
     .from("room_blocks")
     .select("id, name, rate_per_stay, stay_duration_hours")
     .order("id");
-  if (blocksError) throw blocksError;
+  if (blocksError) return FALLBACK_ROOM_BLOCKS;
 
   const { data: rooms, error: roomsError } = await supabase.from("rooms").select("block_id, number").order("number");
-  if (roomsError) throw roomsError;
+  if (roomsError) return FALLBACK_ROOM_BLOCKS;
 
   return blocks.map((block) => ({
     id: block.id,

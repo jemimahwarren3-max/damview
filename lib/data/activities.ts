@@ -1,5 +1,9 @@
 import type { Activity, ActivityCategory, PricingUnit } from "@/types";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import {
+  DAMSIDE_ACTIVITIES as FALLBACK_DAMSIDE,
+  RECREATIONAL_ACTIVITIES as FALLBACK_RECREATIONAL,
+} from "@/lib/data/admin-fallback";
 
 function mapActivity(row: {
   id: string;
@@ -26,15 +30,19 @@ function mapActivity(row: {
 export async function getDamsideActivities(): Promise<Activity[]> {
   "use cache";
   const supabase = getSupabaseClient();
+  if (!supabase) return FALLBACK_DAMSIDE;
+
   const { data, error } = await supabase.from("activities").select("*").eq("category", "damside").order("id");
-  if (error) throw error;
+  if (error) return FALLBACK_DAMSIDE;
   return data.map(mapActivity);
 }
 
 export async function getRecreationalActivities(): Promise<Activity[]> {
   "use cache";
   const supabase = getSupabaseClient();
+  if (!supabase) return FALLBACK_RECREATIONAL;
+
   const { data, error } = await supabase.from("activities").select("*").eq("category", "recreational").order("id");
-  if (error) throw error;
+  if (error) return FALLBACK_RECREATIONAL;
   return data.map(mapActivity);
 }
