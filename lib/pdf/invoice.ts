@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import { SITE_NAME, LOCATION, CONTACT_NUMBERS } from "@/lib/constants";
+import { amountToWords } from "./numberToWords";
 
 export interface InvoiceLineItem {
   description: string;
@@ -14,6 +15,10 @@ export interface InvoiceData {
   issueDate: string;
   items: InvoiceLineItem[];
   amountPaid: number;
+  /** Receipt only — e.g. "Cash", "EcoCash", "Bank Transfer". */
+  paymentMethod?: string;
+  /** Receipt only — staff member who received payment. */
+  receivedBy?: string;
 }
 
 const FOREST = [23, 61, 43] as const;
@@ -40,7 +45,7 @@ export function generateInvoicePdf(data: InvoiceData) {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
   doc.setTextColor(...GOLD);
-  doc.text(data.documentType.toUpperCase(), marginX, y);
+  doc.text(data.documentType === "Receipt" ? "CASH RECEIPT" : data.documentType.toUpperCase(), marginX, y);
 
   y += 8;
   doc.setFont("helvetica", "normal");
@@ -49,7 +54,7 @@ export function generateInvoicePdf(data: InvoiceData) {
   doc.text(`${data.documentType} #: ${data.documentNumber}`, marginX, y);
   doc.text(`Date: ${data.issueDate}`, 140, y);
   y += 6;
-  doc.text(`Customer: ${data.customerName}`, marginX, y);
+  doc.text(`${data.documentType === "Receipt" ? "Received From" : "Client"}: ${data.customerName}`, marginX, y);
 
   y += 10;
   doc.setFillColor(...FOREST);
@@ -82,18 +87,58 @@ export function generateInvoicePdf(data: InvoiceData) {
   y += 8;
 
   const balance = subtotal - data.amountPaid;
-  doc.setFont("helvetica", "bold");
-  doc.text("Total", 148, y);
-  doc.text(`$${subtotal.toFixed(2)}`, 170, y);
-  y += 7;
-  doc.setFont("helvetica", "normal");
-  doc.text("Amount paid", 148, y);
-  doc.text(`$${data.amountPaid.toFixed(2)}`, 170, y);
-  y += 7;
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(...FOREST);
-  doc.text("Balance", 148, y);
-  doc.text(`$${balance.toFixed(2)}`, 170, y);
+
+  if (data.documentType === "Receipt") {
+    doc.setFont("helvetica", "normal");
+    doc.text("Total Amount Due", marginX, y);
+    doc.text(`$${subtotal.toFixed(2)}`, 170, y);
+    y += 7;
+    doc.setFont("helvetica", "bold");
+    doc.text("Cash Received", marginX, y);
+    doc.text(`$${data.amountPaid.toFixed(2)}`, 170, y);
+    y += 7;
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...FOREST);
+    doc.text("Balance", marginX, y);
+    doc.text(`$${balance.toFixed(2)}`, 170, y);
+    doc.setTextColor(40, 40, 40);
+
+    y += 12;
+    doc.setFont("helvetica", "bold");
+    doc.text("Amount Received in Words:", marginX, y);
+    y += 6;
+    doc.setFont("helvetica", "normal");
+    doc.text(amountToWords(data.amountPaid), marginX, y, { maxWidth: 170 });
+
+    y += 12;
+    doc.setFont("helvetica", "bold");
+    doc.text("Payment Method: ", marginX, y);
+    doc.setFont("helvetica", "normal");
+    doc.text(data.paymentMethod ?? "Cash", marginX + 36, y);
+
+    y += 9;
+    doc.setFont("helvetica", "bold");
+    doc.text("Received By: ", marginX, y);
+    doc.setFont("helvetica", "normal");
+    doc.text(data.receivedBy ?? "—", marginX + 28, y);
+
+    y += 18;
+    doc.setFont("helvetica", "italic");
+    doc.text("Dam View Resort — Thank you for your business.", marginX, y);
+  } else {
+    doc.setFont("helvetica", "bold");
+    doc.text("Total", 148, y);
+    doc.text(`$${subtotal.toFixed(2)}`, 170, y);
+    y += 7;
+    doc.setFont("helvetica", "normal");
+    doc.text("Amount paid", 148, y);
+    doc.text(`$${data.amountPaid.toFixed(2)}`, 170, y);
+    y += 7;
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...FOREST);
+    doc.text("Balance", 148, y);
+    doc.text(`$${balance.toFixed(2)}`, 170, y);
+  }
 
   y += 16;
   doc.setFont("helvetica", "italic");

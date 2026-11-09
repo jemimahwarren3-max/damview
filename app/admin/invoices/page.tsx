@@ -7,6 +7,7 @@ import { generateInvoicePdf } from "@/lib/pdf/invoice";
 const SAMPLE_INVOICES = [
   { number: "DV-Q-0001", customer: "Chiedza Events Co.", type: "Quotation" as const, total: 850 },
   { number: "DV-INV-0014", customer: "Tendai Moyo", type: "Invoice" as const, total: 35 },
+  { number: "0004", customer: "Seke High School", type: "Receipt" as const, total: 900 },
 ];
 
 export default function AdminInvoicesPage() {
@@ -17,7 +18,9 @@ export default function AdminInvoicesPage() {
       customerName: invoice.customer,
       issueDate: new Date().toISOString().slice(0, 10),
       items: [{ description: "Sample service line item", quantity: 1, unitPrice: invoice.total }],
-      amountPaid: invoice.type === "Invoice" ? invoice.total : 0,
+      amountPaid: invoice.type === "Receipt" ? invoice.total : invoice.type === "Invoice" ? invoice.total : 0,
+      paymentMethod: invoice.type === "Receipt" ? "Cash" : undefined,
+      receivedBy: invoice.type === "Receipt" ? "Panashe Mumba" : undefined,
     });
   };
 
