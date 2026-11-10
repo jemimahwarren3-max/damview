@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Download } from "lucide-react";
+import { Download, Mail } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { FormField } from "@/components/shared/FormField";
-import { generateInvoicePdf } from "@/lib/pdf/invoice";
+import { generateInvoicePdf, type InvoiceData } from "@/lib/pdf/invoice";
 import { ECOCASH } from "@/lib/constants";
 
 const PAYMENT_METHODS = ["Cash", "EcoCash", "Bank Transfer"] as const;
+const DOCUMENT_TYPES: InvoiceData["documentType"][] = ["Quotation", "Invoice", "Receipt"];
 
 const SAMPLE_INVOICES = [
   { number: "DV-Q-0001", customer: "Chiedza Events Co.", type: "Quotation" as const, total: 850 },
@@ -16,11 +17,14 @@ const SAMPLE_INVOICES = [
 ];
 
 export default function AdminInvoicesPage() {
+  const [documentType, setDocumentType] = useState<InvoiceData["documentType"]>("Receipt");
   const [customerName, setCustomerName] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<(typeof PAYMENT_METHODS)[number]>("Cash");
   const [receivedBy, setReceivedBy] = useState("");
+  const [emailStatus, setEmailStatus] = useState<"idle" | "sending" | "sent" | "failed">("idle");
 
   const handleDownload = (invoice: (typeof SAMPLE_INVOICES)[number]) => {
     generateInvoicePdf({
@@ -35,45 +39,82 @@ export default function AdminInvoicesPage() {
     });
   };
 
-  const onCreateReceipt = (e: React.FormEvent) => {
-    e.preventDefault();
+  const buildCurrentInvoice = (): InvoiceData | null => {
     const total = Number(amount);
-    if (!customerName || !description || !total) return;
-
-    generateInvoicePdf({
-      documentType: "Receipt",
+    if (!customerName || !description || !total) return null;
+    return {
+      documentType,
       documentNumber: String(Date.now()).slice(-6),
       customerName,
       issueDate: new Date().toISOString().slice(0, 10),
       items: [{ description, quantity: 1, unitPrice: total }],
-      amountPaid: total,
-      paymentMethod,
-      receivedBy: receivedBy || undefined,
-    });
+      amountPaid: documentType === "Quotation" ? 0 : total,
+      paymentMethod: documentType === "Receipt" ? paymentMethod : undefined,
+      receivedBy: documentType === "Receipt" ? receivedBy || undefined : undefined,
+    };
+  };
 
-    setCustomerName("");
-    setDescription("");
-    setAmount("");
-    setReceivedBy("");
+  const onDownload = (e: React.FormEvent) => {
+    e.preventDefault();
+    const invoice = buildCurrentInvoice();
+    if (!invoice) return;
+    generateInvoicePdf(invoice);
+  };
+
+  const onEmail = async () => {
+    const invoice = buildCurrentInvoice();
+    if (!invoice || !customerEmail) return;
+    setEmailStatus("sending");
+    try {
+      const res = await fetch("/api/send-document", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to: customerEmail, invoice }),
+      });
+      setEmailStatus(res.ok ? "sent" : "failed");
+    } catch {
+      setEmailStatus("failed");
+    }
   };
 
   return (
     <AdminShell title="Invoices">
       <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
-        Receipts you create below download as a real branded PDF. This page doesn&apos;t keep a
-        record of past receipts yet (no Supabase table for documents is wired up) — download and
-        file each one as you go.
+        Documents you create below generate as a real branded PDF, downloadable or emailable. This
+        page doesn&apos;t keep a record of past documents yet (no Supabase table for documents is
+        wired up) &mdash; download and file each one as you go.
       </div>
 
-      <form onSubmit={onCreateReceipt} className="mb-10 flex flex-col gap-4 rounded-2xl border border-border bg-background p-5">
-        <h2 className="font-serif text-lg text-dv-forest">Create a receipt</h2>
+      <form onSubmit={onDownload} className="mb-10 flex flex-col gap-4 rounded-2xl border border-border bg-background p-5">
+        <h2 className="font-serif text-lg text-dv-forest">Create a document</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <FormField label="Document type" name="documentType">
+            <select
+              value={documentType}
+              onChange={(e) => setDocumentType(e.target.value as InvoiceData["documentType"])}
+              className="w-full rounded-lg border border-border bg-background px-3 py-2.5"
+            >
+              {DOCUMENT_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </FormField>
           <FormField label="Customer name" name="customerName">
             <input
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
               className="w-full rounded-lg border border-border bg-background px-3 py-2.5"
               required
+            />
+          </FormField>
+          <FormField label="Customer email (optional, to send by email)" name="customerEmail">
+            <input
+              type="email"
+              value={customerEmail}
+              onChange={(e) => setCustomerEmail(e.target.value)}
+              className="w-full rounded-lg border border-border bg-background px-3 py-2.5"
             />
           </FormField>
           <FormField label="What for" name="description">
@@ -96,29 +137,33 @@ export default function AdminInvoicesPage() {
               required
             />
           </FormField>
-          <FormField label="Payment method" name="paymentMethod">
-            <select
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value as (typeof PAYMENT_METHODS)[number])}
-              className="w-full rounded-lg border border-border bg-background px-3 py-2.5"
-            >
-              {PAYMENT_METHODS.map((method) => (
-                <option key={method} value={method}>
-                  {method}
-                </option>
-              ))}
-            </select>
-          </FormField>
-          <FormField label="Received by (optional)" name="receivedBy">
-            <input
-              value={receivedBy}
-              onChange={(e) => setReceivedBy(e.target.value)}
-              className="w-full rounded-lg border border-border bg-background px-3 py-2.5"
-            />
-          </FormField>
+          {documentType === "Receipt" && (
+            <>
+              <FormField label="Payment method" name="paymentMethod">
+                <select
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value as (typeof PAYMENT_METHODS)[number])}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2.5"
+                >
+                  {PAYMENT_METHODS.map((method) => (
+                    <option key={method} value={method}>
+                      {method}
+                    </option>
+                  ))}
+                </select>
+              </FormField>
+              <FormField label="Received by (optional)" name="receivedBy">
+                <input
+                  value={receivedBy}
+                  onChange={(e) => setReceivedBy(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2.5"
+                />
+              </FormField>
+            </>
+          )}
         </div>
 
-        {paymentMethod === "EcoCash" && (
+        {documentType === "Receipt" && paymentMethod === "EcoCash" && (
           <div className="rounded-lg border border-dv-pool/30 bg-dv-pool/10 px-4 py-3 text-sm text-dv-black">
             EcoCash line: <span className="font-semibold">{ECOCASH.line}</span> &middot; dial{" "}
             <span className="font-semibold">{ECOCASH.dialCode}</span> to confirm the guest&apos;s payment
@@ -126,12 +171,24 @@ export default function AdminInvoicesPage() {
           </div>
         )}
 
-        <button
-          type="submit"
-          className="flex w-fit items-center gap-2 rounded-full bg-dv-forest px-5 py-2.5 text-sm font-bold text-dv-ivory hover:bg-dv-leaf"
-        >
-          <Download size={15} /> Generate &amp; download receipt
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="submit"
+            className="flex w-fit items-center gap-2 rounded-full bg-dv-forest px-5 py-2.5 text-sm font-bold text-dv-ivory hover:bg-dv-leaf"
+          >
+            <Download size={15} /> Download PDF
+          </button>
+          <button
+            type="button"
+            onClick={onEmail}
+            disabled={!customerEmail || emailStatus === "sending"}
+            className="flex w-fit items-center gap-2 rounded-full border border-dv-pool px-5 py-2.5 text-sm font-bold text-dv-pool hover:bg-dv-pool/10 disabled:opacity-50"
+          >
+            <Mail size={15} /> {emailStatus === "sending" ? "Sending..." : "Email to customer"}
+          </button>
+          {emailStatus === "sent" && <span className="text-sm text-dv-leaf">Sent.</span>}
+          {emailStatus === "failed" && <span className="text-sm text-destructive">Failed to send.</span>}
+        </div>
       </form>
 
       <h2 className="mb-3 font-serif text-lg text-dv-forest">Examples</h2>

@@ -39,6 +39,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ ref
   const formData = await request.formData();
   const ecocashTransactionReference = String(formData.get("ecocashTransactionReference") ?? "").trim();
   const customerEcocashNumber = String(formData.get("customerEcocashNumber") ?? "").trim();
+  const customerEmail = String(formData.get("customerEmail") ?? "").trim();
   const file = formData.get("file");
 
   if (!ecocashTransactionReference) {
@@ -77,6 +78,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ ref
     .update({
       ecocash_transaction_reference: ecocashTransactionReference,
       customer_ecocash_number: customerEcocashNumber,
+      customer_email: customerEmail || payment.customer_email,
       amount_claimed: payment.expected_amount,
       proof_file_path: path,
       proof_file_type: detected.type,

@@ -75,6 +75,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ ref
     rejectionReason: payment.rejection_reason,
     receiptNumber: payment.receipt_number,
     ecocashTransactionReference: payment.ecocash_transaction_reference,
+    customerEmail: payment.customer_email,
     detail,
   });
 }

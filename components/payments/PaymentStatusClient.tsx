@@ -21,6 +21,7 @@ interface PaymentStatusResponse {
   rejectionReason: string | null;
   receiptNumber: string | null;
   ecocashTransactionReference: string | null;
+  customerEmail: string | null;
   detail: { label: string; value: string } | null;
 }
 
@@ -48,6 +49,7 @@ export function PaymentStatusClient({ reference }: { reference: string }) {
 
   const [ecocashRef, setEcocashRef] = useState("");
   const [ecocashNumber, setEcocashNumber] = useState("");
+  const [email, setEmail] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -61,7 +63,10 @@ export function PaymentStatusClient({ reference }: { reference: string }) {
         }
         return res.json();
       })
-      .then(setPayment)
+      .then((data: PaymentStatusResponse) => {
+        setPayment(data);
+        if (data.customerEmail) setEmail(data.customerEmail);
+      })
       .catch((e) => setLoadError(e.message));
   };
 
@@ -102,6 +107,7 @@ export function PaymentStatusClient({ reference }: { reference: string }) {
     const formData = new FormData();
     formData.append("ecocashTransactionReference", ecocashRef);
     formData.append("customerEcocashNumber", ecocashNumber);
+    formData.append("customerEmail", email);
     formData.append("file", file);
 
     try {
@@ -230,6 +236,15 @@ export function PaymentStatusClient({ reference }: { reference: string }) {
               />
             </div>
             <div>
+              <label className="text-sm font-medium text-dv-black">Email (optional, to receive your receipt)</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2.5"
+              />
+            </div>
+            <div>
               <label className="text-sm font-medium text-dv-black">Proof of payment (JPG, PNG or PDF)</label>
               <input
                 required
@@ -262,6 +277,9 @@ export function PaymentStatusClient({ reference }: { reference: string }) {
             <CheckCircle2 className="mx-auto text-dv-leaf" size={28} />
             <p className="mt-2 font-serif text-lg text-dv-forest">Payment verified</p>
             <p className="mt-1 text-sm text-dv-black/70">Receipt {payment.receiptNumber}</p>
+            {payment.customerEmail && (
+              <p className="mt-1 text-xs text-dv-black/50">Also emailed to {payment.customerEmail}</p>
+            )}
             <button
               type="button"
               onClick={downloadReceipt}

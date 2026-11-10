@@ -24,7 +24,8 @@ export interface InvoiceData {
 const FOREST = [23, 61, 43] as const;
 const GOLD = [229, 160, 91] as const;
 
-export function generateInvoicePdf(data: InvoiceData) {
+/** Builds the PDF document itself - safe to call from the browser or a server Route Handler. */
+export function buildInvoiceDoc(data: InvoiceData): jsPDF {
   const doc = new jsPDF();
   const marginX = 20;
   let y = 24;
@@ -146,5 +147,17 @@ export function generateInvoicePdf(data: InvoiceData) {
   doc.setTextColor(140, 140, 140);
   doc.text(`${SITE_NAME} - generated document`, marginX, y);
 
+  return doc;
+}
+
+/** Browser only - builds the document and triggers a download. */
+export function generateInvoicePdf(data: InvoiceData) {
+  const doc = buildInvoiceDoc(data);
   doc.save(`${data.documentType.toLowerCase()}-${data.documentNumber}.pdf`);
+}
+
+/** Server-safe - builds the document and returns its raw bytes, e.g. to attach to an email. */
+export function renderInvoicePdfBytes(data: InvoiceData): Uint8Array {
+  const doc = buildInvoiceDoc(data);
+  return new Uint8Array(doc.output("arraybuffer"));
 }

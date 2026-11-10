@@ -16,6 +16,7 @@ interface PaymentRow {
   eventEnquiryId?: string;
   customerName: string;
   customerPhone: string;
+  customerEmail?: string;
   expectedAmount: number;
   currency: string;
   amountClaimed?: number;
@@ -45,6 +46,8 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
   const [confirmAction, setConfirmAction] = useState<"approve" | "reject" | null>(null);
   const [checklist, setChecklist] = useState({ exists: false, recipient: false, amount: false, notReused: false });
   const [busy, setBusy] = useState(false);
+  const [emailDraft, setEmailDraft] = useState("");
+  const [emailStatus, setEmailStatus] = useState<"idle" | "sending" | "sent" | "failed">("idle");
 
   const load = async () => {
     const supabase = getSupabaseBrowserClient();
@@ -61,6 +64,7 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
       eventEnquiryId: data.event_enquiry_id ?? undefined,
       customerName: data.customer_name,
       customerPhone: data.customer_phone,
+      customerEmail: data.customer_email ?? undefined,
       expectedAmount: Number(data.expected_amount),
       currency: data.currency,
       amountClaimed: data.amount_claimed ? Number(data.amount_claimed) : undefined,
@@ -76,6 +80,7 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
       receiptNumber: data.receipt_number ?? undefined,
     };
     setPayment(row);
+    setEmailDraft(row.customerEmail ?? "");
 
     if (row.proofFilePath) {
       const { data: signed } = await supabase.storage.from("payment-proofs").createSignedUrl(row.proofFilePath, 300);
@@ -123,6 +128,45 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
     });
   };
 
+  const saveEmail = async () => {
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase || !payment) return;
+    await supabase.from("payment_submissions").update({ customer_email: emailDraft || null }).eq("id", payment.id);
+    setPayment((prev) => (prev ? { ...prev, customerEmail: emailDraft || undefined } : prev));
+  };
+
+  const sendReceiptEmail = async (toEmail: string, receiptNumber: string) => {
+    if (!payment) return;
+    setEmailStatus("sending");
+    try {
+      const res = await fetch("/api/send-document", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: toEmail,
+          invoice: {
+            documentType: "Receipt",
+            documentNumber: receiptNumber,
+            customerName: payment.customerName,
+            issueDate: new Date().toISOString().slice(0, 10),
+            items: [
+              {
+                description: payment.enquiryType === "lodge" ? "Accommodation payment - Damview Resort" : "Event payment - Damview Resort",
+                quantity: 1,
+                unitPrice: payment.expectedAmount,
+              },
+            ],
+            amountPaid: payment.expectedAmount,
+            paymentMethod: "EcoCash",
+          },
+        }),
+      });
+      setEmailStatus(res.ok ? "sent" : "failed");
+    } catch {
+      setEmailStatus("failed");
+    }
+  };
+
   const markUnderVerification = async () => {
     const supabase = getSupabaseBrowserClient();
     if (!supabase || !payment) return;
@@ -159,6 +203,11 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
     await logAction(payment.paymentStatus, "VERIFIED", "approved");
     setBusy(false);
     setConfirmAction(null);
+
+    if (emailDraft) {
+      await sendReceiptEmail(emailDraft, receiptNumber);
+    }
+
     load();
   };
 
@@ -212,6 +261,25 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
             <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
               <div><dt className="text-muted-foreground">Customer</dt><dd className="font-medium">{payment.customerName}</dd></div>
               <div><dt className="text-muted-foreground">Phone</dt><dd className="font-medium">{payment.customerPhone}</dd></div>
+              <div className="col-span-2">
+                <dt className="text-muted-foreground">Email (for receipt)</dt>
+                <dd className="mt-1 flex items-center gap-2">
+                  <input
+                    type="email"
+                    value={emailDraft}
+                    onChange={(e) => setEmailDraft(e.target.value)}
+                    placeholder="customer@example.com"
+                    className="w-full rounded-lg border border-border bg-background px-2 py-1.5 text-sm font-normal"
+                  />
+                  <button
+                    type="button"
+                    onClick={saveEmail}
+                    className="shrink-0 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-dv-forest hover:bg-dv-cream"
+                  >
+                    Save
+                  </button>
+                </dd>
+              </div>
               <div><dt className="text-muted-foreground">Expected amount</dt><dd className="font-medium">${payment.expectedAmount.toFixed(2)} {payment.currency}</dd></div>
               <div><dt className="text-muted-foreground">Amount claimed</dt><dd className="font-medium">{payment.amountClaimed ? `$${payment.amountClaimed.toFixed(2)}` : "-"}</dd></div>
               <div><dt className="text-muted-foreground">EcoCash reference</dt><dd className="font-medium">{payment.ecocashTransactionReference ?? "-"}</dd></div>
@@ -342,8 +410,33 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
 
           {payment.paymentStatus === "VERIFIED" && (
             <div className="rounded-2xl border border-dv-leaf/40 bg-dv-leaf/10 p-6 text-sm">
-              Verified. Receipt {payment.receiptNumber}. The customer can download it from their payment
-              status page.
+              <p>Verified. Receipt {payment.receiptNumber}. The customer can download it from their payment status page.</p>
+              {payment.customerEmail && emailStatus === "sent" && <p className="mt-2 text-dv-leaf">Receipt emailed to {payment.customerEmail}.</p>}
+              {emailStatus === "sending" && <p className="mt-2 text-muted-foreground">Sending receipt email...</p>}
+              {emailStatus === "failed" && (
+                <div className="mt-2 flex items-center gap-2">
+                  <p className="text-destructive">Couldn&apos;t send the email.</p>
+                  <button
+                    type="button"
+                    onClick={() => payment.customerEmail && payment.receiptNumber && sendReceiptEmail(payment.customerEmail, payment.receiptNumber)}
+                    className="rounded-full border border-border px-3 py-1 text-xs font-semibold hover:bg-dv-cream"
+                  >
+                    Retry
+                  </button>
+                </div>
+              )}
+              {!payment.customerEmail && (
+                <p className="mt-2 text-muted-foreground">No email on file - add one above and resend if needed.</p>
+              )}
+              {payment.customerEmail && emailStatus !== "sent" && emailStatus !== "sending" && emailStatus !== "failed" && (
+                <button
+                  type="button"
+                  onClick={() => payment.customerEmail && payment.receiptNumber && sendReceiptEmail(payment.customerEmail, payment.receiptNumber)}
+                  className="mt-2 rounded-full border border-dv-leaf px-3 py-1.5 text-xs font-semibold text-dv-leaf hover:bg-dv-leaf/10"
+                >
+                  Email receipt
+                </button>
+              )}
             </div>
           )}
 

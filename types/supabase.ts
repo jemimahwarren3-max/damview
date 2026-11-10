@@ -509,6 +509,7 @@ export type Database = {
           created_at: string
           currency: string
           customer_ecocash_number: string | null
+          customer_email: string | null
           customer_name: string
           customer_phone: string
           ecocash_transaction_reference: string | null
@@ -537,6 +538,7 @@ export type Database = {
           created_at?: string
           currency?: string
           customer_ecocash_number?: string | null
+          customer_email?: string | null
           customer_name: string
           customer_phone: string
           ecocash_transaction_reference?: string | null
@@ -565,6 +567,7 @@ export type Database = {
           created_at?: string
           currency?: string
           customer_ecocash_number?: string | null
+          customer_email?: string | null
           customer_name?: string
           customer_phone?: string
           ecocash_transaction_reference?: string | null
