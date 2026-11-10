@@ -42,6 +42,11 @@ export function SiteFooter() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link href="/guest-centre" className="text-sm text-charcoal/70 transition-colors hover:text-green-800">
+                  Guest Centre
+                </Link>
+              </li>
             </ul>
           </div>
 

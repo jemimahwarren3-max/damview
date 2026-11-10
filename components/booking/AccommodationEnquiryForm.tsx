@@ -37,6 +37,7 @@ export function AccommodationEnquiryForm({
   const [submitting, setSubmitting] = useState(false);
   const [fullyBooked, setFullyBooked] = useState(false);
   const [futureDate, setFutureDate] = useState(false);
+  const [bookingReference, setBookingReference] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -70,6 +71,7 @@ export function AccommodationEnquiryForm({
 
     try {
       const customerId = await upsertCustomerByPhone(supabase, { fullName: values.name, phone: values.phone });
+      const bookingRef = generatePaymentReference();
       const { data: enquiry, error: enquiryError } = await supabase
         .from("lodge_enquiries")
         .insert({
@@ -80,11 +82,13 @@ export function AccommodationEnquiryForm({
           guests: values.guests,
           message: values.message || null,
           customer_id: customerId,
+          booking_reference: bookingRef,
         })
         .select("id")
         .single();
 
       if (enquiryError || !enquiry) throw enquiryError;
+      setBookingReference(bookingRef);
 
       const { data: settings } = await supabase.from("payment_settings").select("room_hold_minutes").eq("id", true).maybeSingle();
       const holdMinutes = settings?.room_hold_minutes ?? 30;
@@ -179,6 +183,12 @@ export function AccommodationEnquiryForm({
         <p className="rounded-lg bg-dv-sunshine/20 px-3 py-2 text-sm text-dv-black">
           That room type is fully booked right now. We&apos;ve got your request and sent it to our
           team on WhatsApp - we&apos;ll follow up with you directly.
+          {bookingReference && (
+            <>
+              {" "}Your booking reference is <strong>{bookingReference}</strong> - save it, you can
+              check your status anytime in the Guest Centre.
+            </>
+          )}
         </p>
       )}
       {futureDate && (
