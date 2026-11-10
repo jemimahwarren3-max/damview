@@ -11,8 +11,9 @@ export default function AdminSettingsPage() {
   return (
     <AdminShell title="Settings">
       <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
-        These fields aren&apos;t connected to anything yet. Saving here won&apos;t change the live site until
-        the backend is built (Stage 10).
+        Business details like this live in the website&apos;s code, not a database, so they can&apos;t be
+        edited from here yet. Changing the name, location or WhatsApp numbers means updating the
+        code directly.
       </div>
 
       <form
@@ -37,7 +38,7 @@ export default function AdminSettingsPage() {
         <button type="submit" className="w-fit rounded-full bg-dv-forest px-6 py-2.5 text-sm font-bold text-dv-ivory hover:bg-dv-leaf">
           Save
         </button>
-        {saved && <span className="text-sm text-dv-pool">Saved locally, not yet connected to the live site.</span>}
+        {saved && <span className="text-sm text-dv-pool">Not saved - these fields are a preview only, see note above.</span>}
       </form>
     </AdminShell>
   );

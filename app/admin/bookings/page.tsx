@@ -1,33 +1,74 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
 import { SAMPLE_LODGE_ENQUIRIES } from "@/lib/data/admin-mock";
 import { ROOM_BLOCKS } from "@/lib/data/admin-fallback";
-import type { EnquiryStatus } from "@/types";
+import type { EnquiryStatus, LodgeEnquiry } from "@/types";
 
 const STATUS_FLOW: EnquiryStatus[] = ["new", "contacted", "confirmed"];
 
 export default function AdminBookingsPage() {
-  const [enquiries, setEnquiries] = useState(SAMPLE_LODGE_ENQUIRIES);
+  const [enquiries, setEnquiries] = useState<LodgeEnquiry[]>(SAMPLE_LODGE_ENQUIRIES);
+  const [configured] = useState(() => getSupabaseBrowserClient() !== null);
 
-  const advanceStatus = (id: string) => {
-    setEnquiries((prev) =>
-      prev.map((enquiry) => {
-        if (enquiry.id !== id) return enquiry;
-        const currentIndex = STATUS_FLOW.indexOf(enquiry.status);
-        const next = STATUS_FLOW[Math.min(currentIndex + 1, STATUS_FLOW.length - 1)];
-        return { ...enquiry, status: next };
-      })
-    );
+  useEffect(() => {
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) return;
+
+    supabase
+      .from("lodge_enquiries")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .then(({ data, error }) => {
+        if (error || !data) return;
+        setEnquiries(
+          data.map((row) => ({
+            id: row.id,
+            name: row.name,
+            phone: row.phone,
+            email: row.email ?? undefined,
+            message: row.message ?? undefined,
+            status: row.status as EnquiryStatus,
+            createdAt: row.created_at,
+            blockId: row.block_id ?? undefined,
+            checkIn: row.check_in,
+            guests: row.guests,
+          }))
+        );
+      });
+  }, []);
+
+  const advanceStatus = async (id: string) => {
+    const enquiry = enquiries.find((e) => e.id === id);
+    if (!enquiry) return;
+    const currentIndex = STATUS_FLOW.indexOf(enquiry.status);
+    const next = STATUS_FLOW[Math.min(currentIndex + 1, STATUS_FLOW.length - 1)];
+
+    setEnquiries((prev) => prev.map((e) => (e.id === id ? { ...e, status: next } : e)));
+
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) return;
+    await supabase.from("lodge_enquiries").update({ status: next }).eq("id", id);
   };
 
   return (
     <AdminShell title="Bookings">
-      <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
-        Sample enquiries. Changes here are local to your browser and not saved anywhere yet.
-      </div>
+      {!configured && (
+        <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
+          Supabase isn&apos;t configured yet, so this is showing sample data only. Status changes
+          here won&apos;t be saved.
+        </div>
+      )}
+
+      {configured && enquiries.length === 0 && (
+        <div className="mb-6 rounded-lg border border-border bg-background px-4 py-3 text-sm text-muted-foreground">
+          No lodge enquiries yet. They&apos;ll show up here as soon as someone submits the
+          accommodation enquiry form.
+        </div>
+      )}
 
       <div className="flex flex-col gap-3">
         {enquiries.map((enquiry) => {
@@ -40,7 +81,7 @@ export default function AdminBookingsPage() {
               <div>
                 <p className="font-medium text-dv-black">{enquiry.name}</p>
                 <p className="text-sm text-muted-foreground">
-                  {block?.name ?? enquiry.blockId} · {enquiry.checkIn} · {enquiry.guests} guests · {enquiry.phone}
+                  {block?.name ?? enquiry.blockId ?? "No block chosen"} &middot; {enquiry.checkIn} &middot; {enquiry.guests} guests &middot; {enquiry.phone}
                 </p>
               </div>
               <div className="flex items-center gap-3">

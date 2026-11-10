@@ -1,22 +1,55 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
 import { MENU_CATEGORIES, MENU_ITEMS } from "@/lib/data/admin-fallback";
+import type { MenuItem } from "@/types";
 
 export default function AdminMenuPage() {
-  const [items, setItems] = useState(MENU_ITEMS);
+  const [items, setItems] = useState<MenuItem[]>(MENU_ITEMS);
+  const [configured] = useState(() => getSupabaseBrowserClient() !== null);
 
-  const updatePrice = (id: string, price: number) => {
+  useEffect(() => {
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) return;
+
+    supabase
+      .from("menu_items")
+      .select("id, category_id, name, price, description, image, available")
+      .order("id")
+      .then(({ data, error }) => {
+        if (error || !data) return;
+        setItems(
+          data.map((row) => ({
+            id: row.id,
+            categoryId: row.category_id,
+            name: row.name,
+            price: Number(row.price),
+            description: row.description ?? undefined,
+            image: row.image ?? undefined,
+            available: row.available,
+          }))
+        );
+      });
+  }, []);
+
+  const updatePrice = async (id: string, price: number) => {
     setItems((prev) => prev.map((item) => (item.id === id ? { ...item, price } : item)));
+
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) return;
+    await supabase.from("menu_items").update({ price }).eq("id", id);
   };
 
   return (
     <AdminShell title="Menu">
-      <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
-        Edits here are local to your browser only. Connecting this to the live site needs the backend
-        (Stage 10).
-      </div>
+      {!configured && (
+        <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
+          Supabase isn&apos;t configured yet, so this is showing sample data only. Price changes
+          here won&apos;t be saved or reflected on the live menu.
+        </div>
+      )}
 
       {MENU_CATEGORIES.map((category) => (
         <div key={category.id} className="mb-6 rounded-2xl border border-border bg-background p-5">
