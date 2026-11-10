@@ -6,17 +6,37 @@ import { StatusBadge } from "@/components/shared/StatusBadge";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
 import { SAMPLE_ACTIVITY_ENQUIRIES } from "@/lib/data/admin-mock";
 import { DAMSIDE_ACTIVITIES, RECREATIONAL_ACTIVITIES } from "@/lib/data/admin-fallback";
-import type { ActivityEnquiry, EnquiryStatus } from "@/types";
+import type { Activity, ActivityEnquiry, EnquiryStatus, PricingUnit } from "@/types";
 
-const ALL_ACTIVITIES = [...DAMSIDE_ACTIVITIES, ...RECREATIONAL_ACTIVITIES];
+const FALLBACK_ACTIVITIES = [...DAMSIDE_ACTIVITIES, ...RECREATIONAL_ACTIVITIES];
 
 export default function AdminActivitiesPage() {
+  const [activities, setActivities] = useState<Activity[]>(FALLBACK_ACTIVITIES);
+  const [priceDrafts, setPriceDrafts] = useState<Record<string, string>>({});
   const [enquiries, setEnquiries] = useState<ActivityEnquiry[]>(SAMPLE_ACTIVITY_ENQUIRIES);
   const [configured] = useState(() => getSupabaseBrowserClient() !== null);
 
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
     if (!supabase) return;
+
+    supabase
+      .from("activities")
+      .select("id, category, name, description, price_amount, price_unit, image")
+      .order("id")
+      .then(({ data, error }) => {
+        if (error || !data) return;
+        setActivities(
+          data.map((row) => ({
+            id: row.id,
+            category: row.category as Activity["category"],
+            name: row.name,
+            description: row.description,
+            pricing: row.price_amount !== null && row.price_unit ? { amount: Number(row.price_amount), unit: row.price_unit as PricingUnit } : undefined,
+            image: row.image ?? undefined,
+          }))
+        );
+      });
 
     supabase
       .from("activity_enquiries")
@@ -49,15 +69,58 @@ export default function AdminActivitiesPage() {
     await supabase.from("activity_enquiries").update({ status: "confirmed" }).eq("id", id);
   };
 
+  const savePrice = async (activityId: string) => {
+    const amount = Number(priceDrafts[activityId]);
+    if (!amount || amount <= 0) return;
+
+    setActivities((prev) => prev.map((a) => (a.id === activityId ? { ...a, pricing: { amount, unit: a.pricing?.unit ?? "per_person" } } : a)));
+
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) return;
+    await supabase.from("activities").update({ price_amount: amount, price_unit: "per_person" }).eq("id", activityId);
+  };
+
   return (
     <AdminShell title="Activities">
       {!configured && (
         <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
-          Supabase isn&apos;t configured yet, so this is showing sample data only. Status changes
-          here won&apos;t be saved.
+          Supabase isn&apos;t configured yet, so this is showing sample data only. Changes here
+          won&apos;t be saved.
         </div>
       )}
 
+      <h2 className="mb-3 font-serif text-lg text-dv-forest">Pricing</h2>
+      <div className="mb-8 flex flex-col gap-2">
+        {activities.map((activity) => (
+          <div key={activity.id} className="flex items-center justify-between gap-3 rounded-xl border border-border bg-background p-4">
+            <div>
+              <p className="font-medium text-dv-black">{activity.name}</p>
+              <p className="text-xs text-muted-foreground capitalize">{activity.category}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">$</span>
+              <input
+                type="number"
+                min={0}
+                step="0.01"
+                value={priceDrafts[activity.id] ?? activity.pricing?.amount ?? ""}
+                onChange={(e) => setPriceDrafts((prev) => ({ ...prev, [activity.id]: e.target.value }))}
+                className="w-20 rounded-lg border border-border bg-background px-2 py-1.5 text-right text-sm"
+              />
+              <span className="text-xs text-muted-foreground">pp</span>
+              <button
+                type="button"
+                onClick={() => savePrice(activity.id)}
+                className="rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-dv-forest hover:bg-dv-cream"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <h2 className="mb-3 font-serif text-lg text-dv-forest">Enquiries</h2>
       {configured && enquiries.length === 0 && (
         <div className="mb-6 rounded-lg border border-border bg-background px-4 py-3 text-sm text-muted-foreground">
           No activity enquiries yet. They&apos;ll show up here as soon as someone enquires about an
@@ -67,7 +130,7 @@ export default function AdminActivitiesPage() {
 
       <div className="flex flex-col gap-3">
         {enquiries.map((enquiry) => {
-          const activity = ALL_ACTIVITIES.find((a) => a.id === enquiry.activityId);
+          const activity = activities.find((a) => a.id === enquiry.activityId);
           return (
             <div
               key={enquiry.id}

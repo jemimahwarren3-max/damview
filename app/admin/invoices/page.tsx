@@ -1,20 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Download, Mail } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { FormField } from "@/components/shared/FormField";
+import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
+import { recordDocument } from "@/lib/documents";
 import { generateInvoicePdf, type InvoiceData } from "@/lib/pdf/invoice";
 import { ECOCASH } from "@/lib/constants";
 
 const PAYMENT_METHODS = ["Cash", "EcoCash", "Bank Transfer"] as const;
 const DOCUMENT_TYPES: InvoiceData["documentType"][] = ["Quotation", "Invoice", "Receipt"];
 
-const SAMPLE_INVOICES = [
-  { number: "DV-Q-0001", customer: "Chiedza Events Co.", type: "Quotation" as const, total: 850 },
-  { number: "DV-INV-0014", customer: "Tendai Moyo", type: "Invoice" as const, total: 35 },
-  { number: "0004", customer: "Seke High School", type: "Receipt" as const, total: 900 },
-];
+interface RecentDocument {
+  id: string;
+  documentNumber: string;
+  documentType: InvoiceData["documentType"];
+  customerName: string;
+  amountPaid: number;
+  issueDate: string;
+}
 
 export default function AdminInvoicesPage() {
   const [documentType, setDocumentType] = useState<InvoiceData["documentType"]>("Receipt");
@@ -25,45 +30,83 @@ export default function AdminInvoicesPage() {
   const [paymentMethod, setPaymentMethod] = useState<(typeof PAYMENT_METHODS)[number]>("Cash");
   const [receivedBy, setReceivedBy] = useState("");
   const [emailStatus, setEmailStatus] = useState<"idle" | "sending" | "sent" | "failed">("idle");
+  const [recent, setRecent] = useState<RecentDocument[]>([]);
+  const [configured] = useState(() => getSupabaseBrowserClient() !== null);
 
-  const handleDownload = (invoice: (typeof SAMPLE_INVOICES)[number]) => {
-    generateInvoicePdf({
-      documentType: invoice.type,
-      documentNumber: invoice.number,
-      customerName: invoice.customer,
-      issueDate: new Date().toISOString().slice(0, 10),
-      items: [{ description: "Sample service line item", quantity: 1, unitPrice: invoice.total }],
-      amountPaid: invoice.type === "Receipt" ? invoice.total : invoice.type === "Invoice" ? invoice.total : 0,
-      paymentMethod: invoice.type === "Receipt" ? "Cash" : undefined,
-      receivedBy: invoice.type === "Receipt" ? "Panashe Mumba" : undefined,
-    });
+  const loadRecent = () => {
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) return;
+    supabase
+      .from("documents")
+      .select("id, document_number, document_type, customer_name, amount_paid, issue_date")
+      .order("created_at", { ascending: false })
+      .limit(20)
+      .then(({ data }) => {
+        if (!data) return;
+        setRecent(
+          data.map((row) => ({
+            id: row.id,
+            documentNumber: row.document_number,
+            documentType: row.document_type as InvoiceData["documentType"],
+            customerName: row.customer_name,
+            amountPaid: Number(row.amount_paid),
+            issueDate: row.issue_date,
+          }))
+        );
+      });
   };
 
-  const buildCurrentInvoice = (): InvoiceData | null => {
+  useEffect(() => {
+    loadRecent();
+  }, []);
+
+  const createInvoiceData = async (): Promise<InvoiceData | null> => {
     const total = Number(amount);
     if (!customerName || !description || !total) return null;
+
+    const amountPaid = documentType === "Quotation" ? 0 : total;
+    const items = [{ description, quantity: 1, unitPrice: total }];
+    const supabase = getSupabaseBrowserClient();
+
+    if (supabase) {
+      return recordDocument(supabase, {
+        documentType,
+        customerName,
+        items,
+        amountPaid,
+        paymentMethod: documentType === "Receipt" ? paymentMethod : undefined,
+        receivedBy: documentType === "Receipt" ? receivedBy || undefined : undefined,
+      });
+    }
+
     return {
       documentType,
       documentNumber: String(Date.now()).slice(-6),
       customerName,
       issueDate: new Date().toISOString().slice(0, 10),
-      items: [{ description, quantity: 1, unitPrice: total }],
-      amountPaid: documentType === "Quotation" ? 0 : total,
+      items,
+      amountPaid,
       paymentMethod: documentType === "Receipt" ? paymentMethod : undefined,
       receivedBy: documentType === "Receipt" ? receivedBy || undefined : undefined,
     };
   };
 
-  const onDownload = (e: React.FormEvent) => {
+  const onDownload = async (e: React.FormEvent) => {
     e.preventDefault();
-    const invoice = buildCurrentInvoice();
+    const invoice = await createInvoiceData();
     if (!invoice) return;
     generateInvoicePdf(invoice);
+    setCustomerName("");
+    setDescription("");
+    setAmount("");
+    setReceivedBy("");
+    loadRecent();
   };
 
   const onEmail = async () => {
-    const invoice = buildCurrentInvoice();
-    if (!invoice || !customerEmail) return;
+    if (!customerEmail) return;
+    const invoice = await createInvoiceData();
+    if (!invoice) return;
     setEmailStatus("sending");
     try {
       const res = await fetch("/api/send-document", {
@@ -72,6 +115,13 @@ export default function AdminInvoicesPage() {
         body: JSON.stringify({ to: customerEmail, invoice }),
       });
       setEmailStatus(res.ok ? "sent" : "failed");
+      if (res.ok) {
+        setCustomerName("");
+        setDescription("");
+        setAmount("");
+        setReceivedBy("");
+        loadRecent();
+      }
     } catch {
       setEmailStatus("failed");
     }
@@ -79,11 +129,12 @@ export default function AdminInvoicesPage() {
 
   return (
     <AdminShell title="Invoices">
-      <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
-        Documents you create below generate as a real branded PDF, downloadable or emailable. This
-        page doesn&apos;t keep a record of past documents yet (no Supabase table for documents is
-        wired up) &mdash; download and file each one as you go.
-      </div>
+      {!configured && (
+        <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
+          Supabase isn&apos;t configured yet, so documents created here won&apos;t be saved or numbered
+          sequentially.
+        </div>
+      )}
 
       <form onSubmit={onDownload} className="mb-10 flex flex-col gap-4 rounded-2xl border border-border bg-background p-5">
         <h2 className="font-serif text-lg text-dv-forest">Create a document</h2>
@@ -176,7 +227,7 @@ export default function AdminInvoicesPage() {
             type="submit"
             className="flex w-fit items-center gap-2 rounded-full bg-dv-forest px-5 py-2.5 text-sm font-bold text-dv-ivory hover:bg-dv-leaf"
           >
-            <Download size={15} /> Download PDF
+            <Download size={15} /> Generate &amp; download
           </button>
           <button
             type="button"
@@ -184,33 +235,24 @@ export default function AdminInvoicesPage() {
             disabled={!customerEmail || emailStatus === "sending"}
             className="flex w-fit items-center gap-2 rounded-full border border-dv-pool px-5 py-2.5 text-sm font-bold text-dv-pool hover:bg-dv-pool/10 disabled:opacity-50"
           >
-            <Mail size={15} /> {emailStatus === "sending" ? "Sending..." : "Email to customer"}
+            <Mail size={15} /> {emailStatus === "sending" ? "Sending..." : "Generate & email"}
           </button>
           {emailStatus === "sent" && <span className="text-sm text-dv-leaf">Sent.</span>}
           {emailStatus === "failed" && <span className="text-sm text-destructive">Failed to send.</span>}
         </div>
       </form>
 
-      <h2 className="mb-3 font-serif text-lg text-dv-forest">Examples</h2>
+      <h2 className="mb-3 font-serif text-lg text-dv-forest">Recent documents</h2>
       <div className="flex flex-col gap-3">
-        {SAMPLE_INVOICES.map((invoice) => (
-          <div
-            key={invoice.number}
-            className="flex items-center justify-between gap-4 rounded-2xl border border-border bg-background p-5"
-          >
+        {recent.length === 0 && <p className="text-sm text-muted-foreground">No documents created yet.</p>}
+        {recent.map((doc) => (
+          <div key={doc.id} className="flex items-center justify-between gap-4 rounded-2xl border border-border bg-background p-5">
             <div>
-              <p className="font-medium text-dv-black">{invoice.customer}</p>
+              <p className="font-medium text-dv-black">{doc.customerName}</p>
               <p className="text-sm text-muted-foreground">
-                {invoice.type} {invoice.number} &middot; ${invoice.total.toFixed(2)}
+                {doc.documentType} {doc.documentNumber} &middot; ${doc.amountPaid.toFixed(2)} &middot; {doc.issueDate}
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => handleDownload(invoice)}
-              className="inline-flex items-center gap-2 rounded-full bg-dv-forest px-4 py-2.5 text-xs font-bold text-dv-ivory hover:bg-dv-leaf"
-            >
-              <Download size={15} /> PDF
-            </button>
           </div>
         ))}
       </div>
