@@ -41,7 +41,7 @@ const STATUS_COPY: Record<string, { label: string; tone: string }> = {
   CANCELLED: { label: "Cancelled", tone: "text-muted-foreground" },
 };
 
-export function PaymentStatusClient({ reference }: { reference: string }) {
+export function PaymentStatusClient({ reference, secret }: { reference: string; secret: string }) {
   const [payment, setPayment] = useState<PaymentStatusResponse | null>(null);
   const [settings, setSettings] = useState<MerchantSettings | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -55,7 +55,7 @@ export function PaymentStatusClient({ reference }: { reference: string }) {
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const load = () => {
-    fetch(`/api/payments/${reference}`)
+    fetch(`/api/payments/${reference}/${secret}`)
       .then(async (res) => {
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
@@ -82,7 +82,7 @@ export function PaymentStatusClient({ reference }: { reference: string }) {
         .then(({ data }) => setSettings(data));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reference]);
+  }, [reference, secret]);
 
   const copyCode = async () => {
     if (!settings) return;
@@ -111,7 +111,7 @@ export function PaymentStatusClient({ reference }: { reference: string }) {
     formData.append("file", file);
 
     try {
-      const res = await fetch(`/api/payments/${reference}/submit`, { method: "POST", body: formData });
+      const res = await fetch(`/api/payments/${reference}/${secret}/submit`, { method: "POST", body: formData });
       const body = await res.json();
       if (!res.ok) throw new Error(body.error ?? "Something went wrong.");
       load();

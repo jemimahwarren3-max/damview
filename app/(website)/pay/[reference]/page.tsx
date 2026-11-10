@@ -1,6 +1,7 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
-import { PaymentStatusClient } from "@/components/payments/PaymentStatusClient";
+import { Container } from "@/components/shared/Container";
+import { SectionHeading } from "@/components/shared/SectionHeading";
+import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 import { SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -8,15 +9,17 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-async function ResolvedPaymentStatus({ params }: { params: Promise<{ reference: string }> }) {
-  const { reference } = await params;
-  return <PaymentStatusClient reference={reference} />;
-}
-
-export default function PaymentStatusPage({ params }: { params: Promise<{ reference: string }> }) {
+export default function IncompletePaymentLinkPage() {
   return (
-    <Suspense fallback={<div className="py-24 text-center text-muted-foreground">Loading...</div>}>
-      <ResolvedPaymentStatus params={params} />
-    </Suspense>
+    <Container className="py-24 text-center">
+      <SectionHeading
+        eyebrow="Payment"
+        title="This link looks incomplete."
+        subtitle="Payment links from Damview Resort include a security code after the reference. Please use the full link exactly as sent, or get in touch and we'll resend it."
+      />
+      <div className="mt-6 flex justify-center">
+        <WhatsAppButton label="Contact Damview on WhatsApp" message="Hi, I need my payment link resent." />
+      </div>
+    </Container>
   );
 }

@@ -8,6 +8,7 @@ import { StatusBadge } from "@/components/shared/StatusBadge";
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
 import { generatePaymentReference } from "@/lib/payments/reference";
+import { generateAccessSecret, hashAccessSecret } from "@/lib/payments/token";
 import { SAMPLE_LODGE_ENQUIRIES } from "@/lib/data/admin-mock";
 import { ROOM_BLOCKS } from "@/lib/data/admin-fallback";
 import type { EnquiryStatus, LodgeEnquiry } from "@/types";
@@ -17,6 +18,7 @@ const STATUS_FLOW: EnquiryStatus[] = ["new", "contacted", "confirmed"];
 export default function AdminBookingsPage() {
   const [enquiries, setEnquiries] = useState<LodgeEnquiry[]>(SAMPLE_LODGE_ENQUIRIES);
   const [paymentRefs, setPaymentRefs] = useState<Record<string, string>>({});
+  const [paymentLinks, setPaymentLinks] = useState<Record<string, string>>({});
   const [configured] = useState(() => getSupabaseBrowserClient() !== null);
   const [requesting, setRequesting] = useState<string | null>(null);
 
@@ -90,9 +92,12 @@ export default function AdminBookingsPage() {
     const { data: settings } = await supabase.from("payment_settings").select("payment_deadline_hours").eq("id", true).maybeSingle();
     const deadlineHours = settings?.payment_deadline_hours ?? 2;
     const reference = generatePaymentReference();
+    const secret = generateAccessSecret();
+    const secretHash = await hashAccessSecret(secret);
 
     const { error } = await supabase.from("payment_submissions").insert({
       payment_reference: reference,
+      access_token_hash: secretHash,
       enquiry_type: "lodge",
       lodge_enquiry_id: enquiry.id,
       customer_name: enquiry.name,
@@ -104,6 +109,20 @@ export default function AdminBookingsPage() {
     setRequesting(null);
     if (!error) {
       setPaymentRefs((prev) => ({ ...prev, [enquiry.id]: reference }));
+      setPaymentLinks((prev) => ({ ...prev, [enquiry.id]: `${window.location.origin}/pay/${reference}/${secret}` }));
+    }
+  };
+
+  const regenerateLink = async (enquiryId: string, paymentRef: string) => {
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) return;
+    setRequesting(enquiryId);
+    const secret = generateAccessSecret();
+    const secretHash = await hashAccessSecret(secret);
+    const { error } = await supabase.from("payment_submissions").update({ access_token_hash: secretHash }).eq("payment_reference", paymentRef);
+    setRequesting(null);
+    if (!error) {
+      setPaymentLinks((prev) => ({ ...prev, [enquiryId]: `${window.location.origin}/pay/${paymentRef}/${secret}` }));
     }
   };
 
@@ -127,7 +146,7 @@ export default function AdminBookingsPage() {
         {enquiries.map((enquiry) => {
           const block = ROOM_BLOCKS.find((b) => b.id === enquiry.blockId);
           const paymentRef = paymentRefs[enquiry.id];
-          const payLink = paymentRef && typeof window !== "undefined" ? `${window.location.origin}/pay/${paymentRef}` : undefined;
+          const payLink = paymentLinks[enquiry.id];
 
           return (
             <div
@@ -173,6 +192,16 @@ export default function AdminBookingsPage() {
                     message={`Hi ${enquiry.name}, please complete your payment for Damview Resort here: ${payLink}`}
                     className="bg-dv-pool text-dv-ivory hover:bg-dv-forest"
                   />
+                )}
+                {paymentRef && !payLink && (
+                  <button
+                    type="button"
+                    onClick={() => regenerateLink(enquiry.id, paymentRef)}
+                    disabled={requesting === enquiry.id}
+                    className="rounded-full border border-dv-pool px-4 py-2 text-xs font-bold text-dv-pool hover:bg-dv-pool/10 disabled:opacity-60"
+                  >
+                    {requesting === enquiry.id ? "Generating..." : "Generate new link"}
+                  </button>
                 )}
               </div>
             </div>

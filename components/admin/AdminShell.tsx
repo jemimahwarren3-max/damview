@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -8,6 +8,7 @@ import { Menu, X, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ADMIN_NAV } from "@/lib/admin-nav";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
+import { StaffProfileSetup } from "@/components/admin/StaffProfileSetup";
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
@@ -38,7 +39,22 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
 
 export function AdminShell({ title, children }: { title: string; children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profileCheck, setProfileCheck] = useState<"checking" | "missing" | "ok" | "unconfigured">("checking");
   const router = useRouter();
+
+  useEffect(() => {
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- no Supabase configured, nothing to check
+      setProfileCheck("unconfigured");
+      return;
+    }
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) return;
+      const { data: profile } = await supabase.from("staff_profiles").select("user_id").eq("user_id", data.user.id).maybeSingle();
+      setProfileCheck(profile ? "ok" : "missing");
+    });
+  }, []);
 
   const signOut = async () => {
     const supabase = getSupabaseBrowserClient();
@@ -48,6 +64,10 @@ export function AdminShell({ title, children }: { title: string; children: React
     router.push("/admin");
     router.refresh();
   };
+
+  if (profileCheck === "missing") {
+    return <StaffProfileSetup onDone={() => setProfileCheck("ok")} />;
+  }
 
   return (
     <div className="flex min-h-screen bg-dv-cream">

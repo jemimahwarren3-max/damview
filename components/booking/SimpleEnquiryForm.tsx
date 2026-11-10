@@ -7,6 +7,7 @@ import { FormField } from "@/components/shared/FormField";
 import { CONTACT_NUMBERS } from "@/lib/constants";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { upsertCustomerByPhone } from "@/lib/customers";
 
 const schema = z.object({
   name: z.string().min(1, "Please enter your name"),
@@ -44,12 +45,14 @@ export function SimpleEnquiryForm({ intro, submitLabel = "Send enquiry on WhatsA
     try {
       const supabase = getSupabaseClient();
       if (supabase && insertTarget) {
+        const customerId = await upsertCustomerByPhone(supabase, { fullName: values.name, phone: values.phone });
         if (insertTarget.table === "activity_enquiries") {
           await supabase.from("activity_enquiries").insert({
             name: values.name,
             phone: values.phone,
             message: values.message || null,
             activity_id: insertTarget.activityId,
+            customer_id: customerId,
           });
         } else {
           await supabase.from("gym_enquiries").insert({
@@ -57,6 +60,7 @@ export function SimpleEnquiryForm({ intro, submitLabel = "Send enquiry on WhatsA
             phone: values.phone,
             message: values.message || null,
             package_id: insertTarget.packageId ?? null,
+            customer_id: customerId,
           });
         }
       }

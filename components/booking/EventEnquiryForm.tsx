@@ -7,6 +7,7 @@ import { FormField } from "@/components/shared/FormField";
 import { CONTACT_NUMBERS } from "@/lib/constants";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { upsertCustomerByPhone } from "@/lib/customers";
 import type { EventType } from "@/types";
 
 const EVENT_TYPE_OPTIONS: { value: EventType; label: string }[] = [
@@ -64,9 +65,11 @@ export function EventEnquiryForm() {
     try {
       const supabase = getSupabaseClient();
       if (supabase) {
+        const customerId = await upsertCustomerByPhone(supabase, { fullName: values.name, phone: values.phone });
         await supabase.from("event_enquiries").insert({
           name: values.name,
           phone: values.phone,
+          customer_id: customerId,
           event_type: values.eventType,
           proposed_date: values.proposedDate,
           expected_guests: values.expectedGuests,

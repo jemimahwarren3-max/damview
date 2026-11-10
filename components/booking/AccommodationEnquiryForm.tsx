@@ -7,6 +7,7 @@ import { FormField } from "@/components/shared/FormField";
 import { CONTACT_NUMBERS } from "@/lib/constants";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { upsertCustomerByPhone } from "@/lib/customers";
 import type { RoomBlock } from "@/types";
 
 const schema = z.object({
@@ -52,6 +53,7 @@ export function AccommodationEnquiryForm({
     try {
       const supabase = getSupabaseClient();
       if (supabase) {
+        const customerId = await upsertCustomerByPhone(supabase, { fullName: values.name, phone: values.phone });
         await supabase.from("lodge_enquiries").insert({
           name: values.name,
           phone: values.phone,
@@ -59,6 +61,7 @@ export function AccommodationEnquiryForm({
           check_in: values.checkIn,
           guests: values.guests,
           message: values.message || null,
+          customer_id: customerId,
         });
       }
     } catch {

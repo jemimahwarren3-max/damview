@@ -6,6 +6,7 @@ import { ArrowLeft, FileText, ShieldCheck, Ban, Clock3 } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
+import { cn } from "@/lib/utils";
 import type { PaymentAuditLogEntry, PaymentStatus } from "@/types";
 
 interface PaymentRow {
@@ -48,6 +49,7 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
   const [busy, setBusy] = useState(false);
   const [emailDraft, setEmailDraft] = useState("");
   const [emailStatus, setEmailStatus] = useState<"idle" | "sending" | "sent" | "failed">("idle");
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
   const load = async () => {
     const supabase = getSupabaseBrowserClient();
@@ -111,6 +113,15 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- initial data fetch on mount
     load();
+
+    const supabase = getSupabaseBrowserClient();
+    if (supabase) {
+      supabase.auth.getUser().then(async ({ data }) => {
+        if (!data.user) return;
+        const { data: profile } = await supabase.from("staff_profiles").select("is_admin").eq("user_id", data.user.id).maybeSingle();
+        setIsAdmin(profile?.is_admin ?? false);
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reference]);
 
@@ -328,7 +339,14 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
                 </button>
               )}
 
-              <div className="mt-4 flex flex-col gap-2 text-sm">
+              {isAdmin === false && (
+                <p className="mt-3 rounded-lg bg-dv-black/5 px-3 py-2 text-sm text-dv-black/70">
+                  Only admin staff can approve or reject a payment. You can still review the evidence
+                  and mark it under verification for an admin to finish.
+                </p>
+              )}
+
+              <div className={cn("mt-4 flex flex-col gap-2 text-sm", isAdmin !== true && "pointer-events-none opacity-50")}>
                 {[
                   ["exists", "The transaction exists in Damview's merchant records"],
                   ["recipient", "The recipient is Damview's merchant account"],
@@ -347,24 +365,26 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
                 ))}
               </div>
 
-              <div className="mt-4 flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => setConfirmAction("approve")}
-                  disabled={!checklistComplete || busy}
-                  className="flex items-center gap-2 rounded-full bg-dv-leaf px-4 py-2 text-xs font-bold text-dv-ivory hover:bg-dv-forest disabled:opacity-50"
-                >
-                  <ShieldCheck size={14} /> Approve payment
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setConfirmAction("reject")}
-                  disabled={busy}
-                  className="flex items-center gap-2 rounded-full border border-destructive px-4 py-2 text-xs font-bold text-destructive hover:bg-destructive/10"
-                >
-                  <Ban size={14} /> Reject payment
-                </button>
-              </div>
+              {isAdmin === true && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setConfirmAction("approve")}
+                    disabled={!checklistComplete || busy}
+                    className="flex items-center gap-2 rounded-full bg-dv-leaf px-4 py-2 text-xs font-bold text-dv-ivory hover:bg-dv-forest disabled:opacity-50"
+                  >
+                    <ShieldCheck size={14} /> Approve payment
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmAction("reject")}
+                    disabled={busy}
+                    className="flex items-center gap-2 rounded-full border border-destructive px-4 py-2 text-xs font-bold text-destructive hover:bg-destructive/10"
+                  >
+                    <Ban size={14} /> Reject payment
+                  </button>
+                </div>
+              )}
 
               {confirmAction === "approve" && (
                 <div className="mt-4 rounded-lg border border-dv-leaf bg-dv-leaf/10 p-4">

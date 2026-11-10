@@ -51,6 +51,7 @@ export type Database = {
         Row: {
           activity_id: string
           created_at: string
+          customer_id: string | null
           email: string | null
           id: string
           message: string | null
@@ -63,6 +64,7 @@ export type Database = {
         Insert: {
           activity_id: string
           created_at?: string
+          customer_id?: string | null
           email?: string | null
           id?: string
           message?: string | null
@@ -75,6 +77,7 @@ export type Database = {
         Update: {
           activity_id?: string
           created_at?: string
+          customer_id?: string | null
           email?: string | null
           id?: string
           message?: string | null
@@ -92,7 +95,50 @@ export type Database = {
             referencedRelation: "activities"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "activity_enquiries_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      customers: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          normalized_phone: string
+          phone: string
+          phone_verification_status: string
+          record_status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          normalized_phone: string
+          phone: string
+          phone_verification_status?: string
+          record_status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          normalized_phone?: string
+          phone?: string
+          phone_verification_status?: string
+          record_status?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       document_line_items: {
         Row: {
@@ -161,6 +207,7 @@ export type Database = {
           accommodation_required: boolean
           catering_required: boolean
           created_at: string
+          customer_id: string | null
           email: string | null
           event_type: string
           expected_guests: number
@@ -177,6 +224,7 @@ export type Database = {
           accommodation_required?: boolean
           catering_required?: boolean
           created_at?: string
+          customer_id?: string | null
           email?: string | null
           event_type: string
           expected_guests: number
@@ -193,6 +241,7 @@ export type Database = {
           accommodation_required?: boolean
           catering_required?: boolean
           created_at?: string
+          customer_id?: string | null
           email?: string | null
           event_type?: string
           expected_guests?: number
@@ -205,7 +254,15 @@ export type Database = {
           quoted_amount?: number | null
           status?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "event_enquiries_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       gallery_items: {
         Row: {
@@ -267,6 +324,7 @@ export type Database = {
       gym_enquiries: {
         Row: {
           created_at: string
+          customer_id: string | null
           email: string | null
           id: string
           message: string | null
@@ -277,6 +335,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          customer_id?: string | null
           email?: string | null
           id?: string
           message?: string | null
@@ -287,6 +346,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          customer_id?: string | null
           email?: string | null
           id?: string
           message?: string | null
@@ -296,6 +356,13 @@ export type Database = {
           status?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "gym_enquiries_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "gym_enquiries_package_id_fkey"
             columns: ["package_id"]
@@ -334,6 +401,7 @@ export type Database = {
           block_id: string | null
           check_in: string
           created_at: string
+          customer_id: string | null
           email: string | null
           guests: number
           id: string
@@ -346,6 +414,7 @@ export type Database = {
           block_id?: string | null
           check_in: string
           created_at?: string
+          customer_id?: string | null
           email?: string | null
           guests: number
           id?: string
@@ -358,6 +427,7 @@ export type Database = {
           block_id?: string | null
           check_in?: string
           created_at?: string
+          customer_id?: string | null
           email?: string | null
           guests?: number
           id?: string
@@ -372,6 +442,13 @@ export type Database = {
             columns: ["block_id"]
             isOneToOne: false
             referencedRelation: "room_blocks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lodge_enquiries_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
             referencedColumns: ["id"]
           },
         ]
@@ -505,11 +582,13 @@ export type Database = {
       }
       payment_submissions: {
         Row: {
+          access_token_hash: string | null
           amount_claimed: number | null
           created_at: string
           currency: string
           customer_ecocash_number: string | null
           customer_email: string | null
+          customer_id: string | null
           customer_name: string
           customer_phone: string
           ecocash_transaction_reference: string | null
@@ -534,11 +613,13 @@ export type Database = {
           verified_by: string | null
         }
         Insert: {
+          access_token_hash?: string | null
           amount_claimed?: number | null
           created_at?: string
           currency?: string
           customer_ecocash_number?: string | null
           customer_email?: string | null
+          customer_id?: string | null
           customer_name: string
           customer_phone: string
           ecocash_transaction_reference?: string | null
@@ -563,11 +644,13 @@ export type Database = {
           verified_by?: string | null
         }
         Update: {
+          access_token_hash?: string | null
           amount_claimed?: number | null
           created_at?: string
           currency?: string
           customer_ecocash_number?: string | null
           customer_email?: string | null
+          customer_id?: string | null
           customer_name?: string
           customer_phone?: string
           ecocash_transaction_reference?: string | null
@@ -592,6 +675,13 @@ export type Database = {
           verified_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "payment_submissions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "payment_submissions_event_enquiry_id_fkey"
             columns: ["event_enquiry_id"]
@@ -665,18 +755,21 @@ export type Database = {
         Row: {
           department: string | null
           full_name: string
+          is_admin: boolean
           role: string
           user_id: string
         }
         Insert: {
           department?: string | null
           full_name: string
+          is_admin?: boolean
           role: string
           user_id: string
         }
         Update: {
           department?: string | null
           full_name?: string
+          is_admin?: boolean
           role?: string
           user_id?: string
         }
@@ -687,7 +780,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_staff_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

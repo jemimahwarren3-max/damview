@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { getSupabaseServiceClient } from "@/lib/supabase/service";
 import { detectFileType } from "@/lib/payments/validateFile";
+import { hashAccessSecret } from "@/lib/payments/token";
 
 const RESUBMITTABLE_STATUSES = ["AWAITING_PAYMENT", "REJECTED"];
 
-export async function POST(request: Request, { params }: { params: Promise<{ reference: string }> }) {
-  const { reference } = await params;
+export async function POST(request: Request, { params }: { params: Promise<{ reference: string; secret: string }> }) {
+  const { reference, secret } = await params;
   const supabase = getSupabaseServiceClient();
   if (!supabase) {
     return NextResponse.json({ error: "Payments aren't configured yet." }, { status: 503 });
@@ -19,6 +20,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ ref
 
   if (!payment) {
     return NextResponse.json({ error: "Payment not found." }, { status: 404 });
+  }
+
+  if (payment.access_token_hash) {
+    const providedHash = await hashAccessSecret(secret);
+    if (providedHash !== payment.access_token_hash) {
+      return NextResponse.json({ error: "This link is invalid or has been revoked." }, { status: 403 });
+    }
   }
 
   if (payment.payment_status === "AWAITING_PAYMENT" && new Date(payment.payment_deadline) < new Date()) {
