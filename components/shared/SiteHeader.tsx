@@ -33,32 +33,25 @@ export function SiteHeader() {
         scrolled ? "bg-cream-50/95 shadow-[0_1px_0_rgba(0,0,0,0.06)] backdrop-blur-md" : "bg-transparent"
       )}
     >
-      <Container className="flex h-16 items-center justify-between lg:h-20">
-        <Link
-          href="/"
-          className={cn(
-            "flex items-center gap-2 rounded-full transition-all",
-            !scrolled && "bg-cream-50/95 px-3 py-1.5 shadow-sm"
-          )}
-          onClick={() => setMenuOpen(false)}
-        >
+      <Container className="flex h-16 items-center justify-between xl:h-20">
+        <Link href="/" className="flex shrink-0 items-center" onClick={() => setMenuOpen(false)}>
           <Image
-            src="/images/brand/logo.png"
+            src={scrolled ? "/images/brand/logo-dark.png" : "/images/brand/logo-light.png"}
             alt={`${SITE_NAME} logo`}
             width={180}
             height={60}
-            className="h-8 w-auto lg:h-9"
+            className="h-8 w-auto xl:h-9"
             priority
           />
         </Link>
 
-        <nav className="hidden items-center gap-8 lg:flex">
+        <nav className="hidden items-center gap-6 xl:flex">
           {WEBSITE_NAV.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "link-underline text-[0.82rem] font-medium tracking-wide transition-colors",
+                "link-underline whitespace-nowrap text-[0.8rem] font-medium tracking-wide transition-colors",
                 scrolled ? "text-charcoal/80 hover:text-green-800" : "text-cream-50/90 hover:text-white"
               )}
             >
@@ -71,7 +64,7 @@ export function SiteHeader() {
           <Link
             href="/accommodation"
             className={cn(
-              "hidden rounded-full px-6 py-2.5 text-[0.82rem] font-semibold tracking-wide transition-all duration-300 lg:inline-flex",
+              "hidden shrink-0 whitespace-nowrap rounded-full px-5 py-2.5 text-[0.8rem] font-semibold tracking-wide transition-all duration-300 xl:inline-flex",
               scrolled ? "bg-green-800 text-cream-50 hover:bg-green-700" : "bg-cream-50 text-green-900 hover:bg-white"
             )}
           >
@@ -84,7 +77,7 @@ export function SiteHeader() {
             aria-label="Toggle menu"
             aria-expanded={menuOpen}
             className={cn(
-              "flex size-10 items-center justify-center rounded-full transition-colors lg:hidden",
+              "flex size-10 items-center justify-center rounded-full transition-colors xl:hidden",
               scrolled ? "text-charcoal" : "text-cream-50",
               menuOpen && "bg-green-800 text-cream-50"
             )}
@@ -97,7 +90,7 @@ export function SiteHeader() {
       {/* Mobile drawer */}
       <div
         className={cn(
-          "overflow-hidden bg-cream-50 transition-[max-height,opacity] duration-500 lg:hidden",
+          "overflow-hidden bg-cream-50 transition-[max-height,opacity] duration-500 xl:hidden",
           menuOpen ? "max-h-[80vh] opacity-100" : "max-h-0 opacity-0"
         )}
       >

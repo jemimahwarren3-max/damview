@@ -30,7 +30,7 @@ export const WEBSITE_NAV = [
   { label: "Restaurant", href: "/restaurant" },
   { label: "Damside", href: "/damside" },
   { label: "Activities", href: "/activities" },
-  { label: "Events & Celebrations", href: "/events" },
+  { label: "Events", href: "/events" },
   { label: "Gallery", href: "/gallery" },
   { label: "Contact", href: "/contact" },
 ] as const;

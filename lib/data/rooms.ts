@@ -2,8 +2,7 @@ import type { RoomBlock } from "@/types";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { ROOM_BLOCKS as FALLBACK_ROOM_BLOCKS } from "@/lib/data/admin-fallback";
 
-export const ROOM_IMAGE =
-  "https://images.pexels.com/photos/33613748/pexels-photo-33613748.jpeg?auto=compress&cs=tinysrgb&w=1200";
+export const ROOM_IMAGE = "/images/accommodation/real/room-3.jpg";
 
 export async function getRoomBlocks(): Promise<RoomBlock[]> {
   "use cache";

@@ -61,9 +61,9 @@ const DINING_SHOTS = [
 ];
 
 const ROOM_SHOTS = [
-  "https://images.pexels.com/photos/33613748/pexels-photo-33613748.jpeg?auto=compress&cs=tinysrgb&w=1280",
-  "https://images.pexels.com/photos/9130978/pexels-photo-9130978.jpeg?auto=compress&cs=tinysrgb&w=1280",
-  "https://images.pexels.com/photos/14775080/pexels-photo-14775080.jpeg?auto=compress&cs=tinysrgb&w=1280",
+  "/images/accommodation/real/room-3.jpg",
+  "/images/accommodation/real/room-1.jpg",
+  "/images/accommodation/real/room-4.jpg",
 ];
 
 const ACTIVITY_SHOTS = [

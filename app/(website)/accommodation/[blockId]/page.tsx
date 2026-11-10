@@ -11,11 +11,12 @@ import { PaymentNote } from "@/components/shared/PaymentNote";
 import { getRoomBlocks, getRoomBlockById } from "@/lib/data/rooms";
 import { SITE_NAME, LODGE_HOURLY_RATE } from "@/lib/constants";
 
+// Matched by feel to each block's price tier - ask the owner to confirm/reassign if a specific photo is known to belong elsewhere.
 const ROOM_IMAGES: Record<string, string> = {
-  a: "https://images.pexels.com/photos/9130978/pexels-photo-9130978.jpeg?auto=compress&cs=tinysrgb&w=1600",
-  b: "https://images.pexels.com/photos/14775080/pexels-photo-14775080.jpeg?auto=compress&cs=tinysrgb&w=1600",
-  f: "https://images.pexels.com/photos/33613748/pexels-photo-33613748.jpeg?auto=compress&cs=tinysrgb&w=1600",
-  r: "https://images.pexels.com/photos/19737839/pexels-photo-19737839.jpeg?auto=compress&cs=tinysrgb&w=1600",
+  a: "/images/accommodation/real/room-1.jpg",
+  b: "/images/accommodation/real/room-4.jpg",
+  f: "/images/accommodation/real/room-3.jpg",
+  r: "/images/accommodation/real/room-2.jpg",
 };
 
 export async function generateStaticParams() {
