@@ -32,7 +32,7 @@ export function generateInvoicePdf(data: InvoiceData) {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(20);
   doc.setTextColor(...FOREST);
-  doc.text("DAM VIEW RESORT", marginX, y);
+  doc.text("DAMVIEW RESORT", marginX, y);
   y += 7;
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
@@ -120,11 +120,11 @@ export function generateInvoicePdf(data: InvoiceData) {
     doc.setFont("helvetica", "bold");
     doc.text("Received By: ", marginX, y);
     doc.setFont("helvetica", "normal");
-    doc.text(data.receivedBy ?? "—", marginX + 28, y);
+    doc.text(data.receivedBy ?? "-", marginX + 28, y);
 
     y += 18;
     doc.setFont("helvetica", "italic");
-    doc.text("Damview Resort — Thank you for your business.", marginX, y);
+    doc.text("Damview Resort - Thank you for your business.", marginX, y);
   } else {
     doc.setFont("helvetica", "bold");
     doc.text("Total", 148, y);
@@ -144,7 +144,7 @@ export function generateInvoicePdf(data: InvoiceData) {
   doc.setFont("helvetica", "italic");
   doc.setFontSize(8);
   doc.setTextColor(140, 140, 140);
-  doc.text(`${SITE_NAME} — generated document, sample data`, marginX, y);
+  doc.text(`${SITE_NAME} - generated document`, marginX, y);
 
   doc.save(`${data.documentType.toLowerCase()}-${data.documentNumber}.pdf`);
 }

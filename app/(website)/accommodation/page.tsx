@@ -7,6 +7,7 @@ import { Container } from "@/components/shared/Container";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 import { PriceDisplay } from "@/components/shared/PriceDisplay";
 import { AccommodationEnquiryForm } from "@/components/booking/AccommodationEnquiryForm";
+import { PaymentNote } from "@/components/shared/PaymentNote";
 import { getRoomBlocks, ROOM_IMAGE } from "@/lib/data/rooms";
 import { SITE_NAME, LODGE_HOURLY_RATE } from "@/lib/constants";
 
@@ -90,6 +91,7 @@ export default async function AccommodationPage() {
             />
             <div className="mt-8">
               <AccommodationEnquiryForm blocks={roomBlocks} />
+              <PaymentNote />
             </div>
           </div>
         </Container>

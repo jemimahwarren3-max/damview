@@ -4,6 +4,7 @@ import { PageHero } from "@/components/shared/PageHero";
 import { Container } from "@/components/shared/Container";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 import { EventEnquiryForm } from "@/components/booking/EventEnquiryForm";
+import { PaymentNote } from "@/components/shared/PaymentNote";
 import { EVENT_CATEGORIES, SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -85,6 +86,7 @@ export default function EventsPage() {
           />
           <div className="mt-8 rounded-2xl bg-dv-ivory p-6 sm:p-8">
             <EventEnquiryForm />
+            <PaymentNote />
           </div>
         </Container>
       </section>

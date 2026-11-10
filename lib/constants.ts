@@ -17,6 +17,11 @@ export const ENTRANCE_FEE = {
 
 export const LODGE_HOURLY_RATE = 5;
 
+export const ECOCASH = {
+  line: "032679",
+  dialCode: "*151*3*1*032679#",
+} as const;
+
 export const WEBSITE_NAV = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },

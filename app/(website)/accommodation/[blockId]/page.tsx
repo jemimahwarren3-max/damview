@@ -7,6 +7,7 @@ import { Container } from "@/components/shared/Container";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 import { PriceDisplay } from "@/components/shared/PriceDisplay";
 import { AccommodationEnquiryForm } from "@/components/booking/AccommodationEnquiryForm";
+import { PaymentNote } from "@/components/shared/PaymentNote";
 import { getRoomBlocks, getRoomBlockById } from "@/lib/data/rooms";
 import { SITE_NAME, LODGE_HOURLY_RATE } from "@/lib/constants";
 
@@ -73,6 +74,7 @@ export default async function RoomDetailPage({ params }: { params: Promise<{ blo
           <SectionHeading eyebrow="Make an Enquiry" title="Check availability." />
           <div className="mt-8">
             <AccommodationEnquiryForm blocks={allBlocks} defaultBlockId={block.id} />
+            <PaymentNote />
           </div>
         </Container>
       </section>
