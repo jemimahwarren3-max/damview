@@ -84,8 +84,8 @@ export default async function HomePage() {
       <section id="home" className="relative h-[100svh] min-h-[640px] w-full overflow-hidden bg-green-900">
         <div className="absolute inset-0">
           <Image
-            src="/images/resort/damview-sunset.jpg"
-            alt="A real Chitungwiza sunset near Damview Resort"
+            src="/images/resort/damview-sunset-2.jpg"
+            alt="Sunset over the water at Damview, framed by the real trees on-site"
             fill
             priority
             className="hero-zoom object-cover"
@@ -179,8 +179,8 @@ export default async function HomePage() {
             <div className="lg:col-span-7">
               <div className="reveal reveal-delay-1 relative h-80 overflow-hidden rounded-sm lg:h-[34rem]">
                 <Image
-                  src="/images/resort/damview-sunset.jpg"
-                  alt="A real Chitungwiza sunset near Damview Resort"
+                  src="/images/resort/pool-damside.jpg"
+                  alt="The real pool and pavilion at Damview Resort"
                   fill
                   className="object-cover transition-transform duration-[1.2s] hover:scale-105"
                 />
