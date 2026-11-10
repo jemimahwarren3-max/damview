@@ -1,6 +1,11 @@
--- Damview Resort — identity & access-control hardening (pending, not yet applied)
+-- Damview Resort — identity & access-control hardening
 --
--- HOW TO RUN THIS:
+-- APPLIED 2026-11-10 by the user via the Supabase SQL editor (Claude Code's
+-- auto-mode classifier kept blocking apply_migration for this one). Kept
+-- here as a record of what's live - don't run it again, it's all
+-- idempotent (if/create-if-not-exists) but there's nothing left to do.
+--
+-- HOW TO RUN THIS (historical - already done):
 -- 1. Go to your Supabase project dashboard -> SQL Editor -> New query.
 -- 2. Paste this entire file.
 -- 3. Click Run.
