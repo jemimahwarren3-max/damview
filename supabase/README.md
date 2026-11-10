@@ -1,21 +1,18 @@
-# Supabase setup (Stage 10 — not yet applied)
+# Supabase setup
 
-This schema isn't live anywhere. Steps for when the Supabase project exists:
+**Status: live.** Project `jbmakvbmyddvlgfjonmc` is connected, `schema.sql` is
+applied with RLS policies on every table, and `lib/data/*.ts` reads/writes
+real data (falling back to static sample data only when Supabase env vars
+aren't set, e.g. a fresh deploy). Staff login (`/admin`) is wired to Supabase
+Auth. A public `media` storage bucket holds guest review photos
+(`reviews/`) and admin-uploaded gallery photos (`gallery/`).
 
-1. Create the project at supabase.com (free tier is fine at this scale).
-2. Paste `schema.sql` into the Supabase SQL editor and run it.
-3. **Enable Row Level Security (RLS) on every table before going live.** Supabase
-   tables are reachable over its public API by default — without RLS policies,
-   anyone with the anon key could read or write any row. At minimum: public
-   `select` on content tables (menu_items, activities, gallery_items,
-   approved guest_reviews), but enquiry/document tables should only be
-   writable by anyone (`insert`) and only readable by authenticated staff.
-4. Give me the project URL and anon key (safe to share — it's public by
-   design) plus the service role key (not safe to share in chat — set it as
-   an environment variable directly, never paste it here).
-5. From there: swap `lib/data/*.ts` mock arrays for real Supabase queries,
-   wire the admin login screen to Supabase Auth, and connect the disabled
-   "Upload photo" button in `/admin/gallery` to Supabase Storage.
+**Still needed from you:** create the first staff account in the Supabase
+dashboard (Authentication → Users → Add user) — nobody can sign in to
+`/admin` until one exists. Let the assistant know the name/role once you've
+made one, so a matching `staff_profiles` row can be added.
 
-Nothing in the app reads from this schema yet — `lib/data/*.ts` is still the
-only data source.
+Regenerate `types/supabase.ts` (via the `generate_typescript_types` MCP tool)
+after any schema change, and keep `schema.sql` here in sync with what's
+actually applied — it's the readable reference copy, not the source of
+truth (the live database is).

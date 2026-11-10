@@ -1,8 +1,7 @@
--- Damview Resort — Stage 10 database schema
+-- Damview Resort database schema — live on project jbmakvbmyddvlgfjonmc.
 --
--- Maps directly onto the TypeScript interfaces already defined in types/
--- and the mock data in lib/data/. Not applied anywhere yet — this is ready
--- to run in the Supabase SQL editor once a project exists.
+-- Maps directly onto the TypeScript interfaces in types/. This file is the
+-- readable reference copy; the actual source of truth is the live database.
 --
 -- Staff accounts/auth are handled by Supabase Auth itself (auth.users),
 -- not a custom table here — staff_profiles below just attaches a role to
@@ -179,3 +178,15 @@ create table document_line_items (
   quantity numeric(10, 2) not null default 1,
   unit_price numeric(10, 2) not null
 );
+
+-- ===== Storage =====
+--
+-- A single public "media" bucket, split by folder:
+--   media/reviews/...  — guest review photos, uploaded by anyone (public
+--                        insert), since the review itself starts 'pending'
+--                        and isn't shown until a staff member approves it.
+--   media/gallery/...  — admin-uploaded gallery photos, insert restricted
+--                        to authenticated staff.
+-- Read is public on the whole bucket (it's all guest-facing content once
+-- approved/published). See storage.objects policies applied alongside this
+-- schema — not reproduced here since they live outside the public schema.

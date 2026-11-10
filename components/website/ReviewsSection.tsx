@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Star } from "lucide-react";
 import { SectionHeading } from "@/components/shared/SectionHeading";
-import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
+import { ReviewForm } from "@/components/website/ReviewForm";
 import type { GuestReview } from "@/types";
 
 export function ReviewsSection({ reviews }: { reviews: GuestReview[] }) {
@@ -10,12 +10,17 @@ export function ReviewsSection({ reviews }: { reviews: GuestReview[] }) {
       <SectionHeading
         eyebrow="From Our Guests"
         title="Share your Damview experience."
-        subtitle="A sample of how guest reviews and photos will appear once review submissions go live. None of the reviews below are real yet."
+        subtitle="Real reviews from guests who've visited, alongside a few samples until more come in."
       />
 
       <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
         {reviews.map((review) => (
-          <div key={review.id} className="overflow-hidden rounded-2xl border border-border bg-card">
+          <div key={review.id} className="relative overflow-hidden rounded-2xl border border-border bg-card">
+            {review.isSample && (
+              <span className="absolute top-3 right-3 z-10 rounded-full bg-dv-black/70 px-2.5 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-dv-ivory">
+                Sample
+              </span>
+            )}
             {review.image && (
               <div className="relative h-44 w-full">
                 <Image src={review.image} alt={review.guestName} fill className="object-cover" />
@@ -34,11 +39,8 @@ export function ReviewsSection({ reviews }: { reviews: GuestReview[] }) {
         ))}
       </div>
 
-      <div className="mt-10 flex justify-center">
-        <WhatsAppButton
-          label="Add your experience"
-          message="Hi, I'd like to share a photo and review of my Damview visit."
-        />
+      <div className="mx-auto mt-10 max-w-xl">
+        <ReviewForm />
       </div>
     </div>
   );
