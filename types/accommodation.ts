@@ -24,4 +24,5 @@ export interface LodgeEnquiry extends EnquiryBase {
   blockId?: string;
   checkIn: string;
   guests: number;
+  roomId?: string;
 }

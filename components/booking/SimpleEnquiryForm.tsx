@@ -18,7 +18,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 type InsertTarget =
-  | { table: "activity_enquiries"; activityId: string }
+  | { table: "activity_enquiries"; activityId: string; priceAmount?: number }
   | { table: "gym_enquiries"; packageId?: string };
 
 interface SimpleEnquiryFormProps {
@@ -52,6 +52,7 @@ export function SimpleEnquiryForm({ intro, submitLabel = "Send enquiry on WhatsA
             phone: values.phone,
             message: values.message || null,
             activity_id: insertTarget.activityId,
+            price_amount: insertTarget.priceAmount ?? null,
             customer_id: customerId,
           });
         } else {

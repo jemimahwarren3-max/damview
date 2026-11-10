@@ -10,12 +10,13 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
 import { generatePaymentReference } from "@/lib/payments/reference";
 import { generateAccessSecret, hashAccessSecret } from "@/lib/payments/token";
 import { recordDocument } from "@/lib/documents";
-import { generateInvoicePdf } from "@/lib/pdf/invoice";
+import { generateInvoicePdf, type InvoiceData } from "@/lib/pdf/invoice";
+import { getIsAdmin } from "@/lib/staff";
 import { SAMPLE_LODGE_ENQUIRIES } from "@/lib/data/admin-mock";
 import { ROOM_BLOCKS } from "@/lib/data/admin-fallback";
 import type { EnquiryStatus, LodgeEnquiry } from "@/types";
 
-const STATUS_FLOW: EnquiryStatus[] = ["new", "contacted", "confirmed"];
+const STATUS_FLOW: EnquiryStatus[] = ["new", "contacted"];
 
 export default function AdminBookingsPage() {
   const [enquiries, setEnquiries] = useState<LodgeEnquiry[]>(SAMPLE_LODGE_ENQUIRIES);
@@ -23,6 +24,7 @@ export default function AdminBookingsPage() {
   const [paymentLinks, setPaymentLinks] = useState<Record<string, string>>({});
   const [configured] = useState(() => getSupabaseBrowserClient() !== null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const loadPaymentRefs = () => {
     const supabase = getSupabaseBrowserClient();
@@ -64,9 +66,12 @@ export default function AdminBookingsPage() {
             blockId: row.block_id ?? undefined,
             checkIn: row.check_in,
             guests: row.guests,
+            roomId: row.room_id ?? undefined,
           }))
         );
       });
+
+    getIsAdmin(supabase).then(setIsAdmin);
 
     loadPaymentRefs();
   }, []);
@@ -82,6 +87,22 @@ export default function AdminBookingsPage() {
     const supabase = getSupabaseBrowserClient();
     if (!supabase) return;
     await supabase.from("lodge_enquiries").update({ status: next }).eq("id", id);
+  };
+
+  /** Admin-only: confirm a booking paid outside the EcoCash flow (cash/other), keeping the room state consistent. */
+  const confirmPaidElsewhere = async (enquiry: LodgeEnquiry) => {
+    const supabase = getSupabaseBrowserClient();
+    const block = ROOM_BLOCKS.find((b) => b.id === enquiry.blockId);
+    if (!supabase) return;
+
+    setBusy(enquiry.id);
+    setEnquiries((prev) => prev.map((e) => (e.id === enquiry.id ? { ...e, status: "confirmed" } : e)));
+    await supabase.from("lodge_enquiries").update({ status: "confirmed" }).eq("id", enquiry.id);
+
+    const roomId = enquiry.roomId ?? (block ? await supabase.rpc("hold_room_for_enquiry", { p_block_id: block.id, p_enquiry_id: enquiry.id, p_hold_minutes: 1440 }).then((r) => r.data) : null);
+    if (roomId) await supabase.rpc("confirm_room_booking", { p_room_id: roomId });
+
+    setBusy(null);
   };
 
   const requestPayment = async (enquiry: LodgeEnquiry) => {
@@ -151,17 +172,24 @@ export default function AdminBookingsPage() {
       { description: `${block.displayName}, ${block.stayDurationHours}-hour stay`, quantity: 1, unitPrice: block.ratePerStay },
     ];
 
-    const invoice = supabase
-      ? await recordDocument(supabase, { documentType: "Receipt", customerName: enquiry.name, items, amountPaid: block.ratePerStay, paymentMethod: "Cash" })
-      : {
-          documentType: "Receipt" as const,
-          documentNumber: String(Date.now()).slice(-6),
-          customerName: enquiry.name,
-          issueDate: new Date().toISOString().slice(0, 10),
-          items,
-          amountPaid: block.ratePerStay,
-          paymentMethod: "Cash",
-        };
+    const fallback: InvoiceData = {
+      documentType: "Receipt",
+      documentNumber: String(Date.now()).slice(-6),
+      customerName: enquiry.name,
+      issueDate: new Date().toISOString().slice(0, 10),
+      items,
+      amountPaid: block.ratePerStay,
+      paymentMethod: "Cash",
+    };
+
+    let invoice = fallback;
+    if (supabase) {
+      try {
+        invoice = await recordDocument(supabase, { documentType: "Receipt", customerName: enquiry.name, items, amountPaid: block.ratePerStay, paymentMethod: "Cash" });
+      } catch {
+        window.alert("Couldn't save this receipt to records, but downloading it anyway - please note the number isn't officially recorded.");
+      }
+    }
 
     generateInvoicePdf(invoice);
     setBusy(null);
@@ -207,13 +235,24 @@ export default function AdminBookingsPage() {
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <StatusBadge status={enquiry.status === "confirmed" ? "confirmed" : "pending"} label={enquiry.status} />
-                {enquiry.status !== "confirmed" && (
+                {enquiry.status === "new" && (
                   <button
                     type="button"
                     onClick={() => advanceStatus(enquiry.id)}
                     className="rounded-full bg-dv-forest px-4 py-2 text-xs font-bold text-dv-ivory hover:bg-dv-leaf"
                   >
-                    Mark as {STATUS_FLOW[STATUS_FLOW.indexOf(enquiry.status) + 1]}
+                    Mark as contacted
+                  </button>
+                )}
+                {isAdmin && enquiry.status !== "confirmed" && (
+                  <button
+                    type="button"
+                    onClick={() => confirmPaidElsewhere(enquiry)}
+                    disabled={busy === enquiry.id}
+                    className="rounded-full border border-dv-leaf px-4 py-2 text-xs font-bold text-dv-leaf hover:bg-dv-leaf/10 disabled:opacity-60"
+                    title="Use this only if the guest paid in cash or by another method outside the EcoCash flow"
+                  >
+                    {busy === enquiry.id ? "Confirming..." : "Confirm - cash/other payment"}
                   </button>
                 )}
                 {configured && block && !paymentRef && enquiry.status !== "confirmed" && (

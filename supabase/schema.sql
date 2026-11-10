@@ -23,7 +23,13 @@ create table rooms (
   id text primary key,
   block_id text not null references room_blocks(id) on delete cascade,
   number text not null,
-  status text not null default 'available' check (status in ('available', 'booked', 'maintenance'))
+  status text not null default 'available' check (status in ('available', 'held', 'booked', 'maintenance'))
+  -- Note: hold_expires_at, held_by_enquiry_id, booked_until, and the room-hold/checkout
+  -- functions (hold_room_for_enquiry, confirm_room_booking, release_room_hold,
+  -- release_expired_holds, check_out_room, release_expired_bookings) are live on the
+  -- real database but not yet captured as migrations here - see
+  -- supabase/pending-checkout-and-hardening-migration.sql and types/supabase.ts
+  -- (generated from the live schema) for the current source of truth.
 );
 
 create table lodge_enquiries (

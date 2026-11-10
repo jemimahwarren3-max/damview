@@ -6,6 +6,7 @@ import { ArrowLeft, FileText, ShieldCheck, Ban, Clock3 } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
+import { recordDocument } from "@/lib/documents";
 import { cn } from "@/lib/utils";
 import type { PaymentAuditLogEntry, PaymentStatus } from "@/types";
 
@@ -199,7 +200,21 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
     if (!supabase || !payment) return;
     setBusy(true);
     const { data: userData } = await supabase.auth.getUser();
-    const receiptNumber = `RCT-${Date.now().toString().slice(-7)}`;
+    const amountPaid = payment.amountClaimed ?? payment.expectedAmount;
+    let receiptNumber: string;
+    try {
+      ({ documentNumber: receiptNumber } = await recordDocument(supabase, {
+        documentType: "Receipt",
+        customerName: payment.customerName,
+        items: [{ description: `${payment.enquiryType === "lodge" ? "Accommodation" : "Event"} - ${payment.paymentReference}`, quantity: 1, unitPrice: amountPaid }],
+        amountPaid,
+        paymentMethod: "EcoCash",
+      }));
+    } catch {
+      setBusy(false);
+      window.alert("Could not record the receipt. Please try approving again.");
+      return;
+    }
 
     await supabase
       .from("payment_submissions")

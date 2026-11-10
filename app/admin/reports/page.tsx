@@ -16,6 +16,7 @@ interface Report {
   eventRevenue: number;
   activityTotal: number;
   activityConfirmed: number;
+  activityRevenue: number;
   gymTotal: number;
   gymConfirmed: number;
   byStatus: Record<string, number>;
@@ -35,7 +36,7 @@ export default function AdminReportsPage() {
     Promise.all([
       supabase.from("lodge_enquiries").select("status, block_id"),
       supabase.from("event_enquiries").select("status, quoted_amount"),
-      supabase.from("activity_enquiries").select("status, activity_id"),
+      supabase.from("activity_enquiries").select("status, activity_id, price_amount"),
       supabase.from("gym_enquiries").select("status"),
       supabase.from("documents").select("id, amount_paid"),
     ]).then(([lodge, event, activity, gym, documents]) => {
@@ -68,6 +69,9 @@ export default function AdminReportsPage() {
       const eventConfirmedRows = eventRows.filter((r) => r.status === "confirmed");
       const eventRevenue = eventConfirmedRows.reduce((sum, r) => sum + (r.quoted_amount ? Number(r.quoted_amount) : 0), 0);
 
+      const activityConfirmedRows = activityRows.filter((r) => r.status === "confirmed");
+      const activityRevenue = activityConfirmedRows.reduce((sum, r) => sum + (r.price_amount ? Number(r.price_amount) : 0), 0);
+
       setReport({
         lodgeTotal: lodgeRows.length,
         lodgeConfirmed: lodgeConfirmedRows.length,
@@ -76,7 +80,8 @@ export default function AdminReportsPage() {
         eventConfirmed: eventConfirmedRows.length,
         eventRevenue,
         activityTotal: activityRows.length,
-        activityConfirmed: activityRows.filter((r) => r.status === "confirmed").length,
+        activityConfirmed: activityConfirmedRows.length,
+        activityRevenue,
         gymTotal: gymRows.length,
         gymConfirmed: gymRows.filter((r) => r.status === "confirmed").length,
         byStatus,
@@ -99,7 +104,7 @@ export default function AdminReportsPage() {
 
       {report && (
         <div className="flex flex-col gap-8">
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
             <div className="rounded-2xl border border-border bg-background p-5">
               <span className="block font-serif text-2xl text-dv-forest">${report.lodgeRevenue.toFixed(2)}</span>
               <span className="text-xs text-muted-foreground">Confirmed lodge revenue</span>
@@ -107,6 +112,10 @@ export default function AdminReportsPage() {
             <div className="rounded-2xl border border-border bg-background p-5">
               <span className="block font-serif text-2xl text-dv-forest">${report.eventRevenue.toFixed(2)}</span>
               <span className="text-xs text-muted-foreground">Confirmed event revenue</span>
+            </div>
+            <div className="rounded-2xl border border-border bg-background p-5">
+              <span className="block font-serif text-2xl text-dv-forest">${report.activityRevenue.toFixed(2)}</span>
+              <span className="text-xs text-muted-foreground">Confirmed activity revenue</span>
             </div>
             <div className="rounded-2xl border border-border bg-background p-5">
               <span className="block font-serif text-2xl text-dv-forest">${report.documentsTotal.toFixed(2)}</span>

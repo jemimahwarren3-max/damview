@@ -64,7 +64,7 @@ export default async function ActivityDetailPage({ params }: { params: Promise<{
           <div className="mt-8">
             <SimpleEnquiryForm
               intro={`Hi, I'd like to enquire about ${activity.name} at Damview Resort.`}
-              insertTarget={{ table: "activity_enquiries", activityId: activity.id }}
+              insertTarget={{ table: "activity_enquiries", activityId: activity.id, priceAmount: activity.pricing?.amount }}
             />
           </div>
         </Container>

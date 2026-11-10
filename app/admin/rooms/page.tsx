@@ -14,10 +14,9 @@ interface RoomRow {
   status: RoomStatus;
 }
 
-const NEXT_STATUS: Record<RoomStatus, RoomStatus> = {
-  available: "booked",
+const NEXT_STATUS: Record<"available" | "held" | "maintenance", RoomStatus> = {
+  available: "booked", // manual override, e.g. a walk-in paying cash
   held: "available", // staff tap releases a held room early
-  booked: "maintenance",
   maintenance: "available",
 };
 
@@ -35,7 +34,7 @@ export default function AdminRoomsPage() {
     const supabase = getSupabaseBrowserClient();
     if (!supabase) return;
 
-    supabase.rpc("release_expired_holds").then(() => {
+    Promise.all([supabase.rpc("release_expired_holds"), supabase.rpc("release_expired_bookings")]).then(() => {
       supabase
         .from("rooms")
         .select("id, block_id, number, status")
@@ -66,12 +65,33 @@ export default function AdminRoomsPage() {
   }, []);
 
   const cycleStatus = async (room: RoomRow) => {
+    if (room.status === "booked") return; // use the explicit Check Out action instead
     const next = NEXT_STATUS[room.status];
     setRooms((prev) => prev.map((r) => (r.id === room.id ? { ...r, status: next } : r)));
 
     const supabase = getSupabaseBrowserClient();
     if (!supabase) return;
     await supabase.from("rooms").update({ status: next }).eq("id", room.id);
+  };
+
+  const checkOut = async (room: RoomRow) => {
+    setRooms((prev) => prev.map((r) => (r.id === room.id ? { ...r, status: "available" } : r)));
+
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) return;
+    const { error } = await supabase.rpc("check_out_room", { p_room_id: room.id });
+    if (error) {
+      // migration not applied yet - fall back to a plain status update
+      await supabase.from("rooms").update({ status: "available" }).eq("id", room.id);
+    }
+  };
+
+  const markMaintenance = async (room: RoomRow) => {
+    setRooms((prev) => prev.map((r) => (r.id === room.id ? { ...r, status: "maintenance" } : r)));
+
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) return;
+    await supabase.from("rooms").update({ status: "maintenance" }).eq("id", room.id);
   };
 
   const saveRate = async (blockId: string) => {
@@ -95,9 +115,10 @@ export default function AdminRoomsPage() {
       )}
 
       <p className="mb-6 text-sm text-muted-foreground">
-        Tap a room to cycle its status. &quot;Held&quot; rooms are holding a spot for a guest who&apos;s
-        mid-payment and release automatically if they don&apos;t finish in time - tap one to release it
-        early. Edit a block&apos;s rate below.
+        Tap an available/maintenance room to toggle it. &quot;Held&quot; rooms are holding a spot for a
+        guest who&apos;s mid-payment and release automatically if they don&apos;t finish in time - tap one
+        to release it early. A &quot;Booked&quot; room shows a Check Out button once the guest leaves -
+        tap it to make the room available again. Edit a block&apos;s rate below.
       </p>
 
       {blocks.map((block) => (
@@ -129,17 +150,41 @@ export default function AdminRoomsPage() {
           <div className="mt-3 grid grid-cols-3 gap-3 sm:grid-cols-5 lg:grid-cols-6">
             {rooms
               .filter((r) => r.blockId === block.id)
-              .map((room) => (
-                <button
-                  key={room.id}
-                  type="button"
-                  onClick={() => cycleStatus(room)}
-                  className="flex flex-col items-center gap-2 rounded-xl border border-border bg-background p-4"
-                >
-                  <span className="font-serif text-lg text-dv-forest">{room.number}</span>
-                  <StatusBadge status={room.status} />
-                </button>
-              ))}
+              .map((room) =>
+                room.status === "booked" ? (
+                  <div
+                    key={room.id}
+                    className="flex flex-col items-center gap-2 rounded-xl border border-border bg-background p-4"
+                  >
+                    <span className="font-serif text-lg text-dv-forest">{room.number}</span>
+                    <StatusBadge status={room.status} />
+                    <button
+                      type="button"
+                      onClick={() => checkOut(room)}
+                      className="rounded-full bg-dv-forest px-2.5 py-1 text-[0.65rem] font-bold text-dv-ivory hover:bg-dv-leaf"
+                    >
+                      Check Out
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => markMaintenance(room)}
+                      className="text-[0.65rem] font-medium text-muted-foreground underline"
+                    >
+                      Needs maintenance
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    key={room.id}
+                    type="button"
+                    onClick={() => cycleStatus(room)}
+                    className="flex flex-col items-center gap-2 rounded-xl border border-border bg-background p-4"
+                  >
+                    <span className="font-serif text-lg text-dv-forest">{room.number}</span>
+                    <StatusBadge status={room.status} />
+                  </button>
+                )
+              )}
           </div>
         </div>
       ))}

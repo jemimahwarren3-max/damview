@@ -10,7 +10,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
 import { generatePaymentReference } from "@/lib/payments/reference";
 import { generateAccessSecret, hashAccessSecret } from "@/lib/payments/token";
 import { recordDocument } from "@/lib/documents";
-import { generateInvoicePdf } from "@/lib/pdf/invoice";
+import { generateInvoicePdf, type InvoiceData } from "@/lib/pdf/invoice";
 import { SAMPLE_EVENT_ENQUIRIES } from "@/lib/data/admin-mock";
 import type { EnquiryStatus, EventEnquiry } from "@/types";
 
@@ -139,23 +139,30 @@ export default function AdminEventsPage() {
       { description: `${enquiry.eventType.replace("_", " ")} event, ${enquiry.expectedGuests} guests`, quantity: 1, unitPrice: enquiry.quotedAmount },
     ];
 
-    const invoice = supabase
-      ? await recordDocument(supabase, {
+    const fallback: InvoiceData = {
+      documentType,
+      documentNumber: String(Date.now()).slice(-6),
+      customerName: enquiry.name,
+      issueDate: new Date().toISOString().slice(0, 10),
+      items,
+      amountPaid: documentType === "Receipt" ? enquiry.quotedAmount : 0,
+      paymentMethod: documentType === "Receipt" ? "Cash" : undefined,
+    };
+
+    let invoice: typeof fallback = fallback;
+    if (supabase) {
+      try {
+        invoice = await recordDocument(supabase, {
           documentType,
           customerName: enquiry.name,
           items,
           amountPaid: documentType === "Receipt" ? enquiry.quotedAmount : 0,
           paymentMethod: documentType === "Receipt" ? "Cash" : undefined,
-        })
-      : {
-          documentType,
-          documentNumber: String(Date.now()).slice(-6),
-          customerName: enquiry.name,
-          issueDate: new Date().toISOString().slice(0, 10),
-          items,
-          amountPaid: documentType === "Receipt" ? enquiry.quotedAmount : 0,
-          paymentMethod: documentType === "Receipt" ? "Cash" : undefined,
-        };
+        });
+      } catch {
+        window.alert("Couldn't save this document to records, but downloading it anyway - please note the number isn't officially recorded.");
+      }
+    }
 
     generateInvoicePdf(invoice);
     setGenerating(null);

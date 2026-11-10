@@ -59,6 +59,7 @@ export type Database = {
           party_size: number | null
           phone: string
           preferred_date: string | null
+          price_amount: number | null
           status: string
         }
         Insert: {
@@ -72,6 +73,7 @@ export type Database = {
           party_size?: number | null
           phone: string
           preferred_date?: string | null
+          price_amount?: number | null
           status?: string
         }
         Update: {
@@ -85,6 +87,7 @@ export type Database = {
           party_size?: number | null
           phone?: string
           preferred_date?: string | null
+          price_amount?: number | null
           status?: string
         }
         Relationships: [
@@ -137,6 +140,21 @@ export type Database = {
           phone_verification_status?: string
           record_status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      document_counters: {
+        Row: {
+          document_type: string
+          next_number: number
+        }
+        Insert: {
+          document_type: string
+          next_number?: number
+        }
+        Update: {
+          document_type?: string
+          next_number?: number
         }
         Relationships: []
       }
@@ -741,6 +759,7 @@ export type Database = {
       rooms: {
         Row: {
           block_id: string
+          booked_until: string | null
           held_by_enquiry_id: string | null
           hold_expires_at: string | null
           id: string
@@ -749,6 +768,7 @@ export type Database = {
         }
         Insert: {
           block_id: string
+          booked_until?: string | null
           held_by_enquiry_id?: string | null
           hold_expires_at?: string | null
           id: string
@@ -757,6 +777,7 @@ export type Database = {
         }
         Update: {
           block_id?: string
+          booked_until?: string | null
           held_by_enquiry_id?: string | null
           hold_expires_at?: string | null
           id?: string
@@ -817,6 +838,9 @@ export type Database = {
       confirm_room_booking: { Args: { p_room_id: string }; Returns: undefined }
       release_room_hold: { Args: { p_room_id: string }; Returns: undefined }
       release_expired_holds: { Args: never; Returns: undefined }
+      check_out_room: { Args: { p_room_id: string }; Returns: undefined }
+      release_expired_bookings: { Args: never; Returns: undefined }
+      next_document_number: { Args: { p_document_type: string }; Returns: number }
     }
     Enums: {
       [_ in never]: never

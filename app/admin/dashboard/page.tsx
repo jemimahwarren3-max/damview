@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CalendarCheck, BedDouble, Clock3, PartyPopper } from "lucide-react";
+import { CalendarCheck, BedDouble, Clock3, PartyPopper, DoorOpen } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
@@ -16,6 +16,7 @@ export default function AdminDashboardPage() {
   const [totalEnquiries, setTotalEnquiries] = useState(SAMPLE_LODGE_ENQUIRIES.length);
   const [pending, setPending] = useState(SAMPLE_LODGE_ENQUIRIES.filter((e) => e.status === "new").length);
   const [eventCount, setEventCount] = useState(0);
+  const [roomsAvailable, setRoomsAvailable] = useState<number | null>(null);
   const [configured] = useState(() => getSupabaseBrowserClient() !== null);
 
   useEffect(() => {
@@ -56,11 +57,22 @@ export default function AdminDashboardPage() {
       setPending(all.filter((e) => e.status === "new").length);
       setEventCount(event.data?.length ?? 0);
     });
+
+    Promise.all([supabase.rpc("release_expired_holds"), supabase.rpc("release_expired_bookings")]).then(() => {
+      supabase
+        .from("rooms")
+        .select("status")
+        .then(({ data }) => {
+          if (!data) return;
+          setRoomsAvailable(data.filter((r) => r.status === "available").length);
+        });
+    });
   }, []);
 
   const stats = [
     { label: "Total enquiries", value: totalEnquiries, icon: CalendarCheck },
     { label: "Pending review", value: pending, icon: Clock3 },
+    { label: "Rooms available now", value: roomsAvailable ?? TOTAL_ROOMS, icon: DoorOpen },
     { label: "Rooms (total)", value: TOTAL_ROOMS, icon: BedDouble },
     { label: "Event enquiries", value: eventCount, icon: PartyPopper },
   ];
@@ -73,7 +85,7 @@ export default function AdminDashboardPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
         {stats.map(({ label, value, icon: Icon }) => (
           <div key={label} className="rounded-2xl border border-border bg-background p-5">
             <Icon className="text-dv-pool" size={20} />

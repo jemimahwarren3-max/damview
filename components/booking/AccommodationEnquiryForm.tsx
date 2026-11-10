@@ -36,6 +36,7 @@ export function AccommodationEnquiryForm({
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [fullyBooked, setFullyBooked] = useState(false);
+  const [futureDate, setFutureDate] = useState(false);
   const {
     register,
     handleSubmit,
@@ -48,6 +49,16 @@ export function AccommodationEnquiryForm({
   const onSubmit = async (values: FormOutput) => {
     const block = blocks.find((b) => b.id === values.blockId);
     setFullyBooked(false);
+    setFutureDate(false);
+
+    const today = new Date().toISOString().slice(0, 10);
+    if (values.checkIn !== today) {
+      // Room holds are instant, not date-scheduled - don't hold a room today for a future stay.
+      setFutureDate(true);
+      sendWhatsAppFallback(values, block?.displayName);
+      return;
+    }
+
     setSubmitting(true);
 
     const supabase = getSupabaseClient();
@@ -151,6 +162,10 @@ export function AccommodationEnquiryForm({
         </FormField>
         <FormField label="Check-in date" name="checkIn" error={errors.checkIn?.message}>
           <input id="checkIn" type="date" {...register("checkIn")} className="w-full rounded-lg border border-border bg-background px-3 py-2.5" />
+          <span className="mt-1 block text-xs text-muted-foreground">
+            Checking in today? We&apos;ll hold a room right now while you pay. For a future date,
+            we&apos;ll pass your request to our team on WhatsApp instead.
+          </span>
         </FormField>
         <FormField label="Guests" name="guests" error={errors.guests?.message}>
           <input id="guests" type="number" min={1} {...register("guests")} className="w-full rounded-lg border border-border bg-background px-3 py-2.5" />
@@ -164,6 +179,12 @@ export function AccommodationEnquiryForm({
         <p className="rounded-lg bg-dv-sunshine/20 px-3 py-2 text-sm text-dv-black">
           That room type is fully booked right now. We&apos;ve got your request and sent it to our
           team on WhatsApp - we&apos;ll follow up with you directly.
+        </p>
+      )}
+      {futureDate && (
+        <p className="rounded-lg bg-dv-sunshine/20 px-3 py-2 text-sm text-dv-black">
+          We&apos;ve sent your request for that date to our team on WhatsApp - we only hold a specific
+          room the moment you&apos;re ready to pay, so a future stay needs a quick chat with us first.
         </p>
       )}
 

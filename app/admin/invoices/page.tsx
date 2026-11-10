@@ -47,7 +47,7 @@ export default function AdminInvoicesPage() {
           data.map((row) => ({
             id: row.id,
             documentNumber: row.document_number,
-            documentType: row.document_type as InvoiceData["documentType"],
+            documentType: (row.document_type.charAt(0).toUpperCase() + row.document_type.slice(1)) as InvoiceData["documentType"],
             customerName: row.customer_name,
             amountPaid: Number(row.amount_paid),
             issueDate: row.issue_date,
@@ -69,14 +69,19 @@ export default function AdminInvoicesPage() {
     const supabase = getSupabaseBrowserClient();
 
     if (supabase) {
-      return recordDocument(supabase, {
-        documentType,
-        customerName,
-        items,
-        amountPaid,
-        paymentMethod: documentType === "Receipt" ? paymentMethod : undefined,
-        receivedBy: documentType === "Receipt" ? receivedBy || undefined : undefined,
-      });
+      try {
+        return await recordDocument(supabase, {
+          documentType,
+          customerName,
+          items,
+          amountPaid,
+          paymentMethod: documentType === "Receipt" ? paymentMethod : undefined,
+          receivedBy: documentType === "Receipt" ? receivedBy || undefined : undefined,
+        });
+      } catch {
+        window.alert("Couldn't save this document to records. Please try again.");
+        return null;
+      }
     }
 
     return {
