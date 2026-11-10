@@ -48,7 +48,7 @@ export default async function RestaurantPage() {
               A few favourites to start with.
             </h2>
             <p className="mt-3 max-w-md text-dv-black/70">
-              This is a sample of our menu. The full breakfast, lunch and supper list is coming soon.
+              Our full bar list, below. The complete breakfast, lunch and supper menu is coming soon.
             </p>
 
             <div className="mt-10 flex flex-col gap-10">

@@ -15,6 +15,13 @@ export const metadata: Metadata = {
   description: "Comfortable accommodation at Damview Resort, Chitungwiza.",
 };
 
+const REAL_ROOM_PHOTOS = [
+  "/images/accommodation/real/room-1.jpg",
+  "/images/accommodation/real/room-2.jpg",
+  "/images/accommodation/real/room-3.jpg",
+  "/images/accommodation/real/room-4.jpg",
+];
+
 export default async function AccommodationPage() {
   const roomBlocks = await getRoomBlocks();
 
@@ -52,6 +59,19 @@ export default async function AccommodationPage() {
                 </div>
                 <PriceDisplay amount={block.ratePerStay} unit={`${block.stayDurationHours}hr stay`} />
               </Link>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      <section className="py-20">
+        <Container>
+          <SectionHeading eyebrow="See For Yourself" title="Inside our rooms." subtitle="Real photos from our rooms, not stock images." />
+          <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {REAL_ROOM_PHOTOS.map((src) => (
+              <div key={src} className="relative aspect-[3/4] overflow-hidden rounded-xl">
+                <Image src={src} alt="Inside a Damview lodge room" fill className="object-cover" />
+              </div>
             ))}
           </div>
         </Container>
