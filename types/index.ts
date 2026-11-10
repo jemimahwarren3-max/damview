@@ -6,3 +6,4 @@ export * from "./activities";
 export * from "./events";
 export * from "./gallery";
 export * from "./review";
+export * from "./payment";

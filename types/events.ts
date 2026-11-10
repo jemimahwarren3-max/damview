@@ -16,4 +16,6 @@ export interface EventEnquiry extends EnquiryBase {
   facilitiesRequired: string[];
   cateringRequired: boolean;
   accommodationRequired: boolean;
+  /** Set by staff once the event has been manually quoted - required before a payment can be requested. */
+  quotedAmount?: number;
 }
