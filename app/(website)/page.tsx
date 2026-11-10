@@ -78,7 +78,7 @@ export default async function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section id="home" className="relative h-[100svh] min-h-[640px] w-full overflow-hidden">
+      <section id="home" className="relative h-[100svh] min-h-[640px] w-full overflow-hidden bg-green-900">
         <div className="absolute inset-0">
           <Image
             src="/images/resort/damview-sunset.jpg"
@@ -87,18 +87,35 @@ export default async function HomePage() {
             priority
             className="hero-zoom object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-green-900/55 via-green-900/15 to-green-900/70" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/35 via-transparent to-transparent" />
+          {/* Cinematic video layer - desktop/tablet only, so mobile data stays light */}
+          <video
+            className="absolute inset-0 hidden h-full w-full object-cover md:block"
+            src="/videos/hero.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="none"
+            poster="/images/resort/damview-sunset.jpg"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-green-900/60 via-green-900/15 to-green-900/75" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
         </div>
 
         <Container className="relative z-10 flex h-full flex-col justify-end pb-20 lg:pb-28">
           <div className="max-w-3xl">
-            <div className="reveal mb-5 inline-flex items-center gap-2 rounded-full border border-cream-50/30 bg-black/15 px-4 py-1.5 text-[0.72rem] font-medium uppercase tracking-[0.22em] text-cream-50 backdrop-blur-sm">
-              <MapPin size={13} className="text-sunset-500" />
-              Chikwanha, Chitungwiza
+            <div className="reveal mb-5 flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-2 rounded-full border border-cream-50/30 bg-black/15 px-4 py-1.5 text-[0.72rem] font-medium uppercase tracking-[0.22em] text-cream-50 backdrop-blur-sm">
+                <MapPin size={13} className="text-sunset-500" />
+                Chikwanha, Chitungwiza
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-sunset-500 px-4 py-1.5 text-[0.72rem] font-bold uppercase tracking-[0.22em] text-green-900">
+                <Clock size={13} />
+                Open 24 Hours
+              </span>
             </div>
 
-            <h1 className="reveal reveal-delay-1 font-serif text-[2.9rem] font-light leading-[1.04] text-cream-50 text-balance sm:text-6xl lg:text-[4.6rem]">
+            <h1 className="reveal reveal-delay-1 font-serif text-[3rem] font-light leading-[1.02] text-cream-50 text-balance sm:text-7xl lg:text-[5.2rem]">
               {SITE_NAME}
             </h1>
 
@@ -109,17 +126,17 @@ export default async function HomePage() {
 
             <div className="reveal reveal-delay-3 mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Link
-                href="/about"
+                href="/accommodation"
                 className="group inline-flex items-center justify-center gap-2 rounded-full bg-cream-50 px-7 py-3.5 text-sm font-semibold text-green-900 transition-all duration-300 hover:bg-white hover:shadow-xl"
               >
-                Explore Damview
+                Make a Booking
                 <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
               <Link
-                href="/accommodation"
+                href="/about"
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-cream-50/45 bg-green-900/20 px-7 py-3.5 text-sm font-semibold text-cream-50 backdrop-blur-sm transition-all duration-300 hover:border-cream-50/80 hover:bg-green-900/40"
               >
-                Make a Booking
+                Explore Damview
               </Link>
             </div>
           </div>
