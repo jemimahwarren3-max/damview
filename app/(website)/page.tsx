@@ -9,6 +9,11 @@ import {
   Clock,
   Navigation,
   CalendarCheck,
+  Waves,
+  Compass,
+  PartyPopper,
+  UtensilsCrossed,
+  Bike,
 } from "lucide-react";
 import { Container } from "@/components/shared/Container";
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
@@ -18,7 +23,6 @@ import {
   LOCATION,
   CONTACT_NUMBERS,
   EVENT_CATEGORIES,
-  GALLERY_PREVIEW,
   ENTRANCE_FEE,
   LODGE_HOURLY_RATE,
 } from "@/lib/constants";
@@ -30,7 +34,7 @@ const EXPERIENCES = [
     no: "01",
     title: "Relax",
     copy: "Swimming, peaceful outdoor spaces, comfortable lodges and time away from everyday routines.",
-    img: "https://images.pexels.com/photos/6821435/pexels-photo-6821435.jpeg?auto=compress&cs=tinysrgb&w=1100",
+    icon: Waves,
     href: "/accommodation",
     span: "lg:col-span-7 lg:row-span-2",
     h: "h-[26rem] lg:h-full",
@@ -39,7 +43,7 @@ const EXPERIENCES = [
     no: "02",
     title: "Explore",
     copy: "Boat cruises, pedal boats, quad bikes and outdoor activities on and off the water.",
-    img: "https://images.pexels.com/photos/36593940/pexels-photo-36593940.jpeg?auto=compress&cs=tinysrgb&w=1100",
+    icon: Compass,
     href: "/activities",
     span: "lg:col-span-5",
     h: "h-72 lg:h-80",
@@ -48,17 +52,12 @@ const EXPERIENCES = [
     no: "03",
     title: "Celebrate",
     copy: "Good food, drinks, entertainment and memorable occasions with friends and family.",
-    img: "https://images.pexels.com/photos/35516036/pexels-photo-35516036.jpeg?auto=compress&cs=tinysrgb&w=1100",
+    icon: PartyPopper,
     href: "/events",
     span: "lg:col-span-5",
     h: "h-72 lg:h-80",
   },
 ] as const;
-
-const DINING_SHOTS = [
-  "https://images.pexels.com/photos/37238864/pexels-photo-37238864.jpeg?auto=compress&cs=tinysrgb&w=900",
-  "https://images.pexels.com/photos/4078164/pexels-photo-4078164.jpeg?auto=compress&cs=tinysrgb&w=900",
-];
 
 const ROOM_SHOTS = [
   "/images/accommodation/real/room-3.jpg",
@@ -66,10 +65,14 @@ const ROOM_SHOTS = [
   "/images/accommodation/real/room-4.jpg",
 ];
 
-const ACTIVITY_SHOTS = [
-  { img: "https://images.pexels.com/photos/15490742/pexels-photo-15490742.jpeg?auto=compress&cs=tinysrgb&w=1100", label: "Quad bikes" },
-  { img: "https://images.pexels.com/photos/38492716/pexels-photo-38492716.jpeg?auto=compress&cs=tinysrgb&w=1100", label: "Horse riding" },
-  { img: "https://images.pexels.com/photos/28263612/pexels-photo-28263612.jpeg?auto=compress&cs=tinysrgb&w=1100", label: "Zip line" },
+const ACTIVITY_LABELS = ["Quad bikes", "Horse riding", "Zip line"];
+
+// Only real Damview photography we have right now - more to follow as it's taken.
+const REAL_GALLERY = [
+  { caption: "Our rooms", image: "/images/accommodation/real/room-1.jpg" },
+  { caption: "Our rooms", image: "/images/accommodation/real/room-2.jpg" },
+  { caption: "Our rooms", image: "/images/accommodation/real/room-3.jpg" },
+  { caption: "Our rooms", image: "/images/accommodation/real/room-4.jpg" },
 ];
 
 export default async function HomePage() {
@@ -174,34 +177,17 @@ export default async function HomePage() {
             </div>
 
             <div className="lg:col-span-7">
-              <div className="grid grid-cols-5 grid-rows-2 gap-4 lg:h-[34rem]">
-                <div className="reveal reveal-delay-1 col-span-5 row-span-1 overflow-hidden rounded-sm lg:col-span-3 lg:row-span-2">
-                  <Image
-                    src="https://images.pexels.com/photos/137569/pexels-photo-137569.jpeg?auto=compress&cs=tinysrgb&w=1280"
-                    alt="The pool deck and pavilion at Damview"
-                    width={900}
-                    height={1100}
-                    className="h-full w-full object-cover transition-transform duration-[1.2s] hover:scale-105"
-                  />
-                </div>
-                <div className="reveal reveal-delay-2 col-span-3 row-span-1 overflow-hidden rounded-sm lg:col-span-2">
-                  <Image
-                    src="https://images.pexels.com/photos/35706767/pexels-photo-35706767.jpeg?auto=compress&cs=tinysrgb&w=900"
-                    alt="A calm dam framed by open lawns and trees"
-                    width={700}
-                    height={700}
-                    className="h-full w-full object-cover transition-transform duration-[1.2s] hover:scale-105"
-                  />
-                </div>
-                <div className="reveal reveal-delay-3 col-span-2 row-span-1 overflow-hidden rounded-sm lg:col-span-2">
-                  <Image
-                    src="https://images.pexels.com/photos/14455480/pexels-photo-14455480.jpeg?auto=compress&cs=tinysrgb&w=900"
-                    alt="Friends enjoying Damview, Harare"
-                    width={700}
-                    height={700}
-                    className="h-full w-full object-cover transition-transform duration-[1.2s] hover:scale-105"
-                  />
-                </div>
+              <div className="reveal reveal-delay-1 relative h-80 overflow-hidden rounded-sm lg:h-[34rem]">
+                <Image
+                  src="/images/resort/damview-sunset.jpg"
+                  alt="A real Chitungwiza sunset near Damview Resort"
+                  fill
+                  className="object-cover transition-transform duration-[1.2s] hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-green-900/70 via-transparent to-transparent" />
+                <p className="absolute bottom-6 left-6 right-6 font-serif text-xl font-light text-cream-50 sm:text-2xl">
+                  &quot;Good times, great views, right here in Chitungwiza.&quot;
+                </p>
               </div>
             </div>
           </div>
@@ -228,10 +214,10 @@ export default async function HomePage() {
               <Link
                 key={exp.no}
                 href={exp.href}
-                className={`reveal group relative overflow-hidden rounded-sm ${exp.span} ${exp.h}`}
+                className={`reveal group relative overflow-hidden rounded-sm bg-green-800 ${exp.span} ${exp.h}`}
               >
-                <Image src={exp.img} alt={`${exp.title} at Damview Resort`} fill className="object-cover transition-transform duration-[1.3s] ease-out group-hover:scale-110" />
-                <div className="absolute inset-0 bg-gradient-to-t from-green-900/85 via-green-900/20 to-transparent" />
+                <exp.icon className="absolute -right-6 -top-6 text-green-700/60 transition-transform duration-[1.3s] ease-out group-hover:scale-110" size={160} strokeWidth={1} />
+                <div className="absolute inset-0 bg-gradient-to-t from-green-900/90 via-green-900/30 to-transparent" />
                 <div className="relative flex h-full flex-col justify-end p-7 lg:p-8">
                   <span className="mb-2 font-serif text-sm font-light tracking-widest text-cream-100/70">{exp.no}</span>
                   <h3 className="font-serif text-2xl font-medium text-cream-50 lg:text-3xl">{exp.title}</h3>
@@ -296,12 +282,8 @@ export default async function HomePage() {
         <Container>
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="order-2 lg:order-1 lg:col-span-7">
-              <div className="grid grid-cols-2 gap-4">
-                {DINING_SHOTS.map((src, i) => (
-                  <div key={src} className={`reveal reveal-delay-${i + 1} overflow-hidden rounded-sm`}>
-                    <Image src={src} alt="Food at Dam Food Bar" width={700} height={560} className="h-64 w-full object-cover transition-transform duration-[1.2s] hover:scale-105" />
-                  </div>
-                ))}
+              <div className="reveal flex h-64 items-center justify-center rounded-sm bg-green-900 sm:h-80">
+                <UtensilsCrossed className="text-green-700" size={88} strokeWidth={1} />
               </div>
             </div>
             <div className="order-1 lg:order-2 lg:col-span-5">
@@ -355,11 +337,10 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {ACTIVITY_SHOTS.map((activity, i) => (
-              <div key={activity.label} className={`reveal reveal-delay-${i + 1} group relative h-72 overflow-hidden rounded-sm`}>
-                <Image src={activity.img} alt={activity.label} fill className="object-cover transition-transform duration-[1.3s] ease-out group-hover:scale-110" />
-                <div className="absolute inset-0 bg-gradient-to-t from-green-900/80 via-green-900/10 to-transparent" />
-                <span className="absolute bottom-5 left-5 font-serif text-xl text-cream-50">{activity.label}</span>
+            {ACTIVITY_LABELS.map((label, i) => (
+              <div key={label} className={`reveal reveal-delay-${i + 1} group relative flex h-72 flex-col justify-end overflow-hidden rounded-sm bg-green-800 p-5`}>
+                <Bike className="absolute -right-4 -top-4 text-green-700/60 transition-transform duration-[1.3s] ease-out group-hover:scale-110" size={120} strokeWidth={1} />
+                <span className="relative font-serif text-xl text-cream-50">{label}</span>
               </div>
             ))}
           </div>
@@ -367,14 +348,8 @@ export default async function HomePage() {
       </section>
 
       {/* Events */}
-      <section id="events" className="relative py-24 lg:py-36">
-        <Image
-          src="https://images.pexels.com/photos/35516036/pexels-photo-35516036.jpeg?auto=compress&cs=tinysrgb&w=1600"
-          alt="A celebration at Damview Resort"
-          fill
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-green-900/80" />
+      <section id="events" className="relative overflow-hidden bg-green-900 py-24 lg:py-36">
+        <PartyPopper className="absolute -right-10 -top-10 text-green-800" size={320} strokeWidth={0.75} />
         <Container className="relative flex flex-col items-center gap-5 text-center">
           <div className="reveal mb-1 flex items-center gap-3">
             <span className="h-px w-10 bg-sunset-500" />
@@ -421,8 +396,8 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {GALLERY_PREVIEW.map((item, i) => (
-              <figure key={item.caption} className={`reveal reveal-delay-${(i % 3) + 1} group relative aspect-square overflow-hidden rounded-sm`}>
+            {REAL_GALLERY.map((item, i) => (
+              <figure key={item.image} className={`reveal reveal-delay-${(i % 3) + 1} group relative aspect-square overflow-hidden rounded-sm`}>
                 <Image src={item.image} alt={item.caption} fill className="object-cover transition-transform duration-[1.3s] ease-out group-hover:scale-110" />
                 <div className="absolute inset-0 bg-green-900/0 transition-colors duration-500 group-hover:bg-green-900/15" />
                 <figcaption className="absolute inset-x-0 bottom-0 bg-green-900/60 px-2 py-1.5 text-center text-xs font-medium text-cream-50">
@@ -442,15 +417,7 @@ export default async function HomePage() {
 
       {/* Location & final CTA */}
       <section id="contact" className="relative overflow-hidden bg-green-900">
-        <div className="absolute inset-0">
-          <Image
-            src="https://images.pexels.com/photos/1502311/pexels-photo-1502311.jpeg?auto=compress&cs=tinysrgb&w=1600"
-            alt="Warm African landscape"
-            fill
-            className="object-cover opacity-25"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-green-900/80 via-green-900/70 to-green-900/90" />
-        </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-green-900 via-green-900/95 to-black" />
 
         <Container className="relative py-24 lg:py-36">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-20">
