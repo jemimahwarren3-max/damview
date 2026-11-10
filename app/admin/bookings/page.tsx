@@ -1,10 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Receipt } from "lucide-react";
+import Link from "next/link";
+import { CreditCard, Receipt } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
+import { generatePaymentReference } from "@/lib/payments/reference";
+import { generateAccessSecret, hashAccessSecret } from "@/lib/payments/token";
 import { recordDocument } from "@/lib/documents";
 import { generateInvoicePdf } from "@/lib/pdf/invoice";
 import { SAMPLE_LODGE_ENQUIRIES } from "@/lib/data/admin-mock";
@@ -15,8 +19,28 @@ const STATUS_FLOW: EnquiryStatus[] = ["new", "contacted", "confirmed"];
 
 export default function AdminBookingsPage() {
   const [enquiries, setEnquiries] = useState<LodgeEnquiry[]>(SAMPLE_LODGE_ENQUIRIES);
+  const [paymentRefs, setPaymentRefs] = useState<Record<string, string>>({});
+  const [paymentLinks, setPaymentLinks] = useState<Record<string, string>>({});
   const [configured] = useState(() => getSupabaseBrowserClient() !== null);
-  const [generating, setGenerating] = useState<string | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const loadPaymentRefs = () => {
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) return;
+    supabase
+      .from("payment_submissions")
+      .select("payment_reference, lodge_enquiry_id")
+      .eq("enquiry_type", "lodge")
+      .not("payment_status", "in", "(CANCELLED,EXPIRED,REJECTED)")
+      .then(({ data }) => {
+        if (!data) return;
+        const map: Record<string, string> = {};
+        data.forEach((row) => {
+          if (row.lodge_enquiry_id) map[row.lodge_enquiry_id] = row.payment_reference;
+        });
+        setPaymentRefs(map);
+      });
+  };
 
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
@@ -43,6 +67,8 @@ export default function AdminBookingsPage() {
           }))
         );
       });
+
+    loadPaymentRefs();
   }, []);
 
   const advanceStatus = async (id: string) => {
@@ -58,11 +84,68 @@ export default function AdminBookingsPage() {
     await supabase.from("lodge_enquiries").update({ status: next }).eq("id", id);
   };
 
+  const requestPayment = async (enquiry: LodgeEnquiry) => {
+    const supabase = getSupabaseBrowserClient();
+    const block = ROOM_BLOCKS.find((b) => b.id === enquiry.blockId);
+    if (!supabase || !block) return;
+
+    setBusy(enquiry.id);
+
+    const { data: settings } = await supabase.from("payment_settings").select("payment_deadline_hours, room_hold_minutes").eq("id", true).maybeSingle();
+    const holdMinutes = settings?.room_hold_minutes ?? 30;
+
+    const { data: roomId } = await supabase.rpc("hold_room_for_enquiry", {
+      p_block_id: block.id,
+      p_enquiry_id: enquiry.id,
+      p_hold_minutes: holdMinutes,
+    });
+
+    if (!roomId) {
+      setBusy(null);
+      window.alert(`No ${block.name} rooms are free to hold right now.`);
+      return;
+    }
+
+    const reference = generatePaymentReference();
+    const secret = generateAccessSecret();
+    const secretHash = await hashAccessSecret(secret);
+
+    const { error } = await supabase.from("payment_submissions").insert({
+      payment_reference: reference,
+      access_token_hash: secretHash,
+      enquiry_type: "lodge",
+      lodge_enquiry_id: enquiry.id,
+      customer_name: enquiry.name,
+      customer_phone: enquiry.phone,
+      expected_amount: block.ratePerStay,
+      payment_deadline: new Date(Date.now() + holdMinutes * 60 * 1000).toISOString(),
+    });
+
+    setBusy(null);
+    if (!error) {
+      setPaymentRefs((prev) => ({ ...prev, [enquiry.id]: reference }));
+      setPaymentLinks((prev) => ({ ...prev, [enquiry.id]: `${window.location.origin}/pay/${reference}/${secret}` }));
+    }
+  };
+
+  const regenerateLink = async (enquiryId: string, paymentRef: string) => {
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) return;
+    setBusy(enquiryId);
+    const secret = generateAccessSecret();
+    const secretHash = await hashAccessSecret(secret);
+    const { error } = await supabase.from("payment_submissions").update({ access_token_hash: secretHash }).eq("payment_reference", paymentRef);
+    setBusy(null);
+    if (!error) {
+      setPaymentLinks((prev) => ({ ...prev, [enquiryId]: `${window.location.origin}/pay/${paymentRef}/${secret}` }));
+    }
+  };
+
   const generateReceipt = async (enquiry: LodgeEnquiry) => {
     const block = ROOM_BLOCKS.find((b) => b.id === enquiry.blockId);
     if (!block) return;
 
-    setGenerating(enquiry.id);
+    setBusy(enquiry.id);
     const supabase = getSupabaseBrowserClient();
     const items = [
       { description: `${block.displayName}, ${block.stayDurationHours}-hour stay`, quantity: 1, unitPrice: block.ratePerStay },
@@ -81,7 +164,7 @@ export default function AdminBookingsPage() {
         };
 
     generateInvoicePdf(invoice);
-    setGenerating(null);
+    setBusy(null);
   };
 
   return (
@@ -103,6 +186,8 @@ export default function AdminBookingsPage() {
       <div className="flex flex-col gap-3">
         {enquiries.map((enquiry) => {
           const block = ROOM_BLOCKS.find((b) => b.id === enquiry.blockId);
+          const paymentRef = paymentRefs[enquiry.id];
+          const payLink = paymentLinks[enquiry.id];
 
           return (
             <div
@@ -114,6 +199,11 @@ export default function AdminBookingsPage() {
                 <p className="text-sm text-muted-foreground">
                   {block?.name ?? enquiry.blockId ?? "No block chosen"} &middot; {enquiry.checkIn} &middot; {enquiry.guests} guests &middot; {enquiry.phone}
                 </p>
+                {paymentRef && (
+                  <p className="mt-2 text-xs text-dv-pool">
+                    Payment requested: <Link href={`/admin/payments/${paymentRef}`} className="underline">{paymentRef}</Link>
+                  </p>
+                )}
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <StatusBadge status={enquiry.status === "confirmed" ? "confirmed" : "pending"} label={enquiry.status} />
@@ -126,14 +216,42 @@ export default function AdminBookingsPage() {
                     Mark as {STATUS_FLOW[STATUS_FLOW.indexOf(enquiry.status) + 1]}
                   </button>
                 )}
+                {configured && block && !paymentRef && enquiry.status !== "confirmed" && (
+                  <button
+                    type="button"
+                    onClick={() => requestPayment(enquiry)}
+                    disabled={busy === enquiry.id}
+                    className="flex items-center gap-1.5 rounded-full border border-dv-pool px-4 py-2 text-xs font-bold text-dv-pool hover:bg-dv-pool/10 disabled:opacity-60"
+                  >
+                    <CreditCard size={14} /> {busy === enquiry.id ? "Holding room..." : "Request Payment"}
+                  </button>
+                )}
+                {payLink && (
+                  <WhatsAppButton
+                    phone={enquiry.phone.replace(/^0/, "263").replace(/\D/g, "")}
+                    label="Send payment link"
+                    message={`Hi ${enquiry.name}, please complete your payment for Damview Resort here: ${payLink}`}
+                    className="bg-dv-pool text-dv-ivory hover:bg-dv-forest"
+                  />
+                )}
+                {paymentRef && !payLink && enquiry.status !== "confirmed" && (
+                  <button
+                    type="button"
+                    onClick={() => regenerateLink(enquiry.id, paymentRef)}
+                    disabled={busy === enquiry.id}
+                    className="rounded-full border border-dv-pool px-4 py-2 text-xs font-bold text-dv-pool hover:bg-dv-pool/10 disabled:opacity-60"
+                  >
+                    {busy === enquiry.id ? "Generating..." : "Generate new link"}
+                  </button>
+                )}
                 {enquiry.status === "confirmed" && block && (
                   <button
                     type="button"
                     onClick={() => generateReceipt(enquiry)}
-                    disabled={generating === enquiry.id}
-                    className="flex items-center gap-1.5 rounded-full border border-dv-pool px-4 py-2 text-xs font-bold text-dv-pool hover:bg-dv-pool/10 disabled:opacity-60"
+                    disabled={busy === enquiry.id}
+                    className="flex items-center gap-1.5 rounded-full border border-dv-leaf px-4 py-2 text-xs font-bold text-dv-leaf hover:bg-dv-leaf/10 disabled:opacity-60"
                   >
-                    <Receipt size={14} /> {generating === enquiry.id ? "Generating..." : "Generate Receipt"}
+                    <Receipt size={14} /> {busy === enquiry.id ? "Generating..." : "Generate Receipt"}
                   </button>
                 )}
               </div>

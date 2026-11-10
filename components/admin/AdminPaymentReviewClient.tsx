@@ -31,6 +31,7 @@ interface PaymentRow {
   verifiedAt?: string;
   rejectionReason?: string;
   receiptNumber?: string;
+  roomId?: string;
 }
 
 function toBadge(status: PaymentStatus) {
@@ -81,6 +82,11 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
       rejectionReason: data.rejection_reason ?? undefined,
       receiptNumber: data.receipt_number ?? undefined,
     };
+    if (row.enquiryType === "lodge" && row.lodgeEnquiryId) {
+      const { data: lodgeEnquiry } = await supabase.from("lodge_enquiries").select("room_id").eq("id", row.lodgeEnquiryId).maybeSingle();
+      row.roomId = lodgeEnquiry?.room_id ?? undefined;
+    }
+
     setPayment(row);
     setEmailDraft(row.customerEmail ?? "");
 
@@ -207,6 +213,9 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
 
     if (payment.enquiryType === "lodge" && payment.lodgeEnquiryId) {
       await supabase.from("lodge_enquiries").update({ status: "confirmed" }).eq("id", payment.lodgeEnquiryId);
+      if (payment.roomId) {
+        await supabase.rpc("confirm_room_booking", { p_room_id: payment.roomId });
+      }
     } else if (payment.enquiryType === "event" && payment.eventEnquiryId) {
       await supabase.from("event_enquiries").update({ status: "confirmed" }).eq("id", payment.eventEnquiryId);
     }
@@ -237,6 +246,10 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
         rejection_reason: rejectionReason.trim(),
       })
       .eq("id", payment.id);
+
+    if (payment.enquiryType === "lodge" && payment.roomId) {
+      await supabase.rpc("release_room_hold", { p_room_id: payment.roomId });
+    }
 
     await logAction(payment.paymentStatus, "REJECTED", "rejected", rejectionReason.trim());
     setBusy(false);

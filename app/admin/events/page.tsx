@@ -1,10 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileText, Receipt } from "lucide-react";
+import Link from "next/link";
+import { CreditCard, FileText, Receipt } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
+import { generatePaymentReference } from "@/lib/payments/reference";
+import { generateAccessSecret, hashAccessSecret } from "@/lib/payments/token";
 import { recordDocument } from "@/lib/documents";
 import { generateInvoicePdf } from "@/lib/pdf/invoice";
 import { SAMPLE_EVENT_ENQUIRIES } from "@/lib/data/admin-mock";
@@ -21,8 +25,28 @@ function badgeStatus(status: EnquiryStatus) {
 export default function AdminEventsPage() {
   const [enquiries, setEnquiries] = useState<EventEnquiry[]>(SAMPLE_EVENT_ENQUIRIES);
   const [quoteDrafts, setQuoteDrafts] = useState<Record<string, string>>({});
+  const [paymentRefs, setPaymentRefs] = useState<Record<string, string>>({});
+  const [paymentLinks, setPaymentLinks] = useState<Record<string, string>>({});
   const [configured] = useState(() => getSupabaseBrowserClient() !== null);
   const [generating, setGenerating] = useState<string | null>(null);
+
+  const loadPaymentRefs = () => {
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) return;
+    supabase
+      .from("payment_submissions")
+      .select("payment_reference, event_enquiry_id")
+      .eq("enquiry_type", "event")
+      .not("payment_status", "in", "(CANCELLED,EXPIRED,REJECTED)")
+      .then(({ data }) => {
+        if (!data) return;
+        const map: Record<string, string> = {};
+        data.forEach((row) => {
+          if (row.event_enquiry_id) map[row.event_enquiry_id] = row.payment_reference;
+        });
+        setPaymentRefs(map);
+      });
+  };
 
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
@@ -53,6 +77,8 @@ export default function AdminEventsPage() {
           }))
         );
       });
+
+    loadPaymentRefs();
   }, []);
 
   const updateStatus = async (id: string, status: EnquiryStatus) => {
@@ -72,6 +98,36 @@ export default function AdminEventsPage() {
     const supabase = getSupabaseBrowserClient();
     if (!supabase) return;
     await supabase.from("event_enquiries").update({ quoted_amount: amount }).eq("id", id);
+  };
+
+  const requestPayment = async (enquiry: EventEnquiry) => {
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase || !enquiry.quotedAmount) return;
+
+    setGenerating(enquiry.id);
+
+    const { data: settings } = await supabase.from("payment_settings").select("payment_deadline_hours").eq("id", true).maybeSingle();
+    const deadlineHours = settings?.payment_deadline_hours ?? 2;
+    const reference = generatePaymentReference();
+    const secret = generateAccessSecret();
+    const secretHash = await hashAccessSecret(secret);
+
+    const { error } = await supabase.from("payment_submissions").insert({
+      payment_reference: reference,
+      access_token_hash: secretHash,
+      enquiry_type: "event",
+      event_enquiry_id: enquiry.id,
+      customer_name: enquiry.name,
+      customer_phone: enquiry.phone,
+      expected_amount: enquiry.quotedAmount,
+      payment_deadline: new Date(Date.now() + deadlineHours * 60 * 60 * 1000).toISOString(),
+    });
+
+    setGenerating(null);
+    if (!error) {
+      setPaymentRefs((prev) => ({ ...prev, [enquiry.id]: reference }));
+      setPaymentLinks((prev) => ({ ...prev, [enquiry.id]: `${window.location.origin}/pay/${reference}/${secret}` }));
+    }
   };
 
   const generateDocument = async (enquiry: EventEnquiry, documentType: "Quotation" | "Receipt") => {
@@ -122,7 +178,10 @@ export default function AdminEventsPage() {
       )}
 
       <div className="flex flex-col gap-3">
-        {enquiries.map((enquiry) => (
+        {enquiries.map((enquiry) => {
+          const paymentRef = paymentRefs[enquiry.id];
+          const payLink = paymentLinks[enquiry.id];
+          return (
           <div key={enquiry.id} className="rounded-2xl border border-border bg-background p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
@@ -197,6 +256,29 @@ export default function AdminEventsPage() {
                   >
                     <FileText size={14} /> Generate Quotation
                   </button>
+                  {!paymentRef && enquiry.status !== "confirmed" && (
+                    <button
+                      type="button"
+                      onClick={() => requestPayment(enquiry)}
+                      disabled={generating === enquiry.id}
+                      className="flex items-center gap-1.5 rounded-full border border-dv-pool px-4 py-2 text-xs font-bold text-dv-pool hover:bg-dv-pool/10 disabled:opacity-60"
+                    >
+                      <CreditCard size={14} /> Request Payment
+                    </button>
+                  )}
+                  {paymentRef && (
+                    <p className="text-xs text-dv-pool">
+                      Payment requested: <Link href={`/admin/payments/${paymentRef}`} className="underline">{paymentRef}</Link>
+                    </p>
+                  )}
+                  {payLink && (
+                    <WhatsAppButton
+                      phone={enquiry.phone.replace(/^0/, "263").replace(/\D/g, "")}
+                      label="Send payment link"
+                      message={`Hi ${enquiry.name}, please complete your payment for your Damview Resort event here: ${payLink}`}
+                      className="bg-dv-pool text-dv-ivory hover:bg-dv-forest"
+                    />
+                  )}
                   {enquiry.status === "confirmed" && (
                     <button
                       type="button"
@@ -211,7 +293,8 @@ export default function AdminEventsPage() {
               )}
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </AdminShell>
   );

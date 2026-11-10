@@ -16,6 +16,7 @@ interface RoomRow {
 
 const NEXT_STATUS: Record<RoomStatus, RoomStatus> = {
   available: "booked",
+  held: "available", // staff tap releases a held room early
   booked: "maintenance",
   maintenance: "available",
 };
@@ -34,6 +35,17 @@ export default function AdminRoomsPage() {
     const supabase = getSupabaseBrowserClient();
     if (!supabase) return;
 
+    supabase.rpc("release_expired_holds").then(() => {
+      supabase
+        .from("rooms")
+        .select("id, block_id, number, status")
+        .order("number")
+        .then(({ data, error }) => {
+          if (error || !data) return;
+          setRooms(data.map((row) => ({ id: row.id, blockId: row.block_id, number: row.number, status: row.status as RoomStatus })));
+        });
+    });
+
     supabase
       .from("room_blocks")
       .select("id, name, display_name, rate_per_stay, stay_duration_hours")
@@ -50,15 +62,6 @@ export default function AdminRoomsPage() {
             roomNumbers: prev.find((b) => b.id === row.id)?.roomNumbers ?? [],
           }))
         );
-      });
-
-    supabase
-      .from("rooms")
-      .select("id, block_id, number, status")
-      .order("number")
-      .then(({ data, error }) => {
-        if (error || !data) return;
-        setRooms(data.map((row) => ({ id: row.id, blockId: row.block_id, number: row.number, status: row.status as RoomStatus })));
       });
   }, []);
 
@@ -91,7 +94,11 @@ export default function AdminRoomsPage() {
         </div>
       )}
 
-      <p className="mb-6 text-sm text-muted-foreground">Tap a room to cycle its status. Edit a block&apos;s rate below.</p>
+      <p className="mb-6 text-sm text-muted-foreground">
+        Tap a room to cycle its status. &quot;Held&quot; rooms are holding a spot for a guest who&apos;s
+        mid-payment and release automatically if they don&apos;t finish in time - tap one to release it
+        early. Edit a block&apos;s rate below.
+      </p>
 
       {blocks.map((block) => (
         <div key={block.id} className="mb-8">

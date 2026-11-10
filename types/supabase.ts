@@ -399,6 +399,7 @@ export type Database = {
       lodge_enquiries: {
         Row: {
           block_id: string | null
+          booking_reference: string | null
           check_in: string
           created_at: string
           customer_id: string | null
@@ -408,10 +409,12 @@ export type Database = {
           message: string | null
           name: string
           phone: string
+          room_id: string | null
           status: string
         }
         Insert: {
           block_id?: string | null
+          booking_reference?: string | null
           check_in: string
           created_at?: string
           customer_id?: string | null
@@ -421,10 +424,12 @@ export type Database = {
           message?: string | null
           name: string
           phone: string
+          room_id?: string | null
           status?: string
         }
         Update: {
           block_id?: string | null
+          booking_reference?: string | null
           check_in?: string
           created_at?: string
           customer_id?: string | null
@@ -434,6 +439,7 @@ export type Database = {
           message?: string | null
           name?: string
           phone?: string
+          room_id?: string | null
           status?: string
         }
         Relationships: [
@@ -449,6 +455,13 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lodge_enquiries_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
             referencedColumns: ["id"]
           },
         ]
@@ -555,6 +568,7 @@ export type Database = {
           merchant_instructions: string
           merchant_name: string
           payment_deadline_hours: number
+          room_hold_minutes: number
           updated_at: string
           upload_max_mb: number
         }
@@ -565,6 +579,7 @@ export type Database = {
           merchant_instructions?: string
           merchant_name?: string
           payment_deadline_hours?: number
+          room_hold_minutes?: number
           updated_at?: string
           upload_max_mb?: number
         }
@@ -575,6 +590,7 @@ export type Database = {
           merchant_instructions?: string
           merchant_name?: string
           payment_deadline_hours?: number
+          room_hold_minutes?: number
           updated_at?: string
           upload_max_mb?: number
         }
@@ -725,18 +741,24 @@ export type Database = {
       rooms: {
         Row: {
           block_id: string
+          held_by_enquiry_id: string | null
+          hold_expires_at: string | null
           id: string
           number: string
           status: string
         }
         Insert: {
           block_id: string
+          held_by_enquiry_id?: string | null
+          hold_expires_at?: string | null
           id: string
           number: string
           status?: string
         }
         Update: {
           block_id?: string
+          held_by_enquiry_id?: string | null
+          hold_expires_at?: string | null
           id?: string
           number?: string
           status?: string
@@ -747,6 +769,13 @@ export type Database = {
             columns: ["block_id"]
             isOneToOne: false
             referencedRelation: "room_blocks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rooms_held_by_enquiry_id_fkey"
+            columns: ["held_by_enquiry_id"]
+            isOneToOne: false
+            referencedRelation: "lodge_enquiries"
             referencedColumns: ["id"]
           },
         ]
@@ -781,6 +810,13 @@ export type Database = {
     }
     Functions: {
       is_staff_admin: { Args: never; Returns: boolean }
+      hold_room_for_enquiry: {
+        Args: { p_block_id: string; p_enquiry_id: string; p_hold_minutes?: number }
+        Returns: string
+      }
+      confirm_room_booking: { Args: { p_room_id: string }; Returns: undefined }
+      release_room_hold: { Args: { p_room_id: string }; Returns: undefined }
+      release_expired_holds: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

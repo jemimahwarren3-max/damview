@@ -1,6 +1,6 @@
 import type { EnquiryBase } from "./enquiry";
 
-export type RoomStatus = "available" | "booked" | "maintenance";
+export type RoomStatus = "available" | "held" | "booked" | "maintenance";
 
 export interface RoomBlock {
   id: string;
