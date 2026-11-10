@@ -9,11 +9,6 @@ import {
   Clock,
   Navigation,
   CalendarCheck,
-  Waves,
-  Compass,
-  PartyPopper,
-  UtensilsCrossed,
-  Bike,
 } from "lucide-react";
 import { Container } from "@/components/shared/Container";
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
@@ -34,7 +29,7 @@ const EXPERIENCES = [
     no: "01",
     title: "Relax",
     copy: "Swimming, peaceful outdoor spaces, comfortable lodges and time away from everyday routines.",
-    icon: Waves,
+    img: "https://images.pexels.com/photos/6821435/pexels-photo-6821435.jpeg?auto=compress&cs=tinysrgb&w=1100",
     href: "/accommodation",
     span: "lg:col-span-7 lg:row-span-2",
     h: "h-[26rem] lg:h-full",
@@ -43,7 +38,7 @@ const EXPERIENCES = [
     no: "02",
     title: "Explore",
     copy: "Boat cruises, pedal boats, quad bikes and outdoor activities on and off the water.",
-    icon: Compass,
+    img: "https://images.pexels.com/photos/36593940/pexels-photo-36593940.jpeg?auto=compress&cs=tinysrgb&w=1100",
     href: "/activities",
     span: "lg:col-span-5",
     h: "h-72 lg:h-80",
@@ -52,12 +47,17 @@ const EXPERIENCES = [
     no: "03",
     title: "Celebrate",
     copy: "Good food, drinks, entertainment and memorable occasions with friends and family.",
-    icon: PartyPopper,
+    img: "https://images.pexels.com/photos/35516036/pexels-photo-35516036.jpeg?auto=compress&cs=tinysrgb&w=1100",
     href: "/events",
     span: "lg:col-span-5",
     h: "h-72 lg:h-80",
   },
 ] as const;
+
+const DINING_SHOTS = [
+  "https://images.pexels.com/photos/37238864/pexels-photo-37238864.jpeg?auto=compress&cs=tinysrgb&w=900",
+  "https://images.pexels.com/photos/4078164/pexels-photo-4078164.jpeg?auto=compress&cs=tinysrgb&w=900",
+];
 
 const ROOM_SHOTS = [
   "/images/accommodation/real/room-3.jpg",
@@ -65,7 +65,11 @@ const ROOM_SHOTS = [
   "/images/accommodation/real/room-4.jpg",
 ];
 
-const ACTIVITY_LABELS = ["Quad bikes", "Horse riding", "Zip line"];
+const ACTIVITY_SHOTS = [
+  { img: "https://images.pexels.com/photos/15490742/pexels-photo-15490742.jpeg?auto=compress&cs=tinysrgb&w=1100", label: "Quad bikes" },
+  { img: "https://images.pexels.com/photos/38492716/pexels-photo-38492716.jpeg?auto=compress&cs=tinysrgb&w=1100", label: "Horse riding" },
+  { img: "https://images.pexels.com/photos/28263612/pexels-photo-28263612.jpeg?auto=compress&cs=tinysrgb&w=1100", label: "Zip line" },
+];
 
 // Only real Damview photography we have right now - more to follow as it's taken.
 const REAL_GALLERY = [
@@ -216,7 +220,7 @@ export default async function HomePage() {
                 href={exp.href}
                 className={`reveal group relative overflow-hidden rounded-sm bg-green-800 ${exp.span} ${exp.h}`}
               >
-                <exp.icon className="absolute -right-6 -top-6 text-green-700/60 transition-transform duration-[1.3s] ease-out group-hover:scale-110" size={160} strokeWidth={1} />
+                <Image src={exp.img} alt={exp.title} fill className="object-cover transition-transform duration-[1.3s] ease-out group-hover:scale-110" />
                 <div className="absolute inset-0 bg-gradient-to-t from-green-900/90 via-green-900/30 to-transparent" />
                 <div className="relative flex h-full flex-col justify-end p-7 lg:p-8">
                   <span className="mb-2 font-serif text-sm font-light tracking-widest text-cream-100/70">{exp.no}</span>
@@ -282,8 +286,12 @@ export default async function HomePage() {
         <Container>
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="order-2 lg:order-1 lg:col-span-7">
-              <div className="reveal flex h-64 items-center justify-center rounded-sm bg-green-900 sm:h-80">
-                <UtensilsCrossed className="text-green-700" size={88} strokeWidth={1} />
+              <div className="grid grid-cols-2 gap-4">
+                {DINING_SHOTS.map((src, i) => (
+                  <div key={src} className={`reveal reveal-delay-${i + 1} overflow-hidden rounded-sm`}>
+                    <Image src={src} alt="Food and drinks" width={700} height={560} className="h-64 w-full object-cover transition-transform duration-[1.2s] hover:scale-105" />
+                  </div>
+                ))}
               </div>
             </div>
             <div className="order-1 lg:order-2 lg:col-span-5">
@@ -337,10 +345,11 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {ACTIVITY_LABELS.map((label, i) => (
-              <div key={label} className={`reveal reveal-delay-${i + 1} group relative flex h-72 flex-col justify-end overflow-hidden rounded-sm bg-green-800 p-5`}>
-                <Bike className="absolute -right-4 -top-4 text-green-700/60 transition-transform duration-[1.3s] ease-out group-hover:scale-110" size={120} strokeWidth={1} />
-                <span className="relative font-serif text-xl text-cream-50">{label}</span>
+            {ACTIVITY_SHOTS.map((activity, i) => (
+              <div key={activity.label} className={`reveal reveal-delay-${i + 1} group relative h-72 overflow-hidden rounded-sm`}>
+                <Image src={activity.img} alt={activity.label} fill className="object-cover transition-transform duration-[1.3s] ease-out group-hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-t from-green-900/80 via-green-900/10 to-transparent" />
+                <span className="absolute bottom-5 left-5 font-serif text-xl text-cream-50">{activity.label}</span>
               </div>
             ))}
           </div>
@@ -348,8 +357,14 @@ export default async function HomePage() {
       </section>
 
       {/* Events */}
-      <section id="events" className="relative overflow-hidden bg-green-900 py-24 lg:py-36">
-        <PartyPopper className="absolute -right-10 -top-10 text-green-800" size={320} strokeWidth={0.75} />
+      <section id="events" className="relative py-24 lg:py-36">
+        <Image
+          src="https://images.pexels.com/photos/35516036/pexels-photo-35516036.jpeg?auto=compress&cs=tinysrgb&w=1600"
+          alt="A celebration"
+          fill
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-green-900/80" />
         <Container className="relative flex flex-col items-center gap-5 text-center">
           <div className="reveal mb-1 flex items-center gap-3">
             <span className="h-px w-10 bg-sunset-500" />
@@ -417,7 +432,15 @@ export default async function HomePage() {
 
       {/* Location & final CTA */}
       <section id="contact" className="relative overflow-hidden bg-green-900">
-        <div className="absolute inset-0 bg-gradient-to-b from-green-900 via-green-900/95 to-black" />
+        <div className="absolute inset-0">
+          <Image
+            src="https://images.pexels.com/photos/1502311/pexels-photo-1502311.jpeg?auto=compress&cs=tinysrgb&w=1600"
+            alt="Warm countryside atmosphere"
+            fill
+            className="object-cover opacity-25"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-green-900/80 via-green-900/70 to-green-900/90" />
+        </div>
 
         <Container className="relative py-24 lg:py-36">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-20">
@@ -493,6 +516,18 @@ export default async function HomePage() {
                 </ul>
               </div>
             </div>
+          </div>
+
+          <div className="reveal mt-12 overflow-hidden rounded-sm border border-cream-50/15">
+            <iframe
+              title="Damview Resort on Google Maps"
+              src={`https://www.google.com/maps?q=${encodeURIComponent(LOCATION)}&output=embed`}
+              width="100%"
+              height="320"
+              style={{ border: 0 }}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
           </div>
         </Container>
       </section>

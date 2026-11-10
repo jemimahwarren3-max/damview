@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,6 +9,7 @@ import { CONTACT_NUMBERS } from "@/lib/constants";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { upsertCustomerByPhone } from "@/lib/customers";
+import { generatePaymentReference } from "@/lib/payments/reference";
 import type { EventType } from "@/types";
 
 const EVENT_TYPE_OPTIONS: { value: EventType; label: string }[] = [
@@ -36,6 +38,7 @@ type FormInput = z.input<typeof schema>;
 type FormOutput = z.output<typeof schema>;
 
 export function EventEnquiryForm() {
+  const [bookingReference, setBookingReference] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -49,24 +52,12 @@ export function EventEnquiryForm() {
     const eventTypeLabel =
       EVENT_TYPE_OPTIONS.find((option) => option.value === values.eventType)?.label ?? values.eventType;
 
-    const lines = [
-      "Hi, I'd like a quotation for an event at Damview Resort.",
-      `Name: ${values.name}`,
-      `Phone: ${values.phone}`,
-      `Event type: ${eventTypeLabel}`,
-      `Proposed date: ${values.proposedDate}`,
-      `Expected guests: ${values.expectedGuests}`,
-      values.facilitiesRequired ? `Facilities required: ${values.facilitiesRequired}` : null,
-      `Catering required: ${values.cateringRequired ? "Yes" : "No"}`,
-      `Accommodation required: ${values.accommodationRequired ? "Yes" : "No"}`,
-      values.additionalInfo ? `Additional info: ${values.additionalInfo}` : null,
-    ].filter(Boolean);
-
     try {
       const supabase = getSupabaseClient();
       if (supabase) {
         const customerId = await upsertCustomerByPhone(supabase, { fullName: values.name, phone: values.phone });
-        await supabase.from("event_enquiries").insert({
+        const bookingRef = generatePaymentReference();
+        const { error } = await supabase.from("event_enquiries").insert({
           name: values.name,
           phone: values.phone,
           customer_id: customerId,
@@ -79,12 +70,26 @@ export function EventEnquiryForm() {
           catering_required: values.cateringRequired,
           accommodation_required: values.accommodationRequired,
           message: values.additionalInfo || null,
+          booking_reference: bookingRef,
         });
+        if (!error) setBookingReference(bookingRef);
       }
     } catch {
       // Don't block the enquiry on a database hiccup — WhatsApp still goes through below.
     }
 
+    const lines = [
+      "Hi, I'd like a quotation for an event at Damview Resort.",
+      `Name: ${values.name}`,
+      `Phone: ${values.phone}`,
+      `Event type: ${eventTypeLabel}`,
+      `Proposed date: ${values.proposedDate}`,
+      `Expected guests: ${values.expectedGuests}`,
+      values.facilitiesRequired ? `Facilities required: ${values.facilitiesRequired}` : null,
+      `Catering required: ${values.cateringRequired ? "Yes" : "No"}`,
+      `Accommodation required: ${values.accommodationRequired ? "Yes" : "No"}`,
+      values.additionalInfo ? `Additional info: ${values.additionalInfo}` : null,
+    ].filter(Boolean);
     window.open(buildWhatsAppUrl(CONTACT_NUMBERS.primary, lines.join("\n")), "_blank", "noopener,noreferrer");
   };
 
@@ -147,6 +152,12 @@ export function EventEnquiryForm() {
       <span className="text-xs text-muted-foreground">
         This sends an enquiry for a custom quotation, not a confirmed booking.
       </span>
+      {bookingReference && (
+        <p className="rounded-lg bg-dv-sunshine/20 px-3 py-2 text-sm text-dv-black">
+          Your booking reference is <strong>{bookingReference}</strong> - save it, you can check
+          your status anytime in the Guest Centre.
+        </p>
+      )}
     </form>
   );
 }

@@ -9,6 +9,8 @@
 --    is callable by anon - everything else becomes authenticated (staff) only.
 -- 4. Adds atomic, race-free document numbering (document_counters + next_document_number()).
 -- 5. Adds activity_enquiries.price_amount so activity revenue can actually be reported.
+-- 7. Adds event_enquiries.booking_reference so the Guest Centre can look up event
+--    bookings too, same as accommodation bookings already can.
 --
 -- Safe to run once. All statements are idempotent (create-or-replace / if-not-exists).
 
@@ -143,3 +145,9 @@ alter table activity_enquiries add column if not exists price_amount numeric;
 create unique index if not exists payment_submissions_ecocash_transaction_reference_idx
   on payment_submissions (ecocash_transaction_reference)
   where ecocash_transaction_reference is not null;
+
+-- 7. Event bookings get the same booking_reference lookup lodge bookings already have
+alter table event_enquiries add column if not exists booking_reference text;
+create unique index if not exists event_enquiries_booking_reference_idx
+  on event_enquiries (booking_reference)
+  where booking_reference is not null;

@@ -22,37 +22,67 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Please enter your booking reference and phone number." }, { status: 400 });
   }
 
-  const { data: enquiry } = await supabase
+  const { data: lodgeEnquiry } = await supabase
     .from("lodge_enquiries")
     .select("id, name, phone, status, check_in, guests, block_id, room_id")
     .eq("booking_reference", bookingReference)
     .maybeSingle();
 
-  if (!enquiry || normalizePhone(enquiry.phone) !== phone) {
-    return NextResponse.json({ error: "We couldn't find a booking matching that reference and phone number." }, { status: 404 });
+  if (lodgeEnquiry && normalizePhone(lodgeEnquiry.phone) === phone) {
+    const { data: block } = lodgeEnquiry.block_id
+      ? await supabase.from("room_blocks").select("display_name").eq("id", lodgeEnquiry.block_id).maybeSingle()
+      : { data: null };
+
+    const { data: payment } = await supabase
+      .from("payment_submissions")
+      .select("payment_reference, payment_status, receipt_number")
+      .eq("lodge_enquiry_id", lodgeEnquiry.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    return NextResponse.json({
+      type: "lodge",
+      name: lodgeEnquiry.name,
+      detailLabel: "Room type",
+      detailValue: block?.display_name ?? "Not yet assigned",
+      checkIn: lodgeEnquiry.check_in,
+      guests: lodgeEnquiry.guests,
+      status: lodgeEnquiry.status,
+      payment: payment
+        ? { reference: payment.payment_reference, status: payment.payment_status, receiptNumber: payment.receipt_number }
+        : null,
+    });
   }
 
-  const { data: block } = enquiry.block_id
-    ? await supabase.from("room_blocks").select("display_name").eq("id", enquiry.block_id).maybeSingle()
-    : { data: null };
-
-  const { data: payment } = await supabase
-    .from("payment_submissions")
-    .select("payment_reference, payment_status, receipt_number")
-    .eq("lodge_enquiry_id", enquiry.id)
-    .order("created_at", { ascending: false })
-    .limit(1)
+  const { data: eventEnquiry } = await supabase
+    .from("event_enquiries")
+    .select("id, name, phone, status, proposed_date, expected_guests, event_type")
+    .eq("booking_reference", bookingReference)
     .maybeSingle();
 
-  return NextResponse.json({
-    name: enquiry.name,
-    blockName: block?.display_name ?? null,
-    checkIn: enquiry.check_in,
-    guests: enquiry.guests,
-    status: enquiry.status,
-    roomAssigned: Boolean(enquiry.room_id),
-    payment: payment
-      ? { reference: payment.payment_reference, status: payment.payment_status, receiptNumber: payment.receipt_number }
-      : null,
-  });
+  if (eventEnquiry && normalizePhone(eventEnquiry.phone) === phone) {
+    const { data: payment } = await supabase
+      .from("payment_submissions")
+      .select("payment_reference, payment_status, receipt_number")
+      .eq("event_enquiry_id", eventEnquiry.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    return NextResponse.json({
+      type: "event",
+      name: eventEnquiry.name,
+      detailLabel: "Event type",
+      detailValue: eventEnquiry.event_type.replace("_", " "),
+      checkIn: eventEnquiry.proposed_date,
+      guests: eventEnquiry.expected_guests,
+      status: eventEnquiry.status,
+      payment: payment
+        ? { reference: payment.payment_reference, status: payment.payment_status, receiptNumber: payment.receipt_number }
+        : null,
+    });
+  }
+
+  return NextResponse.json({ error: "We couldn't find a booking matching that reference and phone number." }, { status: 404 });
 }

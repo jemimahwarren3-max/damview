@@ -223,6 +223,7 @@ export type Database = {
       event_enquiries: {
         Row: {
           accommodation_required: boolean
+          booking_reference: string | null
           catering_required: boolean
           created_at: string
           customer_id: string | null
@@ -240,6 +241,7 @@ export type Database = {
         }
         Insert: {
           accommodation_required?: boolean
+          booking_reference?: string | null
           catering_required?: boolean
           created_at?: string
           customer_id?: string | null
@@ -257,6 +259,7 @@ export type Database = {
         }
         Update: {
           accommodation_required?: boolean
+          booking_reference?: string | null
           catering_required?: boolean
           created_at?: string
           customer_id?: string | null

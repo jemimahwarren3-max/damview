@@ -7,12 +7,13 @@ import { SectionHeading } from "@/components/shared/SectionHeading";
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 
 interface GuestCentreResult {
+  type: "lodge" | "event";
   name: string;
-  blockName: string | null;
+  detailLabel: string;
+  detailValue: string;
   checkIn: string;
   guests: number;
   status: string;
-  roomAssigned: boolean;
   payment: { reference: string; status: string; receiptNumber: string | null } | null;
 }
 
@@ -67,7 +68,7 @@ export default function GuestCentrePage() {
         <SectionHeading
           eyebrow="Guest Centre"
           title="Check your booking."
-          subtitle="Lost your payment link, or just want an update? Enter your booking reference and the phone number you booked with."
+          subtitle="Lost your payment link, or just want an update on an accommodation or event booking? Enter your booking reference and the phone number you booked with."
         />
 
         <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-4 rounded-2xl border border-border bg-background p-6">
@@ -107,11 +108,11 @@ export default function GuestCentrePage() {
               <span className="text-sm font-bold text-dv-forest">{STATUS_LABELS[result.status] ?? result.status}</span>
             </div>
             <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
-              <span className="text-sm text-muted-foreground">Room type</span>
-              <span className="text-sm font-medium">{result.blockName ?? "Not yet assigned"}</span>
+              <span className="text-sm text-muted-foreground">{result.detailLabel}</span>
+              <span className="text-sm font-medium capitalize">{result.detailValue}</span>
             </div>
             <div className="mt-3 flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Check-in</span>
+              <span className="text-sm text-muted-foreground">{result.type === "lodge" ? "Check-in" : "Proposed date"}</span>
               <span className="text-sm font-medium">{result.checkIn} &middot; {result.guests} guests</span>
             </div>
             {result.payment && (
