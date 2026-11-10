@@ -157,7 +157,7 @@ export default async function HomePage() {
                 {[
                   ["24/7", "Open every day"],
                   ["6+", "Outdoor activities"],
-                  ["32", "Rooms to stay in"],
+                  ["4", "Accommodation blocks"],
                 ].map(([n, l]) => (
                   <div key={l}>
                     <div className="font-serif text-3xl font-medium text-green-800">{n}</div>
@@ -252,11 +252,12 @@ export default async function HomePage() {
                 </span>
               </div>
               <h2 className="reveal reveal-delay-1 font-serif text-3xl font-light leading-[1.12] text-green-900 text-balance sm:text-4xl lg:text-[2.9rem]">
-                Stay a little longer.
+                Find Your Stay.
               </h2>
               <p className="reveal reveal-delay-2 mt-6 text-[1.02rem] leading-[1.75] text-charcoal/75">
-                32 rooms, from ${Math.min(...roomBlocks.map((b) => b.ratePerStay))} a stay or ${LODGE_HOURLY_RATE} an
-                hour. A welcoming place to unwind, whether it&apos;s a short break or an overnight visit.
+                From ${Math.min(...roomBlocks.map((b) => b.ratePerStay))} a stay or ${LODGE_HOURLY_RATE} an hour,
+                across our A, B, F and R blocks. A welcoming place to unwind, whether it&apos;s a short
+                break or an overnight visit.
               </p>
               <Link
                 href="/accommodation"
@@ -372,13 +373,17 @@ export default async function HomePage() {
           <div className="reveal mb-1 flex items-center gap-3">
             <span className="h-px w-10 bg-sunset-500" />
             <span className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-cream-100/70">
-              Events &amp; Functions
+              Events &amp; Celebrations
             </span>
             <span className="h-px w-10 bg-sunset-500" />
           </div>
           <h2 className="reveal reveal-delay-1 font-serif text-3xl font-light text-cream-50 text-balance sm:text-4xl">
-            Bring your people, we&apos;ll bring the setting.
+            Damview isn&apos;t just a place to visit. It&apos;s a place to celebrate.
           </h2>
+          <p className="reveal reveal-delay-2 max-w-md text-sm leading-relaxed text-cream-100/80">
+            Our pool, gazebos, bars and open grounds set the scene for your celebration, grounded
+            in what Damview actually offers.
+          </p>
           <div className="reveal reveal-delay-2 flex flex-wrap justify-center gap-2">
             {EVENT_CATEGORIES.map((category) => (
               <span key={category} className="rounded-full border border-cream-50/35 px-4 py-1.5 text-sm text-cream-50">
@@ -390,7 +395,7 @@ export default async function HomePage() {
             href="/events"
             className="reveal reveal-delay-3 mt-3 inline-flex items-center gap-2 rounded-full bg-cream-50 px-7 py-3.5 text-sm font-semibold text-green-900 transition-all duration-300 hover:bg-white hover:shadow-xl"
           >
-            Enquire About Your Event <ArrowUpRight size={16} />
+            Plan Your Event <ArrowUpRight size={16} />
           </Link>
         </Container>
       </section>

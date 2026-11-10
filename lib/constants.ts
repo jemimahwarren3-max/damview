@@ -25,7 +25,7 @@ export const WEBSITE_NAV = [
   { label: "Restaurant", href: "/restaurant" },
   { label: "Damside", href: "/damside" },
   { label: "Activities", href: "/activities" },
-  { label: "Events", href: "/events" },
+  { label: "Events & Celebrations", href: "/events" },
   { label: "Gallery", href: "/gallery" },
   { label: "Contact", href: "/contact" },
 ] as const;
@@ -33,7 +33,7 @@ export const WEBSITE_NAV = [
 export const HOME_FACILITIES = [
   {
     title: "Accommodation & Lodges",
-    description: "32 rooms in a range of styles, from $25 per 12-hour stay or $5 per hour.",
+    description: "A range of room styles, from $25 per 12-hour stay or $5 per hour.",
     href: "/accommodation",
     image: "https://images.pexels.com/photos/33613748/pexels-photo-33613748.jpeg?auto=compress&cs=tinysrgb&w=800",
   },
@@ -64,11 +64,12 @@ export const HOME_FACILITIES = [
 ] as const;
 
 export const EVENT_CATEGORIES = [
-  "Weddings",
   "Birthdays",
+  "Graduations",
+  "Family gatherings",
   "Private parties",
-  "Corporate functions",
-  "Conferences",
+  "Corporate & group events",
+  "Weddings",
 ] as const;
 
 export const GALLERY_PREVIEW = [

@@ -12,7 +12,7 @@ import { SITE_NAME, LODGE_HOURLY_RATE } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: `Accommodation & Lodges, ${SITE_NAME}`,
-  description: "32 comfortable rooms at Damview Resort, Chitungwiza.",
+  description: "Comfortable accommodation at Damview Resort, Chitungwiza.",
 };
 
 export default async function AccommodationPage() {
@@ -22,7 +22,7 @@ export default async function AccommodationPage() {
     <>
       <PageHero
         eyebrow="Accommodation & Lodges"
-        title="32 rooms, simple and comfortable."
+        title="Find Your Stay."
         subtitle="For a proper break from the everyday."
         image={ROOM_IMAGE}
       />
@@ -31,7 +31,7 @@ export default async function AccommodationPage() {
         <Container>
           <SectionHeading
             eyebrow="Our Lodges"
-            title="Choose your room."
+            title="Choose your block."
             subtitle={`Day rates are per 12-hour stay. An hourly rate of $${LODGE_HOURLY_RATE} is also available.`}
           />
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -44,7 +44,7 @@ export default async function AccommodationPage() {
                 <div>
                   <h3 className="font-serif text-xl text-dv-forest">{block.displayName}</h3>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {block.roomNumbers.length} rooms · {block.stayDurationHours}-hour stay
+                    {block.name} &middot; {block.stayDurationHours}-hour stay
                   </p>
                   <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-dv-pool">
                     View details <ArrowRight size={12} />

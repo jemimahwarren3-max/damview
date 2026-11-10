@@ -7,22 +7,22 @@ import { EventEnquiryForm } from "@/components/booking/EventEnquiryForm";
 import { EVENT_CATEGORIES, SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: `Events & Functions, ${SITE_NAME}`,
-  description: "Weddings, birthdays, private parties and corporate functions at Damview Resort.",
+  title: `Events & Celebrations, ${SITE_NAME}`,
+  description: "Birthdays, family gatherings, private parties and more at Damview Resort.",
 };
 
 const SHOWCASE = [
   {
-    image: "https://images.pexels.com/photos/35516036/pexels-photo-35516036.jpeg?auto=compress&cs=tinysrgb&w=900",
-    caption: "Weddings",
-  },
-  {
     image: "https://images.pexels.com/photos/14988950/pexels-photo-14988950.jpeg?auto=compress&cs=tinysrgb&w=900",
-    caption: "Celebrations",
+    caption: "Birthdays & Celebrations",
   },
   {
     image: "https://images.pexels.com/photos/30049861/pexels-photo-30049861.jpeg?auto=compress&cs=tinysrgb&w=900",
-    caption: "Private functions",
+    caption: "Family Gatherings",
+  },
+  {
+    image: "https://images.pexels.com/photos/35516036/pexels-photo-35516036.jpeg?auto=compress&cs=tinysrgb&w=900",
+    caption: "Private Functions",
   },
 ];
 
@@ -30,9 +30,9 @@ export default function EventsPage() {
   return (
     <>
       <PageHero
-        eyebrow="Events & Functions"
-        title="Bring your people, we'll bring the setting."
-        subtitle="Weddings, birthdays, private parties, family gatherings, corporate functions and conferences."
+        eyebrow="Events & Celebrations"
+        title="Damview isn't just a place to visit. It's a place to celebrate."
+        subtitle="Birthdays, graduations, family gatherings, private parties, corporate get-togethers and weddings, set against our pool, gazebos and open grounds."
         image="https://images.pexels.com/photos/35516036/pexels-photo-35516036.jpeg?auto=compress&cs=tinysrgb&w=1600"
       />
 

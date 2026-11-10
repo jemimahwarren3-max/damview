@@ -58,7 +58,7 @@ export default async function RoomDetailPage({ params }: { params: Promise<{ blo
             <ArrowLeft size={15} /> Back to all rooms
           </Link>
           <SectionHeading
-            eyebrow={`${block.roomNumbers.length} rooms`}
+            eyebrow={block.name}
             title={block.displayName}
             subtitle="A comfortable, simple place to rest, whether it's a short stay or an overnight visit."
           />
