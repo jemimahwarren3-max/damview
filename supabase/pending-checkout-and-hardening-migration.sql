@@ -135,3 +135,11 @@ grant execute on function next_document_number(text) to authenticated;
 
 -- 5. Capture real activity revenue at enquiry time (price wasn't stored anywhere before)
 alter table activity_enquiries add column if not exists price_amount numeric;
+
+-- 6. Guarantee the same EcoCash transaction reference can't be used for two different
+-- payments (the app's submit route already handles the 23505 conflict this produces,
+-- but the constraint itself was applied directly via an earlier ad hoc call and was
+-- never captured in a migration file - this makes it reproducible from source).
+create unique index if not exists payment_submissions_ecocash_transaction_reference_idx
+  on payment_submissions (ecocash_transaction_reference)
+  where ecocash_transaction_reference is not null;

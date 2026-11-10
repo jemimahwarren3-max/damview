@@ -11,10 +11,11 @@ import { generatePaymentReference } from "@/lib/payments/reference";
 import { generateAccessSecret, hashAccessSecret } from "@/lib/payments/token";
 import { recordDocument } from "@/lib/documents";
 import { generateInvoicePdf, type InvoiceData } from "@/lib/pdf/invoice";
+import { getIsAdmin } from "@/lib/staff";
 import { SAMPLE_EVENT_ENQUIRIES } from "@/lib/data/admin-mock";
 import type { EnquiryStatus, EventEnquiry } from "@/types";
 
-const STATUS_OPTIONS: EnquiryStatus[] = ["new", "contacted", "confirmed", "declined"];
+const STATUS_OPTIONS: EnquiryStatus[] = ["new", "contacted", "declined"];
 
 function badgeStatus(status: EnquiryStatus) {
   if (status === "confirmed") return "confirmed" as const;
@@ -29,6 +30,7 @@ export default function AdminEventsPage() {
   const [paymentLinks, setPaymentLinks] = useState<Record<string, string>>({});
   const [configured] = useState(() => getSupabaseBrowserClient() !== null);
   const [generating, setGenerating] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const loadPaymentRefs = () => {
     const supabase = getSupabaseBrowserClient();
@@ -78,6 +80,7 @@ export default function AdminEventsPage() {
         );
       });
 
+    getIsAdmin(supabase).then(setIsAdmin);
     loadPaymentRefs();
   }, []);
 
@@ -87,6 +90,15 @@ export default function AdminEventsPage() {
     const supabase = getSupabaseBrowserClient();
     if (!supabase) return;
     await supabase.from("event_enquiries").update({ status }).eq("id", id);
+  };
+
+  /** Admin-only: confirm an event paid outside the EcoCash flow (cash/other). */
+  const confirmPaidElsewhere = async (id: string) => {
+    setEnquiries((prev) => prev.map((e) => (e.id === id ? { ...e, status: "confirmed" } : e)));
+
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) return;
+    await supabase.from("event_enquiries").update({ status: "confirmed" }).eq("id", id);
   };
 
   const saveQuote = async (id: string) => {
@@ -199,17 +211,29 @@ export default function AdminEventsPage() {
               </div>
               <div className="flex items-center gap-2">
                 <StatusBadge status={badgeStatus(enquiry.status)} label={enquiry.status} />
-                <select
-                  value={enquiry.status}
-                  onChange={(e) => updateStatus(enquiry.id, e.target.value as EnquiryStatus)}
-                  className="rounded-lg border border-border bg-background px-2 py-1.5 text-xs"
-                >
-                  {STATUS_OPTIONS.map((status) => (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  ))}
-                </select>
+                {enquiry.status !== "confirmed" && (
+                  <select
+                    value={enquiry.status}
+                    onChange={(e) => updateStatus(enquiry.id, e.target.value as EnquiryStatus)}
+                    className="rounded-lg border border-border bg-background px-2 py-1.5 text-xs"
+                  >
+                    {STATUS_OPTIONS.map((status) => (
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {isAdmin && enquiry.status !== "confirmed" && (
+                  <button
+                    type="button"
+                    onClick={() => confirmPaidElsewhere(enquiry.id)}
+                    className="rounded-full border border-dv-leaf px-3 py-1.5 text-xs font-bold text-dv-leaf hover:bg-dv-leaf/10"
+                    title="Use this only if the client paid in cash or by another method outside the EcoCash flow"
+                  >
+                    Confirm - cash/other
+                  </button>
+                )}
               </div>
             </div>
             <dl className="mt-3 grid grid-cols-2 gap-2 text-sm text-muted-foreground sm:grid-cols-4">

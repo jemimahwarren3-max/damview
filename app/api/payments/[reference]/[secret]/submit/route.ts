@@ -48,6 +48,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ ref
   const ecocashTransactionReference = String(formData.get("ecocashTransactionReference") ?? "").trim();
   const customerEcocashNumber = String(formData.get("customerEcocashNumber") ?? "").trim();
   const customerEmail = String(formData.get("customerEmail") ?? "").trim();
+  const amountClaimedRaw = String(formData.get("amountClaimed") ?? "").trim();
   const file = formData.get("file");
 
   if (!ecocashTransactionReference) {
@@ -55,6 +56,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ ref
   }
   if (!customerEcocashNumber) {
     return NextResponse.json({ error: "Please enter the EcoCash number used to pay." }, { status: 400 });
+  }
+  const amountClaimed = Number(amountClaimedRaw);
+  if (!amountClaimedRaw || !Number.isFinite(amountClaimed) || amountClaimed <= 0) {
+    return NextResponse.json({ error: "Please enter the amount you actually paid." }, { status: 400 });
   }
   if (!(file instanceof File)) {
     return NextResponse.json({ error: "Please attach your proof of payment." }, { status: 400 });
@@ -87,7 +92,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ ref
       ecocash_transaction_reference: ecocashTransactionReference,
       customer_ecocash_number: customerEcocashNumber,
       customer_email: customerEmail || payment.customer_email,
-      amount_claimed: payment.expected_amount,
+      amount_claimed: amountClaimed,
       proof_file_path: path,
       proof_file_type: detected.type,
       payment_status: "PROOF_SUBMITTED",

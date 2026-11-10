@@ -50,9 +50,11 @@ export function PaymentStatusClient({ reference, secret }: { reference: string; 
   const [ecocashRef, setEcocashRef] = useState("");
   const [ecocashNumber, setEcocashNumber] = useState("");
   const [email, setEmail] = useState("");
+  const [amountPaid, setAmountPaid] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [timeLeft, setTimeLeft] = useState<string | null>(null);
 
   const load = () => {
     fetch(`/api/payments/${reference}/${secret}`)
@@ -66,6 +68,7 @@ export function PaymentStatusClient({ reference, secret }: { reference: string; 
       .then((data: PaymentStatusResponse) => {
         setPayment(data);
         if (data.customerEmail) setEmail(data.customerEmail);
+        setAmountPaid((prev) => prev || String(data.expectedAmount));
       })
       .catch((e) => setLoadError(e.message));
   };
@@ -83,6 +86,27 @@ export function PaymentStatusClient({ reference, secret }: { reference: string; 
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reference, secret]);
+
+  useEffect(() => {
+    if (!payment || payment.paymentStatus !== "AWAITING_PAYMENT") return;
+
+    const tick = () => {
+      const msLeft = new Date(payment.paymentDeadline).getTime() - Date.now();
+      if (msLeft <= 0) {
+        setTimeLeft("Expired");
+        load();
+        return;
+      }
+      const minutes = Math.floor(msLeft / 60000);
+      const seconds = Math.floor((msLeft % 60000) / 1000);
+      setTimeLeft(minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`);
+    };
+
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [payment?.paymentDeadline, payment?.paymentStatus]);
 
   const copyCode = async () => {
     if (!settings) return;
@@ -108,6 +132,7 @@ export function PaymentStatusClient({ reference, secret }: { reference: string; 
     formData.append("ecocashTransactionReference", ecocashRef);
     formData.append("customerEcocashNumber", ecocashNumber);
     formData.append("customerEmail", email);
+    formData.append("amountClaimed", amountPaid);
     formData.append("file", file);
 
     try {
@@ -177,9 +202,9 @@ export function PaymentStatusClient({ reference, secret }: { reference: string; 
             </span>
           </div>
           {payment.paymentStatus === "AWAITING_PAYMENT" && (
-            <div className="mt-3 flex items-center gap-2 text-sm text-dv-gold">
+            <div className="mt-3 flex items-center gap-2 text-sm font-semibold text-dv-gold">
               <Clock size={15} />
-              Pay before {new Date(payment.paymentDeadline).toLocaleString()}
+              {timeLeft && timeLeft !== "Expired" ? `Room held - ${timeLeft} left to pay` : `Pay before ${new Date(payment.paymentDeadline).toLocaleString()}`}
             </div>
           )}
         </div>
@@ -234,6 +259,24 @@ export function PaymentStatusClient({ reference, secret }: { reference: string; 
                 onChange={(e) => setEcocashNumber(e.target.value)}
                 className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2.5"
               />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-dv-black">Amount you actually paid ($)</label>
+              <input
+                required
+                type="number"
+                min={0}
+                step="0.01"
+                value={amountPaid}
+                onChange={(e) => setAmountPaid(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2.5"
+              />
+              {Number(amountPaid) !== payment.expectedAmount && amountPaid !== "" && (
+                <p className="mt-1 text-xs text-dv-gold">
+                  This is different from the ${payment.expectedAmount.toFixed(2)} due - that&apos;s fine,
+                  just let our team know why when they follow up.
+                </p>
+              )}
             </div>
             <div>
               <label className="text-sm font-medium text-dv-black">Email (optional, to receive your receipt)</label>

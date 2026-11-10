@@ -320,7 +320,12 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
                 </dd>
               </div>
               <div><dt className="text-muted-foreground">Expected amount</dt><dd className="font-medium">${payment.expectedAmount.toFixed(2)} {payment.currency}</dd></div>
-              <div><dt className="text-muted-foreground">Amount claimed</dt><dd className="font-medium">{payment.amountClaimed ? `$${payment.amountClaimed.toFixed(2)}` : "-"}</dd></div>
+              <div>
+                <dt className="text-muted-foreground">Amount claimed</dt>
+                <dd className={cn("font-medium", payment.amountClaimed != null && payment.amountClaimed !== payment.expectedAmount && "text-destructive")}>
+                  {payment.amountClaimed ? `$${payment.amountClaimed.toFixed(2)}` : "-"}
+                </dd>
+              </div>
               <div><dt className="text-muted-foreground">EcoCash reference</dt><dd className="font-medium">{payment.ecocashTransactionReference ?? "-"}</dd></div>
               <div><dt className="text-muted-foreground">EcoCash number</dt><dd className="font-medium">{payment.customerEcocashNumber ?? "-"}</dd></div>
               <div><dt className="text-muted-foreground">Submitted</dt><dd className="font-medium">{payment.submittedAt ? new Date(payment.submittedAt).toLocaleString() : "-"}</dd></div>
@@ -356,6 +361,13 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
           {canAct && (
             <div className="rounded-2xl border border-dv-gold/40 bg-dv-sunshine/10 p-6">
               <h3 className="font-serif text-lg text-dv-forest">Verify &amp; decide</h3>
+              {payment.amountClaimed != null && payment.amountClaimed !== payment.expectedAmount && (
+                <p className="mt-3 flex items-start gap-2 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                  <ShieldCheck size={16} className="mt-0.5 shrink-0" />
+                  Guest claims they paid ${payment.amountClaimed.toFixed(2)}, but ${payment.expectedAmount.toFixed(2)} was due - check
+                  this carefully before approving.
+                </p>
+              )}
               {payment.paymentStatus === "PROOF_SUBMITTED" && (
                 <button
                   type="button"
