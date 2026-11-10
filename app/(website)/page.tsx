@@ -87,17 +87,6 @@ export default async function HomePage() {
             priority
             className="hero-zoom object-cover"
           />
-          {/* Cinematic video layer - desktop/tablet only, so mobile data stays light */}
-          <video
-            className="absolute inset-0 hidden h-full w-full object-cover md:block"
-            src="/videos/hero.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="none"
-            poster="/images/resort/damview-sunset.jpg"
-          />
           <div className="absolute inset-0 bg-gradient-to-b from-green-900/60 via-green-900/15 to-green-900/75" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
         </div>
