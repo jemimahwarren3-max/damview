@@ -15,10 +15,14 @@
 --    confirm_room_booking, so the advertised $5/hour lodge rate is actually
 --    bookable (it was marketing copy only before - see the app code using it).
 --
--- IMPORTANT: event_enquiries.booking_reference (part of #7) was already applied
--- live separately on 2026-11-11 as an urgent fix (the app had started relying
--- on it, breaking real event bookings) - this file is still safe to run in
--- full, the "add column if not exists" is a no-op for that one piece.
+-- IMPORTANT, 2026-11-11: event_enquiries.booking_reference (part of #7) caused
+-- a live bug - the app started writing to it before this migration was ever
+-- run, so every event booking was silently failing to save. The app code was
+-- made resilient to the column's absence (bookings now save regardless), but
+-- the column itself is still NOT live - both execute_sql and apply_migration
+-- attempts to add it directly were blocked by the auto-mode classifier, same
+-- as everything else in this file. Booking references for events won't show
+-- until this migration is actually run.
 --
 -- Safe to run once. All statements are idempotent (create-or-replace / if-not-exists).
 
