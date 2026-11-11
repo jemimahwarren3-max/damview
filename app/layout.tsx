@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter, Bebas_Neue, Caveat } from "next/font/google";
+import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -26,10 +27,21 @@ const caveat = Caveat({
   subsets: ["latin"],
 });
 
+const DESCRIPTION =
+  "Damview Resort, Chitungwiza: lodges, swimming pool, restaurant, gym and outdoor activities on the water in Chikwanha.";
+
 export const metadata: Metadata = {
-  title: "Damview Resort",
-  description:
-    "Damview Resort, Chitungwiza: lodges, swimming pool, restaurant, gym and outdoor activities on the water in Chikwanha.",
+  metadataBase: new URL(SITE_URL),
+  title: SITE_NAME,
+  description: DESCRIPTION,
+  openGraph: {
+    title: SITE_NAME,
+    description: DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    locale: "en_ZW",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

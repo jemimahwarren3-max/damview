@@ -1,5 +1,8 @@
 export const SITE_NAME = "Damview Resort";
 
+/** Set NEXT_PUBLIC_SITE_URL in the deployment environment to the real domain. */
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://damviewresort.example";
+
 export const TAGLINE = "Good times. Great views. Unforgettable moments.";
 
 export const CONTACT_NUMBERS = {
