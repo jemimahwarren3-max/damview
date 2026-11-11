@@ -70,6 +70,7 @@ export default function AdminBookingsPage() {
             checkIn: row.check_in,
             guests: row.guests,
             roomId: row.room_id ?? undefined,
+            bookedHours: row.booked_hours ?? undefined,
           }))
         );
       });
@@ -103,7 +104,7 @@ export default function AdminBookingsPage() {
     await supabase.from("lodge_enquiries").update({ status: "confirmed" }).eq("id", enquiry.id);
 
     const roomId = enquiry.roomId ?? (block ? await supabase.rpc("hold_room_for_enquiry", { p_block_id: block.id, p_enquiry_id: enquiry.id, p_hold_minutes: 1440 }).then((r) => r.data) : null);
-    if (roomId) await supabase.rpc("confirm_room_booking", { p_room_id: roomId });
+    if (roomId) await supabase.rpc("confirm_room_booking", { p_room_id: roomId, p_hours: enquiry.bookedHours });
 
     setBusy(null);
   };
@@ -331,7 +332,8 @@ export default function AdminBookingsPage() {
               <div>
                 <p className="font-medium text-dv-black">{enquiry.name}</p>
                 <p className="text-sm text-muted-foreground">
-                  {block?.name ?? enquiry.blockId ?? "No block chosen"} &middot; {enquiry.checkIn} &middot; {enquiry.guests} guests &middot; {enquiry.phone}
+                  {block?.name ?? enquiry.blockId ?? "No block chosen"} &middot; {enquiry.checkIn} &middot; {enquiry.guests} guests
+                  {enquiry.bookedHours ? ` · ${enquiry.bookedHours}h hourly rate` : ""} &middot; {enquiry.phone}
                 </p>
                 {paymentRef && (
                   <p className="mt-2 text-xs text-dv-pool">

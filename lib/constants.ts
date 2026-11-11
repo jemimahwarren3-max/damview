@@ -16,6 +16,8 @@ export const ENTRANCE_FEE = {
 } as const;
 
 export const LODGE_HOURLY_RATE = 5;
+export const LODGE_HOURLY_MIN_HOURS = 2;
+export const LODGE_HOURLY_MAX_HOURS = 11; // beyond this, the full day rate is the better deal
 
 export const ECOCASH = {
   line: "032679",

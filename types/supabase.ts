@@ -420,6 +420,7 @@ export type Database = {
       lodge_enquiries: {
         Row: {
           block_id: string | null
+          booked_hours: number | null
           booking_reference: string | null
           check_in: string
           created_at: string
@@ -435,6 +436,7 @@ export type Database = {
         }
         Insert: {
           block_id?: string | null
+          booked_hours?: number | null
           booking_reference?: string | null
           check_in: string
           created_at?: string
@@ -450,6 +452,7 @@ export type Database = {
         }
         Update: {
           block_id?: string | null
+          booked_hours?: number | null
           booking_reference?: string | null
           check_in?: string
           created_at?: string
@@ -838,7 +841,7 @@ export type Database = {
         Args: { p_block_id: string; p_enquiry_id: string; p_hold_minutes?: number }
         Returns: string
       }
-      confirm_room_booking: { Args: { p_room_id: string }; Returns: undefined }
+      confirm_room_booking: { Args: { p_room_id: string; p_hours?: number }; Returns: undefined }
       release_room_hold: { Args: { p_room_id: string }; Returns: undefined }
       release_expired_holds: { Args: never; Returns: undefined }
       check_out_room: { Args: { p_room_id: string }; Returns: undefined }

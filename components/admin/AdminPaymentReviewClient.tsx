@@ -33,6 +33,7 @@ interface PaymentRow {
   rejectionReason?: string;
   receiptNumber?: string;
   roomId?: string;
+  bookedHours?: number;
 }
 
 function toBadge(status: PaymentStatus) {
@@ -86,6 +87,11 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
     if (row.enquiryType === "lodge" && row.lodgeEnquiryId) {
       const { data: lodgeEnquiry } = await supabase.from("lodge_enquiries").select("room_id").eq("id", row.lodgeEnquiryId).maybeSingle();
       row.roomId = lodgeEnquiry?.room_id ?? undefined;
+
+      // booked_hours is a newer column that may not be live yet - fetched
+      // separately so a missing-column error there can never break roomId above.
+      const { data: hoursRow } = await supabase.from("lodge_enquiries").select("booked_hours").eq("id", row.lodgeEnquiryId).maybeSingle();
+      row.bookedHours = hoursRow?.booked_hours ?? undefined;
     }
 
     setPayment(row);
@@ -229,7 +235,7 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
     if (payment.enquiryType === "lodge" && payment.lodgeEnquiryId) {
       await supabase.from("lodge_enquiries").update({ status: "confirmed" }).eq("id", payment.lodgeEnquiryId);
       if (payment.roomId) {
-        await supabase.rpc("confirm_room_booking", { p_room_id: payment.roomId });
+        await supabase.rpc("confirm_room_booking", { p_room_id: payment.roomId, p_hours: payment.bookedHours });
       }
     } else if (payment.enquiryType === "event" && payment.eventEnquiryId) {
       await supabase.from("event_enquiries").update({ status: "confirmed" }).eq("id", payment.eventEnquiryId);
@@ -320,6 +326,9 @@ export function AdminPaymentReviewClient({ reference }: { reference: string }) {
                 </dd>
               </div>
               <div><dt className="text-muted-foreground">Expected amount</dt><dd className="font-medium">${payment.expectedAmount.toFixed(2)} {payment.currency}</dd></div>
+              {payment.bookedHours && (
+                <div><dt className="text-muted-foreground">Stay length</dt><dd className="font-medium">{payment.bookedHours} hours (hourly rate)</dd></div>
+              )}
               <div>
                 <dt className="text-muted-foreground">Amount claimed</dt>
                 <dd className={cn("font-medium", payment.amountClaimed != null && payment.amountClaimed !== payment.expectedAmount && "text-destructive")}>

@@ -25,4 +25,6 @@ export interface LodgeEnquiry extends EnquiryBase {
   checkIn: string;
   guests: number;
   roomId?: string;
+  /** Set only for an hourly booking ($5/hr) - null/undefined means the full day-rate stay. */
+  bookedHours?: number;
 }
