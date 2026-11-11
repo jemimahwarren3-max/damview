@@ -28,6 +28,9 @@ export const SOCIAL_LINKS = {
   facebook: "https://www.facebook.com/damviewchitown/",
 } as const;
 
+// Flat list of every public page - used by the footer and the sitemap, where
+// a flat list is exactly what's wanted. The header nav groups a couple of
+// these under "Experiences" instead; see HEADER_NAV below.
 export const WEBSITE_NAV = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
@@ -36,6 +39,24 @@ export const WEBSITE_NAV = [
   { label: "Restaurant", href: "/restaurant" },
   { label: "Damside", href: "/damside" },
   { label: "Activities", href: "/activities" },
+  { label: "Events", href: "/events" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Contact", href: "/contact" },
+] as const;
+
+export const HEADER_NAV = [
+  { label: "Home", href: "/" },
+  { label: "About", href: "/about" },
+  { label: "Accommodation", href: "/accommodation" },
+  { label: "Gym", href: "/gym" },
+  { label: "Restaurant", href: "/restaurant" },
+  {
+    label: "Experiences",
+    children: [
+      { label: "Damside", href: "/damside" },
+      { label: "Activities", href: "/activities" },
+    ],
+  },
   { label: "Events", href: "/events" },
   { label: "Gallery", href: "/gallery" },
   { label: "Contact", href: "/contact" },

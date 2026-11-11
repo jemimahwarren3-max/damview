@@ -39,7 +39,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
 
 export function AdminShell({ title, children }: { title: string; children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [profileCheck, setProfileCheck] = useState<"checking" | "missing" | "ok" | "unconfigured">("checking");
+  const [profileCheck, setProfileCheck] = useState<"checking" | "missing" | "ok" | "unconfigured" | "deactivated">("checking");
   const router = useRouter();
 
   useEffect(() => {
@@ -52,9 +52,23 @@ export function AdminShell({ title, children }: { title: string; children: React
     supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) return;
       const { data: profile } = await supabase.from("staff_profiles").select("user_id").eq("user_id", data.user.id).maybeSingle();
-      setProfileCheck(profile ? "ok" : "missing");
+      if (!profile) {
+        setProfileCheck("missing");
+        return;
+      }
+      // is_active is a newer column that may not be live yet - fetched
+      // separately so a missing column can never lock everyone out.
+      const { data: activeRow } = await supabase.from("staff_profiles").select("is_active").eq("user_id", data.user.id).maybeSingle();
+      setProfileCheck(activeRow?.is_active === false ? "deactivated" : "ok");
     });
   }, []);
+
+  const signOutDeactivated = async () => {
+    const supabase = getSupabaseBrowserClient();
+    if (supabase) await supabase.auth.signOut();
+    router.push("/admin");
+    router.refresh();
+  };
 
   const signOut = async () => {
     const supabase = getSupabaseBrowserClient();
@@ -67,6 +81,24 @@ export function AdminShell({ title, children }: { title: string; children: React
 
   if (profileCheck === "missing") {
     return <StaffProfileSetup onDone={() => setProfileCheck("ok")} />;
+  }
+
+  if (profileCheck === "deactivated") {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-dv-cream px-6 text-center">
+        <h1 className="font-serif text-xl text-dv-forest">Your staff access has been deactivated</h1>
+        <p className="max-w-sm text-sm text-muted-foreground">
+          Speak to an admin if you think this is a mistake.
+        </p>
+        <button
+          type="button"
+          onClick={signOutDeactivated}
+          className="rounded-full bg-dv-forest px-5 py-2.5 text-sm font-semibold text-dv-ivory"
+        >
+          Sign out
+        </button>
+      </div>
+    );
   }
 
   return (

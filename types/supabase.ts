@@ -811,6 +811,7 @@ export type Database = {
         Row: {
           department: string | null
           full_name: string
+          is_active: boolean
           is_admin: boolean
           role: string
           user_id: string
@@ -818,6 +819,7 @@ export type Database = {
         Insert: {
           department?: string | null
           full_name: string
+          is_active?: boolean
           is_admin?: boolean
           role: string
           user_id: string
@@ -825,6 +827,7 @@ export type Database = {
         Update: {
           department?: string | null
           full_name?: string
+          is_active?: boolean
           is_admin?: boolean
           role?: string
           user_id?: string

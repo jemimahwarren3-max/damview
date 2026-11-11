@@ -5,23 +5,26 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { Container } from "@/components/shared/Container";
-import { WEBSITE_NAV, SITE_NAME } from "@/lib/constants";
+import { HEADER_NAV, SITE_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [bookingMenuOpen, setBookingMenuOpen] = useState(false);
+  const [experiencesMenuOpen, setExperiencesMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const bookingMenuRef = useRef<HTMLDivElement>(null);
+  const experiencesMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!bookingMenuOpen) return;
+    if (!bookingMenuOpen && !experiencesMenuOpen) return;
     const onClickOutside = (event: MouseEvent) => {
       if (!bookingMenuRef.current?.contains(event.target as Node)) setBookingMenuOpen(false);
+      if (!experiencesMenuRef.current?.contains(event.target as Node)) setExperiencesMenuOpen(false);
     };
     document.addEventListener("click", onClickOutside);
     return () => document.removeEventListener("click", onClickOutside);
-  }, [bookingMenuOpen]);
+  }, [bookingMenuOpen, experiencesMenuOpen]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 48);
@@ -57,18 +60,54 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden items-center gap-6 xl:flex">
-          {WEBSITE_NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "link-underline whitespace-nowrap text-[0.8rem] font-medium tracking-wide transition-colors",
-                scrolled ? "text-charcoal/80 hover:text-green-800" : "text-cream-50/90 hover:text-white"
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {HEADER_NAV.map((item) =>
+            "children" in item ? (
+              <div key={item.label} ref={experiencesMenuRef} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setExperiencesMenuOpen((open) => !open)}
+                  aria-haspopup="menu"
+                  aria-expanded={experiencesMenuOpen}
+                  className={cn(
+                    "link-underline inline-flex items-center gap-1 whitespace-nowrap text-[0.8rem] font-medium tracking-wide transition-colors",
+                    scrolled ? "text-charcoal/80 hover:text-green-800" : "text-cream-50/90 hover:text-white"
+                  )}
+                >
+                  {item.label}
+                  <ChevronDown size={12} className={cn("transition-transform", experiencesMenuOpen && "rotate-180")} />
+                </button>
+                {experiencesMenuOpen && (
+                  <div
+                    role="menu"
+                    className="absolute left-0 top-full mt-2 w-40 overflow-hidden rounded-xl border border-charcoal/10 bg-cream-50 shadow-lg"
+                  >
+                    {item.children.map((child) => (
+                      <Link
+                        key={child.href}
+                        href={child.href}
+                        role="menuitem"
+                        onClick={() => setExperiencesMenuOpen(false)}
+                        className="block px-4 py-3 text-sm font-medium text-charcoal hover:bg-green-800/10"
+                      >
+                        {child.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "link-underline whitespace-nowrap text-[0.8rem] font-medium tracking-wide transition-colors",
+                  scrolled ? "text-charcoal/80 hover:text-green-800" : "text-cream-50/90 hover:text-white"
+                )}
+              >
+                {item.label}
+              </Link>
+            )
+          )}
         </nav>
 
         <div className="flex items-center gap-3">
@@ -135,17 +174,36 @@ export function SiteHeader() {
         )}
       >
         <ul className="flex flex-col gap-1 px-6 pb-8 pt-2">
-          {WEBSITE_NAV.map((item) => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                onClick={() => setMenuOpen(false)}
-                className="block border-b border-charcoal/10 py-3.5 font-serif text-lg text-charcoal"
-              >
-                {item.label}
-              </Link>
-            </li>
-          ))}
+          {HEADER_NAV.map((item) =>
+            "children" in item ? (
+              <li key={item.label} className="border-b border-charcoal/10 py-3.5">
+                <p className="font-serif text-lg text-charcoal">{item.label}</p>
+                <ul className="mt-2 flex flex-col gap-2 pl-4">
+                  {item.children.map((child) => (
+                    <li key={child.href}>
+                      <Link
+                        href={child.href}
+                        onClick={() => setMenuOpen(false)}
+                        className="block text-base text-charcoal/80"
+                      >
+                        {child.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ) : (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="block border-b border-charcoal/10 py-3.5 font-serif text-lg text-charcoal"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            )
+          )}
           <li className="flex flex-col gap-2 pt-4">
             <Link
               href="/accommodation"
