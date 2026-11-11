@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Container } from "@/components/shared/Container";
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
+import { FacebookIcon } from "@/components/shared/FacebookIcon";
 import {
   SITE_NAME,
   TAGLINE,
@@ -20,6 +21,7 @@ import {
   EVENT_CATEGORIES,
   ENTRANCE_FEE,
   LODGE_HOURLY_RATE,
+  SOCIAL_LINKS,
 } from "@/lib/constants";
 import { getRoomBlocks } from "@/lib/data/rooms";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
@@ -512,6 +514,17 @@ export default async function HomePage() {
                     <span className="text-sm text-cream-50">
                       Entrance ${ENTRANCE_FEE.weekday} weekdays, ${ENTRANCE_FEE.weekend} weekends &amp; holidays
                     </span>
+                  </li>
+                  <li className="flex items-center gap-4">
+                    <span className="shrink-0 text-sunset-500"><FacebookIcon size={18} /></span>
+                    <a
+                      href={SOCIAL_LINKS.facebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-cream-50 transition-colors hover:text-sunset-500"
+                    >
+                      Follow us on Facebook
+                    </a>
                   </li>
                 </ul>
               </div>

@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { MapPin, MessageCircle } from "lucide-react";
 import { Container } from "@/components/shared/Container";
-import { WEBSITE_NAV, SITE_NAME, CONTACT_NUMBERS, LOCATION } from "@/lib/constants";
+import { FacebookIcon } from "@/components/shared/FacebookIcon";
+import { WEBSITE_NAV, SITE_NAME, CONTACT_NUMBERS, LOCATION, SOCIAL_LINKS } from "@/lib/constants";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export function SiteFooter() {
@@ -29,6 +30,15 @@ export function SiteFooter() {
                   <MessageCircle size={17} />
                 </a>
               ))}
+              <a
+                href={SOCIAL_LINKS.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-charcoal/15 text-charcoal/70 transition-colors hover:border-green-700 hover:bg-green-800 hover:text-cream-50"
+              >
+                <FacebookIcon size={17} />
+              </a>
             </div>
           </div>
 

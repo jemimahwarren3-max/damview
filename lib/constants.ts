@@ -22,6 +22,10 @@ export const ECOCASH = {
   dialCode: "*151*3*1*032679#",
 } as const;
 
+export const SOCIAL_LINKS = {
+  facebook: "https://www.facebook.com/damviewchitown/",
+} as const;
+
 export const WEBSITE_NAV = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },

@@ -4,7 +4,8 @@ import { PageHero } from "@/components/shared/PageHero";
 import { Container } from "@/components/shared/Container";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 import { SimpleEnquiryForm } from "@/components/booking/SimpleEnquiryForm";
-import { CONTACT_NUMBERS, LOCATION, SITE_NAME, ENTRANCE_FEE } from "@/lib/constants";
+import { FacebookIcon } from "@/components/shared/FacebookIcon";
+import { CONTACT_NUMBERS, LOCATION, SITE_NAME, ENTRANCE_FEE, SOCIAL_LINKS } from "@/lib/constants";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
@@ -56,9 +57,14 @@ export default function ContactPage() {
             <p className="mt-2 text-dv-cream/80">
               Entrance ${ENTRANCE_FEE.weekday} weekdays, ${ENTRANCE_FEE.weekend} weekends &amp; public holidays
             </p>
-            <p className="mt-6 text-sm text-dv-cream/50">
-              Facebook / Instagram, social links coming soon
-            </p>
+            <a
+              href={SOCIAL_LINKS.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-flex items-center gap-2 text-sm text-dv-cream/80 hover:text-dv-sunshine"
+            >
+              <FacebookIcon size={16} /> Follow us on Facebook
+            </a>
           </Container>
         </section>
 
