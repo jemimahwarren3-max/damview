@@ -24,6 +24,7 @@ import {
   SOCIAL_LINKS,
 } from "@/lib/constants";
 import { getRoomBlocks } from "@/lib/data/rooms";
+import { GYM_IMAGE } from "@/lib/data/gym";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 const EXPERIENCES = [
@@ -73,12 +74,18 @@ const ACTIVITY_SHOTS = [
   { img: "https://images.pexels.com/photos/28263612/pexels-photo-28263612.jpeg?auto=compress&cs=tinysrgb&w=1100", label: "Zip line" },
 ];
 
-// Only real Damview photography we have right now - more to follow as it's taken.
-const REAL_GALLERY = [
+// A mix of real Damview photos (rooms, pool) and generic photos for facilities
+// we don't have real photography of yet - captions describe what's shown, not
+// where it was taken.
+const GALLERY_ITEMS = [
   { caption: "Our rooms", image: "/images/accommodation/real/room-1.jpg" },
-  { caption: "Our rooms", image: "/images/accommodation/real/room-2.jpg" },
+  { caption: "The pool", image: "/images/resort/pool-damside.jpg" },
   { caption: "Our rooms", image: "/images/accommodation/real/room-3.jpg" },
+  { caption: "Outdoor activities", image: "https://images.pexels.com/photos/15490742/pexels-photo-15490742.jpeg?auto=compress&cs=tinysrgb&w=500" },
+  { caption: "Our rooms", image: "/images/accommodation/real/room-2.jpg" },
+  { caption: "Celebrations", image: "https://images.pexels.com/photos/35516036/pexels-photo-35516036.jpeg?auto=compress&cs=tinysrgb&w=500" },
   { caption: "Our rooms", image: "/images/accommodation/real/room-4.jpg" },
+  { caption: "Food and drinks", image: "https://images.pexels.com/photos/37238864/pexels-photo-37238864.jpeg?auto=compress&cs=tinysrgb&w=500" },
 ];
 
 export default async function HomePage() {
@@ -322,6 +329,40 @@ export default async function HomePage() {
         </Container>
       </section>
 
+      {/* Gym */}
+      <section id="gym" className="bg-cream-100 py-24 lg:py-36">
+        <Container>
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
+            <div className="lg:col-span-5">
+              <div className="reveal mb-5 flex items-center gap-3">
+                <span className="h-px w-10 bg-sunset-500" />
+                <span className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-green-700">
+                  Damview Gym
+                </span>
+              </div>
+              <h2 className="reveal reveal-delay-1 font-serif text-3xl font-light leading-[1.12] text-green-900 text-balance sm:text-4xl lg:text-[2.9rem]">
+                Train any time. We never close.
+              </h2>
+              <p className="reveal reveal-delay-2 mt-6 text-[1.02rem] leading-[1.75] text-charcoal/75">
+                A full gym on-site, open 24 hours a day, with packages starting from $10.
+              </p>
+              <Link
+                href="/gym"
+                className="reveal reveal-delay-3 mt-8 inline-flex items-center gap-2 text-sm font-semibold text-green-800 transition-colors hover:text-green-600"
+              >
+                <span className="link-underline">See Gym Memberships</span>
+                <ArrowRight size={15} />
+              </Link>
+            </div>
+            <div className="reveal reveal-delay-1 lg:col-span-7">
+              <div className="relative h-72 overflow-hidden rounded-sm sm:h-96">
+                <Image src={GYM_IMAGE} alt="Gym equipment" fill className="object-cover transition-transform duration-[1.2s] hover:scale-105" />
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
       {/* Activities */}
       <section id="activities" className="bg-green-900 py-24 lg:py-36">
         <Container>
@@ -413,7 +454,7 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {REAL_GALLERY.map((item, i) => (
+            {GALLERY_ITEMS.map((item, i) => (
               <figure key={item.image} className={`reveal reveal-delay-${(i % 3) + 1} group relative aspect-square overflow-hidden rounded-sm`}>
                 <Image src={item.image} alt={item.caption} fill className="object-cover transition-transform duration-[1.3s] ease-out group-hover:scale-110" />
                 <div className="absolute inset-0 bg-green-900/0 transition-colors duration-500 group-hover:bg-green-900/15" />

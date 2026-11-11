@@ -159,7 +159,7 @@ export function AccommodationEnquiryForm({
             </option>
             {blocks.map((block) => (
               <option key={block.id} value={block.id}>
-                {block.displayName}, from ${block.ratePerStay}
+                {block.name} - {block.displayName}, from ${block.ratePerStay}
               </option>
             ))}
           </select>

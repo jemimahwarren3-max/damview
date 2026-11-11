@@ -30,8 +30,8 @@ export async function generateMetadata({ params }: { params: Promise<{ blockId: 
   if (!block) return { title: `Accommodation, ${SITE_NAME}` };
 
   return {
-    title: `${block.displayName}, ${SITE_NAME}`,
-    description: `${block.displayName} at Damview Resort, from $${block.ratePerStay} per ${block.stayDurationHours}-hour stay.`,
+    title: `${block.name}, ${SITE_NAME}`,
+    description: `${block.name} (${block.displayName}) at Damview Resort, from $${block.ratePerStay} per ${block.stayDurationHours}-hour stay.`,
   };
 }
 
@@ -46,8 +46,8 @@ export default async function RoomDetailPage({ params }: { params: Promise<{ blo
     <>
       <PageHero
         eyebrow="Accommodation & Lodges"
-        title={block.displayName}
-        subtitle={`From $${block.ratePerStay} per ${block.stayDurationHours}-hour stay, or $${LODGE_HOURLY_RATE} an hour.`}
+        title={block.name}
+        subtitle={`${block.displayName} - from $${block.ratePerStay} per ${block.stayDurationHours}-hour stay, or $${LODGE_HOURLY_RATE} an hour.`}
         image={image}
       />
 
@@ -60,8 +60,8 @@ export default async function RoomDetailPage({ params }: { params: Promise<{ blo
             <ArrowLeft size={15} /> Back to all rooms
           </Link>
           <SectionHeading
-            eyebrow={block.name}
-            title={block.displayName}
+            eyebrow={block.displayName}
+            title={block.name}
             subtitle="A comfortable, simple place to rest, whether it's a short stay or an overnight visit."
           />
           <div className="mt-6">

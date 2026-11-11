@@ -50,9 +50,9 @@ export default async function AccommodationPage() {
                 className="flex items-center justify-between gap-6 rounded-2xl border border-border bg-card p-6 transition-colors hover:border-dv-pool"
               >
                 <div>
-                  <h3 className="font-serif text-xl text-dv-forest">{block.displayName}</h3>
+                  <h3 className="font-serif text-xl text-dv-forest">{block.name}</h3>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {block.name} &middot; {block.stayDurationHours}-hour stay
+                    {block.displayName} &middot; {block.stayDurationHours}-hour stay
                   </p>
                   <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-dv-pool">
                     View details <ArrowRight size={12} />
