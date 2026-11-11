@@ -344,7 +344,7 @@ export default async function HomePage() {
                 Train any time. We never close.
               </h2>
               <p className="reveal reveal-delay-2 mt-6 text-[1.02rem] leading-[1.75] text-charcoal/75">
-                A full gym on-site, open 24 hours a day, with packages starting from $10.
+                A full gym on-site, open 24 hours a day, from $1 a day or $30 a month.
               </p>
               <Link
                 href="/gym"

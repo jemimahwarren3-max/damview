@@ -15,8 +15,8 @@ export const ROOM_BLOCKS: RoomBlock[] = [
 ];
 
 export const GYM_PACKAGES: GymPackage[] = [
-  { id: "day-pass", name: "Day Pass", price: 10, billingPeriod: "session", features: ["Full gym access for one visit", "Open 24/7"] },
-  { id: "monthly", name: "Monthly Membership", price: null, billingPeriod: "month", features: ["Unlimited visits", "Full equipment access", "Open 24/7"] },
+  { id: "day-pass", name: "Day Pass", price: 1, billingPeriod: "session", features: ["Full gym access for one visit", "Open 24/7"] },
+  { id: "monthly", name: "Monthly Membership", price: 30, billingPeriod: "month", features: ["Unlimited visits", "Full equipment access", "Open 24/7"] },
 ];
 
 export const MENU_CATEGORIES: MenuCategory[] = [

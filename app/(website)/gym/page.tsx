@@ -8,7 +8,7 @@ import { SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: `Damview Gym, ${SITE_NAME}`,
-  description: "A fully equipped gym at Damview Resort, open 24/7, packages from $10.",
+  description: "A fully equipped gym at Damview Resort, open 24/7, from $1 a day or $30 a month.",
 };
 
 export default async function GymPage() {
@@ -19,7 +19,7 @@ export default async function GymPage() {
       <PageHero
         eyebrow="Damview Gym"
         title="Train any time. We never close."
-        subtitle="A full gym on-site, open 24 hours a day, packages from $10."
+        subtitle="A full gym on-site, open 24 hours a day, from $1 a day or $30 a month."
         image={GYM_IMAGE}
       />
 
@@ -27,8 +27,8 @@ export default async function GymPage() {
         <Container>
           <SectionHeading
             eyebrow="Memberships"
-            title="Starting from $10."
-            subtitle="Fitness classes and full equipment access are part of the gym experience. Specific package tiers above the entry price are still being finalised."
+            title="From $1 a day."
+            subtitle="Pay per visit or save with a monthly membership - full equipment access either way, open 24/7."
             className="[&_h2]:text-dv-ivory [&_p]:text-dv-cream/75"
           />
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -36,7 +36,9 @@ export default async function GymPage() {
               <div key={pkg.id} className="rounded-2xl border border-dv-ivory/15 bg-dv-forest/40 p-6">
                 <h3 className="font-serif text-xl text-dv-sunshine">{pkg.name}</h3>
                 <p className="mt-1 font-promo text-sm tracking-wide text-dv-gold">
-                  {pkg.price === null ? "Price to be confirmed" : `From $${pkg.price} / ${pkg.billingPeriod}`}
+                  {pkg.price === null
+                    ? "Price to be confirmed"
+                    : `$${pkg.price} ${pkg.billingPeriod === "session" ? "per visit" : `/ ${pkg.billingPeriod}`}`}
                 </p>
                 <ul className="mt-4 flex flex-col gap-2 text-sm text-dv-cream/80">
                   {pkg.features.map((feature) => (

@@ -6,27 +6,27 @@ import { PageHero } from "@/components/shared/PageHero";
 import { Container } from "@/components/shared/Container";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 import { SimpleEnquiryForm } from "@/components/booking/SimpleEnquiryForm";
-import { getRecreationalActivities } from "@/lib/data/activities";
+import { getAllActivities } from "@/lib/data/activities";
 import { SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: `Recreational Activities, ${SITE_NAME}`,
-  description: "Quad biking, horse riding, zip lines, trampolines and pool tables at Damview Resort.",
+  title: `Activities, ${SITE_NAME}`,
+  description: "Quad biking, horse riding, zip lines, trampolines, pool tables, boat cruises, pedal boats and more at Damview Resort.",
 };
 
 export default async function ActivitiesPage() {
-  const recreationalActivities = await getRecreationalActivities();
+  const activities = await getAllActivities();
 
   return (
     <>
       <PageHero
         eyebrow="Recreational Activities"
         title="Find your fun."
-        subtitle="From quad bikes to pool tables, something for every age, every visit."
+        subtitle="From quad bikes to boat cruises, something for every age, every visit."
         image="https://images.pexels.com/photos/15490742/pexels-photo-15490742.jpeg?auto=compress&cs=tinysrgb&w=1600"
       />
 
-      {recreationalActivities.map((activity, index) => (
+      {activities.map((activity, index) => (
         <section
           key={activity.id}
           className={index % 2 === 0 ? "bg-background" : "bg-dv-cream"}
