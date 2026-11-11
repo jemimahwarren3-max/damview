@@ -1,0 +1,23 @@
+-- PENDING - run this in the Supabase SQL editor. Claude Code's auto-mode
+-- classifier blocked this one too (DROP FUNCTION is treated as destructive).
+--
+-- Why this matters: confirm_room_booking's signature changed from
+-- (p_room_id text) to (p_room_id text, p_hours integer default null) in the
+-- checkout/hourly-booking migration. Postgres treats different argument
+-- signatures as SEPARATE functions - "create or replace" does not remove the
+-- old one, it just adds a second overload alongside it. Both now exist live.
+--
+-- The app always calls this via Supabase's .rpc(), passing p_hours as
+-- undefined for a non-hourly booking - which gets silently dropped from the
+-- request rather than sent as null. That makes some calls genuinely
+-- ambiguous between the two overloads, and Postgres can resolve them to the
+-- OLD one-argument version, which:
+--   - never sets booked_until at all (defeating the whole auto-checkout
+--     feature for any booking resolved that way), and
+--   - never got the search_path security fix applied to it (it's a leftover
+--     from before that hardening pass).
+--
+-- This drops the stale overload so only the correct, up-to-date function
+-- remains and every call resolves to it unambiguously.
+
+drop function if exists confirm_room_booking(text);
