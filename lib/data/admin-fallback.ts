@@ -100,7 +100,7 @@ export const DAMSIDE_ACTIVITIES: Activity[] = [
     name: "Boat Cruise",
     description: "A scenic cruise along the water — a relaxed way to see Damview from the dam itself.",
     pricing: { amount: 5, unit: "per_person" },
-    image: "https://images.pexels.com/photos/36593940/pexels-photo-36593940.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    image: "/images/activities/real/boats.jpg",
   },
   {
     id: "pedal-boats",
@@ -151,7 +151,7 @@ export const RECREATIONAL_ACTIVITIES: Activity[] = [
     name: "Pool Tables",
     description: "Pool tables and recreational games at the bar.",
     pricing: { amount: 3, unit: "per_person" },
-    image: "https://images.pexels.com/photos/5055427/pexels-photo-5055427.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    image: "/images/activities/real/pool-tables.jpg",
   },
   {
     id: "soccer-field",
@@ -159,7 +159,7 @@ export const RECREATIONAL_ACTIVITIES: Activity[] = [
     name: "Soccer Field",
     description: "An open field for a proper game, bring your own team or join one already playing.",
     pricing: { amount: 3, unit: "per_person" },
-    image: "https://images.pexels.com/photos/29440634/pexels-photo-29440634.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    image: "/images/activities/real/soccer-field.jpg",
   },
 ];
 

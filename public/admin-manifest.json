@@ -1,0 +1,14 @@
+{
+  "name": "Damview Staff",
+  "short_name": "Damview Staff",
+  "description": "Damview Resort staff admin",
+  "start_url": "/admin/dashboard",
+  "scope": "/admin",
+  "display": "standalone",
+  "background_color": "#f9f7f1",
+  "theme_color": "#16291d",
+  "icons": [
+    { "src": "/icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

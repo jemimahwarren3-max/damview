@@ -32,7 +32,7 @@ const EXPERIENCES = [
     no: "01",
     title: "Relax",
     copy: "Swimming, peaceful outdoor spaces, comfortable lodges and time away from everyday routines.",
-    img: "https://images.pexels.com/photos/6821435/pexels-photo-6821435.jpeg?auto=compress&cs=tinysrgb&w=1100",
+    img: "/images/resort/damview-pool.jpg",
     href: "/accommodation",
     span: "lg:col-span-7 lg:row-span-2",
     h: "h-[26rem] lg:h-full",
@@ -41,7 +41,7 @@ const EXPERIENCES = [
     no: "02",
     title: "Explore",
     copy: "Boat cruises, pedal boats, quad bikes and outdoor activities on and off the water.",
-    img: "https://images.pexels.com/photos/36593940/pexels-photo-36593940.jpeg?auto=compress&cs=tinysrgb&w=1100",
+    img: "/images/activities/real/boats.jpg",
     href: "/activities",
     span: "lg:col-span-5",
     h: "h-72 lg:h-80",
@@ -57,10 +57,7 @@ const EXPERIENCES = [
   },
 ] as const;
 
-const DINING_SHOTS = [
-  "https://images.pexels.com/photos/37238864/pexels-photo-37238864.jpeg?auto=compress&cs=tinysrgb&w=900",
-  "https://images.pexels.com/photos/4078164/pexels-photo-4078164.jpeg?auto=compress&cs=tinysrgb&w=900",
-];
+const DINING_SHOTS = ["/images/restaurant/real/exterior.jpg", "/images/restaurant/real/interior.jpg"];
 
 const ROOM_SHOTS = [
   "/images/accommodation/real/room-3.jpg",
@@ -74,18 +71,16 @@ const ACTIVITY_SHOTS = [
   { img: "https://images.pexels.com/photos/28263612/pexels-photo-28263612.jpeg?auto=compress&cs=tinysrgb&w=1100", label: "Zip line" },
 ];
 
-// A mix of real Damview photos (rooms, pool) and generic photos for facilities
-// we don't have real photography of yet - captions describe what's shown, not
-// where it was taken.
+// All real Damview photography now - no more generic stock in this section.
 const GALLERY_ITEMS = [
   { caption: "Our rooms", image: "/images/accommodation/real/room-1.jpg" },
-  { caption: "The pool", image: "/images/resort/pool-damside.jpg" },
+  { caption: "The pool", image: "/images/resort/damview-pool.jpg" },
   { caption: "On the water", image: "/images/resort/damview-water-1.jpg" },
-  { caption: "Outdoor activities", image: "https://images.pexels.com/photos/15490742/pexels-photo-15490742.jpeg?auto=compress&cs=tinysrgb&w=500" },
+  { caption: "Pool tables", image: "/images/activities/real/pool-tables.jpg" },
   { caption: "Our rooms", image: "/images/accommodation/real/room-2.jpg" },
   { caption: "Sunset on the dam", image: "/images/resort/damview-water-2.jpg" },
   { caption: "Our rooms", image: "/images/accommodation/real/room-4.jpg" },
-  { caption: "Food and drinks", image: "https://images.pexels.com/photos/37238864/pexels-photo-37238864.jpeg?auto=compress&cs=tinysrgb&w=500" },
+  { caption: "Dam Food Bar", image: "/images/restaurant/real/interior.jpg" },
 ];
 
 export default async function HomePage() {
@@ -298,7 +293,7 @@ export default async function HomePage() {
               <div className="grid grid-cols-2 gap-4">
                 {DINING_SHOTS.map((src, i) => (
                   <div key={src} className={`reveal reveal-delay-${i + 1} overflow-hidden rounded-sm`}>
-                    <Image src={src} alt="Food and drinks" width={700} height={560} className="h-64 w-full object-cover transition-transform duration-[1.2s] hover:scale-105" />
+                    <Image src={src} alt="The real Dam Food Bar" width={700} height={560} className="h-64 w-full object-cover transition-transform duration-[1.2s] hover:scale-105" />
                   </div>
                 ))}
               </div>

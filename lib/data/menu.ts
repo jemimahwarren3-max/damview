@@ -2,8 +2,7 @@ import type { MenuCategory, MenuItem } from "@/types";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { MENU_CATEGORIES as FALLBACK_CATEGORIES, MENU_ITEMS as FALLBACK_ITEMS } from "@/lib/data/admin-fallback";
 
-export const RESTAURANT_IMAGE =
-  "https://images.pexels.com/photos/8021129/pexels-photo-8021129.jpeg?auto=compress&cs=tinysrgb&w=1200";
+export const RESTAURANT_IMAGE = "/images/restaurant/real/exterior.jpg";
 
 const FALLBACK = { categories: FALLBACK_CATEGORIES, items: FALLBACK_ITEMS };
 

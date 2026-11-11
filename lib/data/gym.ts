@@ -2,8 +2,7 @@ import type { GymPackage, BillingPeriod } from "@/types";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { GYM_PACKAGES as FALLBACK_GYM_PACKAGES } from "@/lib/data/admin-fallback";
 
-export const GYM_IMAGE =
-  "https://images.pexels.com/photos/7031705/pexels-photo-7031705.jpeg?auto=compress&cs=tinysrgb&w=1200";
+export const GYM_IMAGE = "/images/gym/real/gym-1.jpg";
 
 export async function getGymPackages(): Promise<GymPackage[]> {
   "use cache";

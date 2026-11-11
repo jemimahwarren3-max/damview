@@ -31,8 +31,8 @@ export default async function RestaurantPage() {
           <div className="flex flex-col gap-4 py-16 lg:sticky lg:top-16 lg:h-fit lg:w-[40%] lg:py-20 lg:pr-10">
             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-sm">
               <Image
-                src="https://images.pexels.com/photos/37238864/pexels-photo-37238864.jpeg?auto=compress&cs=tinysrgb&w=900"
-                alt="Steaks sizzling on the grill"
+                src="/images/restaurant/real/interior.jpg"
+                alt="Inside the Dam Food Bar"
                 fill
                 className="object-cover"
               />

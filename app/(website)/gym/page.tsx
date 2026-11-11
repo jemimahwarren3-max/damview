@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { PageHero } from "@/components/shared/PageHero";
 import { Container } from "@/components/shared/Container";
 import { SectionHeading } from "@/components/shared/SectionHeading";
@@ -63,6 +64,19 @@ export default async function GymPage() {
           <p className="mt-6 text-sm text-dv-cream/60">
             Plus a one-time $10 joining fee for all new members.
           </p>
+        </Container>
+      </section>
+
+      <section className="py-20">
+        <Container>
+          <SectionHeading eyebrow="See For Yourself" title="Inside our gym." subtitle="Real photos from the floor, not stock images." />
+          <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {["/images/gym/real/gym-1.jpg", "/images/gym/real/gym-2.jpg", "/images/gym/real/gym-3.jpg"].map((src) => (
+              <div key={src} className="relative aspect-[4/3] overflow-hidden rounded-xl">
+                <Image src={src} alt="Inside Damview's Fitness Club" fill className="object-cover" />
+              </div>
+            ))}
+          </div>
         </Container>
       </section>
 
