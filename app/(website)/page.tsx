@@ -15,6 +15,7 @@ import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 import { FacebookIcon } from "@/components/shared/FacebookIcon";
 import {
   SITE_NAME,
+  SITE_URL,
   TAGLINE,
   LOCATION,
   CONTACT_NUMBERS,
@@ -85,9 +86,40 @@ const GALLERY_ITEMS = [
 
 export default async function HomePage() {
   const roomBlocks = await getRoomBlocks();
+  const rates = roomBlocks.map((b) => b.ratePerStay).filter((n) => n > 0);
+  const priceRange = rates.length ? `$${Math.min(...rates)}-$${Math.max(...rates)}` : undefined;
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        name: SITE_NAME,
+        url: SITE_URL,
+      },
+      {
+        "@type": "LodgingBusiness",
+        name: SITE_NAME,
+        description: TAGLINE,
+        url: SITE_URL,
+        telephone: `+${CONTACT_NUMBERS.primary}`,
+        image: `${SITE_URL}/images/resort/damview-sunset.jpg`,
+        ...(priceRange ? { priceRange } : {}),
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "Chikwanha, along Seke Road, next to Zuva Service Station",
+          addressLocality: "Chitungwiza",
+          addressCountry: "ZW",
+        },
+        sameAs: [SOCIAL_LINKS.facebook],
+      },
+    ],
+  };
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+
       {/* Hero */}
       <section id="home" className="relative h-[100svh] min-h-[640px] w-full overflow-hidden bg-green-900">
         <div className="absolute inset-0">

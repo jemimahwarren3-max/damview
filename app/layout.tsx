@@ -29,6 +29,7 @@ const caveat = Caveat({
 
 const DESCRIPTION =
   "Damview Resort, Chitungwiza: lodges, swimming pool, restaurant, gym and outdoor activities on the water in Chikwanha.";
+const SHARE_IMAGE = "/images/resort/damview-sunset.jpg";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -39,8 +40,15 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: SITE_URL,
     siteName: SITE_NAME,
+    images: [SHARE_IMAGE],
     locale: "en_ZW",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_NAME,
+    description: DESCRIPTION,
+    images: [SHARE_IMAGE],
   },
 };
 
