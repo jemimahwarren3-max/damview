@@ -11,6 +11,14 @@
 -- 5. Adds activity_enquiries.price_amount so activity revenue can actually be reported.
 -- 7. Adds event_enquiries.booking_reference so the Guest Centre can look up event
 --    bookings too, same as accommodation bookings already can.
+-- 8. Adds lodge_enquiries.booked_hours and an optional p_hours arg on
+--    confirm_room_booking, so the advertised $5/hour lodge rate is actually
+--    bookable (it was marketing copy only before - see the app code using it).
+--
+-- IMPORTANT: event_enquiries.booking_reference (part of #7) was already applied
+-- live separately on 2026-11-11 as an urgent fix (the app had started relying
+-- on it, breaking real event bookings) - this file is still safe to run in
+-- full, the "add column if not exists" is a no-op for that one piece.
 --
 -- Safe to run once. All statements are idempotent (create-or-replace / if-not-exists).
 
@@ -52,14 +60,21 @@ $$;
 -- 2. Room checkout support: track when a booked room's stay ends
 alter table rooms add column if not exists booked_until timestamptz;
 
-create or replace function confirm_room_booking(p_room_id text) returns void
+-- p_hours lets an hourly booking (see lodge_enquiries.booked_hours below)
+-- auto-checkout after its own shorter window instead of the block's full
+-- stay_duration_hours.
+create or replace function confirm_room_booking(p_room_id text, p_hours integer default null) returns void
 language plpgsql security definer set search_path = public as $$
 declare
   v_hours integer;
 begin
-  select rb.stay_duration_hours into v_hours
-  from rooms r join room_blocks rb on rb.id = r.block_id
-  where r.id = p_room_id;
+  if p_hours is not null then
+    v_hours := p_hours;
+  else
+    select rb.stay_duration_hours into v_hours
+    from rooms r join room_blocks rb on rb.id = r.block_id
+    where r.id = p_room_id;
+  end if;
 
   update rooms
   set status = 'booked',
@@ -69,6 +84,10 @@ begin
   where id = p_room_id;
 end;
 $$;
+
+-- Lodge bookings can now be an hourly stay ($5/hr, see lib/constants.ts
+-- LODGE_HOURLY_RATE) instead of the block's full day rate. Null = full stay.
+alter table lodge_enquiries add column if not exists booked_hours integer;
 
 create or replace function release_room_hold(p_room_id text) returns void
 language sql security definer set search_path = public as $$
@@ -109,7 +128,7 @@ end;
 $$;
 
 -- 3. Tighten EXECUTE grants: anon only needs the one function the public enquiry form calls
-revoke execute on function confirm_room_booking(text) from anon;
+revoke execute on function confirm_room_booking(text, integer) from anon;
 revoke execute on function release_room_hold(text) from anon;
 revoke execute on function release_expired_holds() from anon;
 revoke execute on function enforce_payment_verification_admin_only() from anon, authenticated;

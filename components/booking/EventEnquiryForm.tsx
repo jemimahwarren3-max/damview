@@ -56,23 +56,36 @@ export function EventEnquiryForm() {
       const supabase = getSupabaseClient();
       if (supabase) {
         const customerId = await upsertCustomerByPhone(supabase, { fullName: values.name, phone: values.phone });
-        const bookingRef = generatePaymentReference();
-        const { error } = await supabase.from("event_enquiries").insert({
-          name: values.name,
-          phone: values.phone,
-          customer_id: customerId,
-          event_type: values.eventType,
-          proposed_date: values.proposedDate,
-          expected_guests: values.expectedGuests,
-          facilities_required: values.facilitiesRequired
-            ? values.facilitiesRequired.split(",").map((f) => f.trim()).filter(Boolean)
-            : [],
-          catering_required: values.cateringRequired,
-          accommodation_required: values.accommodationRequired,
-          message: values.additionalInfo || null,
-          booking_reference: bookingRef,
-        });
-        if (!error) setBookingReference(bookingRef);
+        const { data: enquiry, error } = await supabase
+          .from("event_enquiries")
+          .insert({
+            name: values.name,
+            phone: values.phone,
+            customer_id: customerId,
+            event_type: values.eventType,
+            proposed_date: values.proposedDate,
+            expected_guests: values.expectedGuests,
+            facilities_required: values.facilitiesRequired
+              ? values.facilitiesRequired.split(",").map((f) => f.trim()).filter(Boolean)
+              : [],
+            catering_required: values.cateringRequired,
+            accommodation_required: values.accommodationRequired,
+            message: values.additionalInfo || null,
+          })
+          .select("id")
+          .single();
+
+        // booking_reference is set as a best-effort follow-up, not part of the
+        // main insert - the booking itself must always save even if that
+        // column isn't live yet (it's still in a pending migration).
+        if (!error && enquiry) {
+          const bookingRef = generatePaymentReference();
+          const { error: refError } = await supabase
+            .from("event_enquiries")
+            .update({ booking_reference: bookingRef })
+            .eq("id", enquiry.id);
+          if (!refError) setBookingReference(bookingRef);
+        }
       }
     } catch {
       // Don't block the enquiry on a database hiccup — WhatsApp still goes through below.
