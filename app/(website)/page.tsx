@@ -80,10 +80,10 @@ const ACTIVITY_SHOTS = [
 const GALLERY_ITEMS = [
   { caption: "Our rooms", image: "/images/accommodation/real/room-1.jpg" },
   { caption: "The pool", image: "/images/resort/pool-damside.jpg" },
-  { caption: "Our rooms", image: "/images/accommodation/real/room-3.jpg" },
+  { caption: "On the water", image: "/images/resort/damview-water-1.jpg" },
   { caption: "Outdoor activities", image: "https://images.pexels.com/photos/15490742/pexels-photo-15490742.jpeg?auto=compress&cs=tinysrgb&w=500" },
   { caption: "Our rooms", image: "/images/accommodation/real/room-2.jpg" },
-  { caption: "Celebrations", image: "https://images.pexels.com/photos/35516036/pexels-photo-35516036.jpeg?auto=compress&cs=tinysrgb&w=500" },
+  { caption: "Sunset on the dam", image: "/images/resort/damview-water-2.jpg" },
   { caption: "Our rooms", image: "/images/accommodation/real/room-4.jpg" },
   { caption: "Food and drinks", image: "https://images.pexels.com/photos/37238864/pexels-photo-37238864.jpeg?auto=compress&cs=tinysrgb&w=500" },
 ];
@@ -337,14 +337,15 @@ export default async function HomePage() {
               <div className="reveal mb-5 flex items-center gap-3">
                 <span className="h-px w-10 bg-sunset-500" />
                 <span className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-green-700">
-                  Damview Gym
+                  Damview&apos;s Fitness Club
                 </span>
               </div>
               <h2 className="reveal reveal-delay-1 font-serif text-3xl font-light leading-[1.12] text-green-900 text-balance sm:text-4xl lg:text-[2.9rem]">
-                Train any time. We never close.
+                More than a gym. It&apos;s a lifestyle.
               </h2>
               <p className="reveal reveal-delay-2 mt-6 text-[1.02rem] leading-[1.75] text-charcoal/75">
-                A full gym on-site, open 24 hours a day, from $1 a day or $30 a month.
+                Standard membership from $30/month, with Premium add-ons for pool access and guest
+                entry.
               </p>
               <Link
                 href="/gym"

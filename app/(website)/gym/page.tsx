@@ -6,9 +6,23 @@ import { SimpleEnquiryForm } from "@/components/booking/SimpleEnquiryForm";
 import { getGymPackages, GYM_IMAGE } from "@/lib/data/gym";
 import { SITE_NAME } from "@/lib/constants";
 
+const WORKOUT_CLASSES = [
+  "Zumba",
+  "Aerobics",
+  "Board Stepping",
+  "Kata Box",
+  "Spin Class",
+  "Functional Training",
+  "Yoga",
+  "Aqua Aerobics",
+  "Cardio",
+  "Auto Boxing",
+  "HIIT Marathon",
+];
+
 export const metadata: Metadata = {
-  title: `Damview Gym, ${SITE_NAME}`,
-  description: "A fully equipped gym at Damview Resort, open 24/7, from $1 a day or $30 a month.",
+  title: `Damview's Fitness Club, ${SITE_NAME}`,
+  description: "Damview's Fitness Club - Standard membership from $30/month, plus Premium add-ons. A $10 one-time joining fee applies for new members.",
 };
 
 export default async function GymPage() {
@@ -17,28 +31,26 @@ export default async function GymPage() {
   return (
     <>
       <PageHero
-        eyebrow="Damview Gym"
-        title="Train any time. We never close."
-        subtitle="A full gym on-site, open 24 hours a day, from $1 a day or $30 a month."
+        eyebrow="Damview's Fitness Club"
+        title="More than a gym. It's a lifestyle."
+        subtitle="Standard membership from $30/month, with Premium add-ons available. A $10 one-time joining fee applies for new members."
         image={GYM_IMAGE}
       />
 
       <section className="bg-dv-black py-20">
         <Container>
           <SectionHeading
-            eyebrow="Memberships"
-            title="From $1 a day."
-            subtitle="Pay per visit or save with a monthly membership - full equipment access either way, open 24/7."
+            eyebrow="Choose Your Membership"
+            title="Pick the tier that fits your lifestyle."
+            subtitle="Premium and Premium Plus are monthly add-ons on top of Standard, not separate memberships."
             className="[&_h2]:text-dv-ivory [&_p]:text-dv-cream/75"
           />
-          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
             {gymPackages.map((pkg) => (
               <div key={pkg.id} className="rounded-2xl border border-dv-ivory/15 bg-dv-forest/40 p-6">
                 <h3 className="font-serif text-xl text-dv-sunshine">{pkg.name}</h3>
                 <p className="mt-1 font-promo text-sm tracking-wide text-dv-gold">
-                  {pkg.price === null
-                    ? "Price to be confirmed"
-                    : `$${pkg.price} ${pkg.billingPeriod === "session" ? "per visit" : `/ ${pkg.billingPeriod}`}`}
+                  {pkg.price === null ? "Price to be confirmed" : `$${pkg.price} / ${pkg.billingPeriod}`}
                 </p>
                 <ul className="mt-4 flex flex-col gap-2 text-sm text-dv-cream/80">
                   {pkg.features.map((feature) => (
@@ -46,6 +58,22 @@ export default async function GymPage() {
                   ))}
                 </ul>
               </div>
+            ))}
+          </div>
+          <p className="mt-6 text-sm text-dv-cream/60">
+            Plus a one-time $10 joining fee for all new members.
+          </p>
+        </Container>
+      </section>
+
+      <section className="py-20">
+        <Container>
+          <SectionHeading eyebrow="Workout Services" title="Classes included with membership." />
+          <div className="mt-8 flex flex-wrap gap-2">
+            {WORKOUT_CLASSES.map((cls) => (
+              <span key={cls} className="rounded-full border border-dv-pool/30 bg-dv-pool/10 px-4 py-1.5 text-sm text-dv-black">
+                {cls}
+              </span>
             ))}
           </div>
         </Container>

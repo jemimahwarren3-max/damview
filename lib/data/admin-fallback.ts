@@ -14,9 +14,31 @@ export const ROOM_BLOCKS: RoomBlock[] = [
   { id: "r", name: "R Block", displayName: "Riverside Rooms", roomNumbers: ["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10"], ratePerStay: 25, stayDurationHours: 12 },
 ];
 
+// From the real Damview's Fitness Club flyer. Premium/Premium Plus prices are
+// the add-on cost on top of Standard, as the flyer itself frames them - not
+// flat monthly totals.
 export const GYM_PACKAGES: GymPackage[] = [
-  { id: "day-pass", name: "Day Pass", price: 1, billingPeriod: "session", features: ["Full gym access for one visit", "Open 24/7"] },
-  { id: "monthly", name: "Monthly Membership", price: 30, billingPeriod: "month", features: ["Unlimited visits", "Full equipment access", "Open 24/7"] },
+  {
+    id: "1-standard",
+    name: "Standard",
+    price: 30,
+    billingPeriod: "month",
+    features: ["Unlimited gym access", "Modern gym equipment", "Clean showers & lockers", "Member workout environment"],
+  },
+  {
+    id: "2-premium",
+    name: "Premium (+ $15/mo add-on)",
+    price: 15,
+    billingPeriod: "month",
+    features: ["Everything in Standard", "Free entry to Gym View every weekend", "Entry for two (you + 1 guest)"],
+  },
+  {
+    id: "3-premium-plus",
+    name: "Premium Plus (+ $10/mo add-on)",
+    price: 10,
+    billingPeriod: "month",
+    features: ["Everything in Premium", "Individual swimming pool access"],
+  },
 ];
 
 export const MENU_CATEGORIES: MenuCategory[] = [

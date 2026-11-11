@@ -48,6 +48,19 @@ export default async function DamsidePage() {
         </Container>
       </section>
 
+      <section className="bg-dv-cream py-20">
+        <Container>
+          <SectionHeading eyebrow="See For Yourself" title="Real evenings on the dam." subtitle="Actual photos taken on-site, not stock images." />
+          <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {["/images/resort/damview-water-1.jpg", "/images/resort/damview-water-2.jpg", "/images/resort/damview-water-3.jpg", "/images/resort/damview-water-4.jpg"].map((src) => (
+              <div key={src} className="relative aspect-[3/4] overflow-hidden rounded-xl">
+                <Image src={src} alt="Sunset on the dam at Damview" fill className="object-cover" />
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
       <section className="py-20">
         <Container>
           <SectionHeading eyebrow="On the Water" title="Boat cruises and pedal boats." />
