@@ -33,3 +33,54 @@ export async function getSupabaseServerClient() {
     },
   });
 }
+
+/**
+ * Hospiq-compatible server client. Throws on missing env vars instead of
+ * returning null — required by the admin auth-guard and cached-auth.
+ */
+export async function createClient() {
+  const url =
+    process.env.SUPABASE_SERVER_URL?.trim() ||
+    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+
+  if (!url || !anonKey) {
+    throw new Error(
+      "Missing Supabase env vars: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are required.",
+    );
+  }
+
+  const cookieStore = await cookies();
+
+  return createServerClient(url, anonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+    },
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll(
+        cookiesToSet: {
+          name: string;
+          value: string;
+          options?: Record<string, unknown>;
+        }[],
+      ) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(
+              name,
+              value,
+              options as Parameters<typeof cookieStore.set>[2],
+            ),
+          );
+        } catch {
+          // Called from a Server Component — proxy refreshes the session.
+        }
+      },
+    },
+  });
+}

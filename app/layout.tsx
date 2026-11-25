@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter, Bebas_Neue, Caveat } from "next/font/google";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
+import ToastProvider from "@/components/ui/ToastProvider";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -58,7 +59,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       className={`${fraunces.variable} ${inter.variable} ${bebasNeue.variable} ${caveat.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        <ToastProvider />
+        {children}
+      </body>
     </html>
   );
 }

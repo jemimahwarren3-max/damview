@@ -1,0 +1,643 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Dub-inspired design system (from dubinc/dub)
+   Flat, neutral grayscale + neutral-900 (black) primary,
+   blue-600 as the single accent. No glassmorphism, no gradients,
+   hairline borders, rounded-lg, subtle shadows only.
+   ============================================================ */
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-display: var(--font-satoshi), var(--font-inter), ui-sans-serif,
+    system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+
+  --radius-lg: 0.625rem; /* 10px */
+}
+
+:root {
+  /* Surfaces */
+  --background: #ffffff;
+  --foreground: #171717; /* neutral-900 */
+
+  /* Neutral scale (pure gray, dub palette) */
+  --neutral-50: #fafafa;
+  --neutral-100: #f5f5f5;
+  --neutral-200: #e5e5e5;
+  --neutral-300: #d4d4d4;
+  --neutral-400: #a3a3a3;
+  --neutral-500: #737373;
+  --neutral-600: #525252;
+  --neutral-700: #404040;
+  --neutral-800: #262626;
+  --neutral-900: #171717;
+
+  /* Primary = neutral-900 (black), like dub's primary button */
+  --primary: #171717;
+  --primary-light: #404040;
+  --primary-dark: #000000;
+
+  /* Single accent — dub content-info blue */
+  --accent: #2563eb; /* blue-600 */
+
+  --success: #16a34a; /* green-600 */
+  --warning: #d97706; /* amber-600 */
+  --danger: #dc2626; /* red-600 */
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #d4d4d4 transparent;
+  border-color: var(--neutral-200);
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #d4d4d4;
+  border-radius: 20px;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: #171717;
+  color: #ffffff;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+/* ── Performance: View Transitions for page navigation ── */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: 120ms ease-out both fade-out;
+}
+
+::view-transition-new(root) {
+  animation: 150ms ease-in 50ms both fade-in;
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.sidebar-hw-accel {
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+main > * {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
+/* ============================================================
+   Cards — flat, hairline-bordered, subtle radius
+   ============================================================ */
+.glass-card {
+  background: #ffffff;
+  border: 1px solid var(--neutral-200);
+  border-radius: 0.75rem; /* 12px */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.glass-card:hover {
+  border-color: var(--neutral-300);
+}
+
+.glass-card-dark {
+  background: #171717;
+  border: 1px solid #262626;
+  border-radius: 0.75rem;
+  color: #fafafa;
+}
+
+/* Stat cards — flat white with hairline border */
+.premium-stat-card {
+  background: #ffffff;
+  border: 1px solid var(--neutral-200);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.premium-stat-card:hover {
+  border-color: var(--neutral-300);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Chart cards */
+.premium-chart-card {
+  background: #ffffff;
+  border: 1px solid var(--neutral-200);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s ease;
+}
+
+.premium-chart-card:hover {
+  border-color: var(--neutral-300);
+}
+
+.chart-glow-indigo,
+.chart-glow-amber {
+  filter: none;
+}
+
+.premium-card {
+  background: #ffffff;
+  border: 1px solid var(--neutral-200);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s ease;
+}
+
+.premium-card:hover {
+  border-color: var(--neutral-300);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #fafafa;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #e5e5e5;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #d4d4d4;
+}
+
+/* ============================================================
+   Animations — kept minimal
+   ============================================================ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in { animation: fadeIn 0.3s ease-out both; }
+.animate-slide-up { animation: slideUp 0.35s ease-out both; }
+.animate-slide-in-right { animation: slideInRight 0.3s ease-out both; }
+.animate-pulse-glow { animation: none; }
+.animate-count-up { animation: countUp 0.4s ease-out both; }
+
+.stagger-children > * { animation: fadeIn 0.3s ease-out both; }
+.stagger-children > *:nth-child(1) { animation-delay: 0.04s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.08s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.12s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.16s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.24s; }
+.stagger-children > *:nth-child(7) { animation-delay: 0.28s; }
+.stagger-children > *:nth-child(8) { animation-delay: 0.32s; }
+
+/* ============================================================
+   Status badges — flat, soft tint + solid text, hairline ring
+   ============================================================ */
+.status-available,
+.status-served {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.status-occupied,
+.status-accepted {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.status-cleaning,
+.status-pending {
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.status-preparing {
+  background: #f5f5f5;
+  color: #404040;
+  border: 1px solid #e5e5e5;
+}
+
+.status-cancelled {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+/* ============================================================
+   Form inputs — dub bordered inputs, rounded-lg, neutral focus
+   ============================================================ */
+.premium-input {
+  background: #ffffff;
+  border: 1px solid var(--neutral-300);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+  width: 100%;
+  color: #171717;
+}
+
+.premium-input:focus {
+  border-color: var(--neutral-400);
+  box-shadow: 0 0 0 4px var(--neutral-200);
+  background: #ffffff;
+}
+
+.premium-input::placeholder {
+  color: #a3a3a3;
+}
+
+.premium-select {
+  background: #ffffff;
+  border: 1px solid var(--neutral-300);
+  border-radius: 0.5rem;
+  padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+  width: 100%;
+  color: #171717;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23a3a3a3' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+}
+
+.premium-select:focus {
+  border-color: var(--neutral-400);
+  box-shadow: 0 0 0 4px var(--neutral-200);
+  background-color: #ffffff;
+}
+
+/* ============================================================
+   Buttons — dub: flat, bordered, rounded-lg, ring on focus/hover
+   ============================================================ */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #171717;
+  color: #ffffff;
+  border: 1px solid #171717;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-primary:hover {
+  background: #404040;
+  box-shadow: 0 0 0 4px var(--neutral-200);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #ffffff;
+  color: #171717;
+  border: 1px solid var(--neutral-200);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--neutral-50);
+  border-color: var(--neutral-300);
+}
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #dc2626;
+  color: #ffffff;
+  border: 1px solid #dc2626;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+  box-shadow: 0 0 0 4px #fee2e2;
+}
+
+/* ============================================================
+   Tables — dub flat table, neutral header, hairline rows
+   ============================================================ */
+.premium-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.premium-table thead th {
+  background: var(--neutral-50);
+  padding: 0.625rem 1rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #737373;
+  border-bottom: 1px solid var(--neutral-200);
+}
+
+.premium-table tbody tr {
+  transition: background 0.12s ease;
+}
+
+.premium-table tbody tr:hover {
+  background: var(--neutral-50);
+}
+
+.premium-table tbody td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--neutral-100);
+  font-size: 0.875rem;
+  color: #404040;
+}
+
+/* Login backdrop — flat neutral, no mesh gradient */
+.mesh-gradient {
+  background: var(--neutral-50);
+}
+
+/* Hover lift — flattened to a border/shadow cue */
+.hover-lift {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.hover-lift:hover {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.kanban-column {
+  min-height: 200px;
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+/* Loading skeleton shimmer */
+.skeleton {
+  background: linear-gradient(90deg, #f5f5f5 25%, #e5e5e5 50%, #f5f5f5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 0.5rem;
+}
+
+/* Thin grid backdrop (optional, matches landing hero) */
+.grid-bg {
+  background-image: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.045) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.045) 1px, transparent 1px);
+  background-size: 3.5rem 3.5rem;
+  -webkit-mask-image: radial-gradient(120% 100% at 50% 0%, #000 0%, transparent 70%);
+  mask-image: radial-gradient(120% 100% at 50% 0%, #000 0%, transparent 70%);
+}
+
+/* ============================================================
+   Dub structural helpers — dotted background, crisp cards,
+   section dividers. These give pages a defined, gridded feel.
+   ============================================================ */
+
+/* Dot-grid page surface (dub app background texture) */
+.dotted-bg {
+  background-color: #fafafa;
+  background-image: radial-gradient(circle, #e2e2e2 1px, transparent 1.2px);
+  background-size: 16px 16px;
+  background-position: -8px -8px;
+}
+
+/* Crisp content card — hairline border, tight radius, flat */
+.dash-card {
+  background: #ffffff;
+  border: 1px solid var(--neutral-200);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+/* Card header with a hard bottom dividing line (straight rule) */
+.dash-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--neutral-200);
+}
+
+.dash-card-body {
+  padding: 1.25rem;
+}
+
+/* Page-level section header with a full-width divider under it.
+   Block-level so a bare <h2>+<p> stack correctly; when an action
+   button is needed, wrap title + action in a flex row inside. */
+.page-header {
+  display: block;
+  width: 100%;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--neutral-200);
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  color: #171717;
+}
+
+.page-subtitle {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #737373;
+}
+
+/* KPI grid: cards fused into one gridded block divided by hairlines */
+.kpi-grid {
+  display: grid;
+  border: 1px solid var(--neutral-200);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: var(--neutral-200); /* shows through as 1px gridlines */
+  gap: 1px;
+}
+
+.kpi-cell {
+  background: #ffffff;
+  padding: 1.25rem;
+  transition: background 0.12s ease;
+}
+
+.kpi-cell:hover {
+  background: var(--neutral-50);
+}
+
+/* Eyebrow label — mono-caps, dub data-table header vibe */
+.eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #a3a3a3;
+}
+
+/* ============================================================
+   Segmented control — the dub toggle used in the dashboard
+   filters (All / Lodging / …). Reuse everywhere for tabs/toggles.
+   ============================================================ */
+.seg-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 0.5rem;
+  border: 1px solid var(--neutral-200);
+  background: #ffffff;
+}
+
+.seg-group.seg-fill {
+  display: flex;
+  width: 100%;
+}
+
+.seg-group.seg-fill .seg-item {
+  flex: 1;
+}
+
+.seg-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border: none;
+  background: transparent;
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  color: var(--neutral-500);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.seg-item:hover {
+  color: var(--neutral-900);
+}
+
+.seg-item[data-active="true"],
+.seg-item-active {
+  background: var(--neutral-900);
+  color: #ffffff;
+}
+
+.seg-item[data-active="true"]:hover,
+.seg-item-active:hover {
+  color: #ffffff;
+}
+
+.seg-item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
