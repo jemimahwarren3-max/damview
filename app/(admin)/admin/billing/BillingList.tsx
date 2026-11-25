@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { differenceInDays, startOfDay } from "date-fns";
+import { differenceInDays, differenceInHours, startOfDay } from "date-fns";
 import { processCheckout } from "@/lib/actions/billing";
 import {
   Plus,
@@ -10,10 +10,14 @@ import {
   Receipt,
   Printer,
   Search,
+  Clock,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { printFinalBill } from "@/lib/printing";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
+
+const PAYMENT_MODES = ["Cash", "EcoCash", "Bank Transfer"] as const;
+type PaymentMode = (typeof PAYMENT_MODES)[number];
 
 export default function BillingList({
   activeGuests,
@@ -36,6 +40,8 @@ export default function BillingList({
     Record<string, string>
   >({});
   const [searchQuery, setSearchQuery] = useState("");
+  const [paymentModes, setPaymentModes] = useState<Record<string, PaymentMode>>({});
+  const [amountsPaid, setAmountsPaid] = useState<Record<string, string>>({});
   const { confirm } = useConfirm();
 
   const handleDiscountChange = (guestId: string, value: string) => {
@@ -62,6 +68,32 @@ export default function BillingList({
     }));
   };
 
+  function getStayInfo(guest: any) {
+    const isHourly = guest.billing_mode === "hourly";
+    const now = new Date();
+    const checkIn = new Date(guest.check_in);
+
+    if (isHourly) {
+      const hours = Math.max(1, differenceInHours(now, checkIn));
+      const rate = guest.hourly_rate ?? 0;
+      const roomCharges = hours * rate;
+      const label = hours >= 24
+        ? `${Math.floor(hours / 24)}d ${hours % 24}h`
+        : `${hours}h`;
+      const rateLabel = `${hours}h × $${rate}/hr`;
+      return { roomCharges, stayLabel: label, rateLabel, unit: "hr" };
+    }
+
+    const days = Math.max(
+      1,
+      differenceInDays(startOfDay(now), startOfDay(checkIn)),
+    );
+    const roomCharges = days * guest.rate;
+    const label = `${days} ${days === 1 ? "night" : "nights"}`;
+    const rateLabel = `${days}d × $${guest.rate}`;
+    return { roomCharges, stayLabel: label, rateLabel, unit: "night" };
+  }
+
   const generatePdf = async (
     guest: any,
     roomCharges: number,
@@ -73,11 +105,14 @@ export default function BillingList({
     totalAmount: number,
     paymentMode: string,
     isPreliminary: boolean = false,
+    amountPaid?: number,
   ) => {
     const { jsPDF } = await import("jspdf");
     const doc = new jsPDF();
+    const isHourly = guest.billing_mode === "hourly";
+
     doc.setFontSize(22);
-    doc.text(isPreliminary ? "PRELIMINARY INVOICE" : "HOTEL INVOICE", 105, 20, {
+    doc.text(isPreliminary ? "PRELIMINARY INVOICE" : "DAMVIEW RESORT INVOICE", 105, 20, {
       align: "center",
     });
     doc.setFontSize(12);
@@ -89,18 +124,9 @@ export default function BillingList({
     doc.text("Amount (USD)", 150, 75);
     doc.line(20, 80, 190, 80);
     let currY = 90;
-    const daysStayed = Math.max(
-      1,
-      differenceInDays(
-        startOfDay(new Date()),
-        startOfDay(new Date(guest.check_in)),
-      ),
-    );
-    doc.text(
-      `Room Charges (${daysStayed} days @ ${guest.rate}/day)`,
-      20,
-      currY,
-    );
+
+    const { rateLabel } = getStayInfo(guest);
+    doc.text(`Room Charges (${rateLabel})`, 20, currY);
     doc.text(roomCharges.toFixed(2), 150, currY);
     currY += 10;
     doc.text("Food & Beverage Charges", 20, currY);
@@ -127,32 +153,41 @@ export default function BillingList({
     doc.text(`Subtotal`, 100, currY);
     doc.text(subTotal.toFixed(2), 150, currY);
     currY += 10;
-    
+
     doc.text(`VAT (${guest.gst_percent}%)`, 100, currY);
     doc.text(gstAmount.toFixed(2), 150, currY);
     currY += 5;
-    
+
     doc.line(100, currY, 190, currY);
     currY += 10;
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
     doc.text(`Total Amount`, 100, currY);
     doc.text(`$${totalAmount.toFixed(2)}`, 150, currY);
-    
+
+    if (amountPaid !== undefined && amountPaid < totalAmount) {
+      currY += 12;
+      doc.setFontSize(12);
+      doc.text(`Amount Paid (${paymentMode})`, 100, currY);
+      doc.text(`$${amountPaid.toFixed(2)}`, 150, currY);
+      currY += 10;
+      doc.setFont("helvetica", "bold");
+      doc.text(`Outstanding Balance`, 100, currY);
+      doc.text(`$${(totalAmount - amountPaid).toFixed(2)}`, 150, currY);
+    } else {
+      currY += 10;
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "normal");
+      doc.text(`Payment: ${paymentMode}`, 100, currY);
+    }
+
     doc.save(
       `${isPreliminary ? "preliminary_" : ""}invoice_room_${guest.rooms?.room_number}_${guest.name.replace(/ /g, "_")}.pdf`,
     );
   };
 
   const calculateAmounts = (guest: any, foodCharges: number) => {
-    const daysStayed = Math.max(
-      1,
-      differenceInDays(
-        startOfDay(new Date()),
-        startOfDay(new Date(guest.check_in)),
-      ),
-    );
-    const roomCharges = daysStayed * guest.rate;
+    const { roomCharges } = getStayInfo(guest);
     const discountAmount = parseFloat(discounts[guest.id] || "0") || 0;
     const guestExtraExpenses = extraExpenses[guest.id] || [];
     const extraChargesAmount = guestExtraExpenses.reduce(
@@ -165,7 +200,9 @@ export default function BillingList({
     );
     const gstAmount = (subTotal * guest.gst_percent) / 100;
     const totalAmount = subTotal + gstAmount;
-    const paymentMode = "Cash";
+    const paymentMode = paymentModes[guest.id] || "Cash";
+    const paidInput = parseFloat(amountsPaid[guest.id] || "");
+    const amountPaid = isNaN(paidInput) ? totalAmount : Math.min(paidInput, totalAmount);
     return {
       roomCharges,
       discountAmount,
@@ -175,29 +212,22 @@ export default function BillingList({
       gstAmount,
       totalAmount,
       paymentMode,
+      amountPaid,
     };
   };
 
   const downloadPreliminary = (guest: any, foodCharges: number) => {
-    const {
-      roomCharges,
-      discountAmount,
-      extraChargesDetails,
-      subTotal,
-      gstAmount,
-      totalAmount,
-      paymentMode,
-    } = calculateAmounts(guest, foodCharges);
+    const calc = calculateAmounts(guest, foodCharges);
     generatePdf(
       guest,
-      roomCharges,
+      calc.roomCharges,
       foodCharges,
-      extraChargesDetails,
-      discountAmount,
-      subTotal,
-      gstAmount,
-      totalAmount,
-      paymentMode,
+      calc.extraChargesDetails,
+      calc.discountAmount,
+      calc.subTotal,
+      calc.gstAmount,
+      calc.totalAmount,
+      calc.paymentMode,
       true,
     );
   };
@@ -208,35 +238,35 @@ export default function BillingList({
       return;
     }
 
+    const calc = calculateAmounts(guest, foodCharges);
+    const isPartial = calc.amountPaid < calc.totalAmount;
+    const outstanding = calc.totalAmount - calc.amountPaid;
+
+    const message = isPartial
+      ? `Process checkout for ${guest.name} (Room ${guest.rooms?.room_number})?\n\nTotal: $${calc.totalAmount.toFixed(2)}\nPaying now: $${calc.amountPaid.toFixed(2)} (${calc.paymentMode})\nOutstanding: $${outstanding.toFixed(2)}`
+      : `Process FINAL checkout for ${guest.name} (Room ${guest.rooms?.room_number})? This will generate the invoice and free the room.`;
+
     const confirmed = await confirm({
-      title: "Confirm Final Checkout",
-      message: `Process FINAL checkout for ${guest.name} (Room ${guest.rooms?.room_number})? This will generate the invoice and free the room.`,
+      title: isPartial ? "Checkout with Outstanding Balance" : "Confirm Final Checkout",
+      message,
       confirmText: "Process Checkout",
-      variant: "warning",
+      variant: isPartial ? "danger" : "warning",
     });
     if (!confirmed) return;
     setLoadingId(guest.id);
-    const {
-      roomCharges,
-      discountAmount,
-      extraChargesAmount,
-      extraChargesDetails,
-      subTotal,
-      gstAmount,
-      totalAmount,
-      paymentMode,
-    } = calculateAmounts(guest, foodCharges);
+
     const { error } = await processCheckout(
       guest.id,
       guest.room_id,
-      roomCharges,
+      calc.roomCharges,
       foodCharges,
-      discountAmount,
-      extraChargesAmount,
-      extraChargesDetails,
-      gstAmount,
-      totalAmount,
-      paymentMode,
+      calc.discountAmount,
+      calc.extraChargesAmount,
+      calc.extraChargesDetails,
+      calc.gstAmount,
+      calc.totalAmount,
+      calc.paymentMode,
+      calc.amountPaid,
     );
     if (error) {
       toast.error("Checkout failed: " + error);
@@ -245,17 +275,22 @@ export default function BillingList({
     }
     generatePdf(
       guest,
-      roomCharges,
+      calc.roomCharges,
       foodCharges,
-      extraChargesDetails,
-      discountAmount,
-      subTotal,
-      gstAmount,
-      totalAmount,
-      paymentMode,
+      calc.extraChargesDetails,
+      calc.discountAmount,
+      calc.subTotal,
+      calc.gstAmount,
+      calc.totalAmount,
+      calc.paymentMode,
       false,
+      isPartial ? calc.amountPaid : undefined,
     );
-    toast.success("Checkout successful! Invoice downloaded.");
+    toast.success(
+      isPartial
+        ? `Checkout done. Outstanding: $${outstanding.toFixed(2)}`
+        : "Checkout successful! Invoice downloaded.",
+    );
     setLoadingId(null);
   };
 
@@ -320,14 +355,8 @@ export default function BillingList({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 stagger-children">
           {filteredGuests.map((guest) => {
-            const daysStayed = Math.max(
-              1,
-              differenceInDays(
-                startOfDay(new Date()),
-                startOfDay(new Date(guest.check_in)),
-              ),
-            );
-            const roomCharges = daysStayed * guest.rate;
+            const isHourly = guest.billing_mode === "hourly";
+            const { roomCharges, stayLabel, rateLabel } = getStayInfo(guest);
             const foodCharges = ordersMap[guest.room_id] || 0;
             const discountAmount = parseFloat(discounts[guest.id] || "0") || 0;
             const guestExtraExpenses = extraExpenses[guest.id] || [];
@@ -339,6 +368,10 @@ export default function BillingList({
             const subTotal = Math.max(0, rawTotal - discountAmount);
             const gstAmount = (subTotal * guest.gst_percent) / 100;
             const totalAmount = subTotal + gstAmount;
+            const selectedMode = paymentModes[guest.id] || "Cash";
+            const paidInput = parseFloat(amountsPaid[guest.id] || "");
+            const amountPaid = isNaN(paidInput) ? totalAmount : Math.min(paidInput, totalAmount);
+            const outstanding = Math.max(0, totalAmount - amountPaid);
 
             return (
               <div
@@ -358,28 +391,34 @@ export default function BillingList({
                         </span>
                       )}
                     </div>
-                    <span className="text-xs font-bold uppercase tracking-wider bg-neutral-200 text-neutral-600 px-2.5 py-1 rounded-lg capitalize">
-                      {guest.rooms?.type}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      {isHourly && (
+                        <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-2 py-0.5 rounded-lg flex items-center gap-1">
+                          <Clock className="h-3 w-3" /> Hourly
+                        </span>
+                      )}
+                      <span className="text-xs font-bold uppercase tracking-wider bg-neutral-200 text-neutral-600 px-2.5 py-1 rounded-lg capitalize">
+                        {guest.rooms?.type}
+                      </span>
+                    </div>
                   </div>
                   <p className="text-neutral-500 font-medium text-sm">
-                    {guest.name} • {daysStayed}{" "}
-                    {daysStayed === 1 ? "night" : "nights"}
+                    {guest.name} • {stayLabel}
                   </p>
                 </div>
 
                 <div className="p-5 flex-1 space-y-4">
                   {/* Charges breakdown */}
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-neutral-50 rounded-xl p-3 border border-neutral-300">
-                      <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">
+                    <div className={`rounded-xl p-3 border ${isHourly ? "bg-blue-50 border-blue-100" : "bg-neutral-50 border-neutral-300"}`}>
+                      <p className={`text-[10px] font-bold uppercase tracking-wider ${isHourly ? "text-blue-500" : "text-neutral-500"}`}>
                         Room
                       </p>
-                      <p className="text-lg font-semibold text-neutral-900">
+                      <p className={`text-lg font-semibold ${isHourly ? "text-blue-700" : "text-neutral-900"}`}>
                         ${roomCharges.toLocaleString('en-US')}
                       </p>
-                      <p className="text-[10px] text-neutral-400">
-                        {daysStayed}d × ${guest.rate}
+                      <p className={`text-[10px] ${isHourly ? "text-blue-400" : "text-neutral-400"}`}>
+                        {rateLabel}
                       </p>
                     </div>
                     <div className="bg-amber-50 rounded-xl p-3 border border-amber-100">
@@ -512,6 +551,27 @@ export default function BillingList({
                     </div>
                   </div>
 
+                  {/* Payment Mode */}
+                  <div>
+                    <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider mb-1.5 block">
+                      Payment Method
+                    </label>
+                    <div className="flex gap-1.5">
+                      {PAYMENT_MODES.map((mode) => (
+                        <button
+                          key={mode}
+                          onClick={() => setPaymentModes((prev) => ({ ...prev, [guest.id]: mode }))}
+                          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                            selectedMode === mode
+                              ? "bg-neutral-900 text-white border-neutral-900"
+                              : "bg-neutral-50 text-neutral-600 border-neutral-200 hover:bg-neutral-100"
+                          }`}
+                        >
+                          {mode}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
                   {/* Totals */}
                   <div className="bg-neutral-50 rounded-xl p-3 space-y-1.5 border border-neutral-100">
@@ -533,6 +593,40 @@ export default function BillingList({
                       <span>Total Due</span>
                       <span>${totalAmount.toFixed(2)}</span>
                     </div>
+                  </div>
+
+                  {/* Amount Paid (partial payment) */}
+                  <div>
+                    <label className="text-xs font-bold text-neutral-600 uppercase tracking-wider mb-1.5 block">
+                      Amount Paying
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 text-sm font-bold">
+                        $
+                      </span>
+                      <input
+                        type="number"
+                        min="0"
+                        max={totalAmount}
+                        step="0.01"
+                        value={amountsPaid[guest.id] ?? ""}
+                        onChange={(e) =>
+                          setAmountsPaid((prev) => ({ ...prev, [guest.id]: e.target.value }))
+                        }
+                        placeholder={totalAmount.toFixed(2)}
+                        className="premium-input"
+                        style={{
+                          paddingLeft: "1.75rem",
+                          paddingTop: "0.4rem",
+                          paddingBottom: "0.4rem",
+                        }}
+                      />
+                    </div>
+                    {outstanding > 0 && !isNaN(paidInput) && (
+                      <p className="text-xs text-amber-600 font-semibold mt-1">
+                        Outstanding balance: ${outstanding.toFixed(2)}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -582,12 +676,14 @@ export default function BillingList({
                     disabled={loadingId === guest.id}
                     className="w-full py-3 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50 shadow-sm"
                     style={{
-                      background: "#10b981",
+                      background: outstanding > 0 && !isNaN(paidInput) ? "#f59e0b" : "#10b981",
                     }}
                   >
                     {loadingId === guest.id
                       ? "Processing..."
-                      : "✓ Final Checkout"}
+                      : outstanding > 0 && !isNaN(paidInput)
+                        ? `Checkout — $${outstanding.toFixed(2)} outstanding`
+                        : "✓ Final Checkout"}
                   </button>
                 </div>
               </div>
@@ -598,4 +694,3 @@ export default function BillingList({
     </div>
   );
 }
-

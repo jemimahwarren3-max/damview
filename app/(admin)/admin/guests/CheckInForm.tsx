@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { checkInGuest } from "@/lib/actions/guests";
 import { Database } from "@/types/database.types";
-import { UserPlus, BedDouble, User, Users, Tag, Mail, FileText } from "lucide-react";
+import { UserPlus, BedDouble, User, Users, Tag, Mail, FileText, Clock } from "lucide-react";
 import toast from "react-hot-toast";
 
 type Room = Pick<
@@ -30,6 +30,8 @@ export default function CheckInForm({
   const [rate, setRate] = useState<string>(
     String(selectedRoom?.base_price || 0),
   );
+  const [billingMode, setBillingMode] = useState<"nightly" | "hourly">("nightly");
+  const [hourlyRate, setHourlyRate] = useState<string>("");
   const [gstPercent, setGstPercent] = useState(15);
   const [gstNumber, setGstNumber] = useState("");
   const [email, setEmail] = useState("");
@@ -112,6 +114,8 @@ export default function CheckInForm({
     formData.append("id_proof_number", idProofNumber);
     formData.append("people_count", peopleCount);
     formData.append("rate", rate);
+    formData.append("billing_mode", billingMode);
+    if (billingMode === "hourly" && hourlyRate) formData.append("hourly_rate", hourlyRate);
     formData.append("gst_percent", gstPercent.toString());
     if (gstNumber.trim()) formData.append("gst_number", gstNumber.trim());
     if (email.trim()) formData.append("email", email.trim());
@@ -127,6 +131,8 @@ export default function CheckInForm({
       setIdProofNumber("");
       setIdError("");
       setPeopleCount("1");
+      setBillingMode("nightly");
+      setHourlyRate("");
       setGstPercent(15);
       setGstNumber("");
       setEmail("");
@@ -208,6 +214,47 @@ export default function CheckInForm({
             style={{ fontWeight: 700, color: "#1d4ed8" }}
           />
         </div>
+      </div>
+
+      {/* Billing Mode */}
+      <div>
+        <label className="flex items-center gap-1.5 text-xs font-bold text-neutral-600 uppercase tracking-wider mb-2">
+          <Clock className="h-3.5 w-3.5 text-neutral-500" /> Billing Mode
+        </label>
+        <div className="flex gap-2">
+          {(["nightly", "hourly"] as const).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setBillingMode(mode)}
+              className={`flex-1 py-2 rounded-xl text-sm font-bold transition-all border ${
+                billingMode === mode
+                  ? "bg-neutral-900 text-white border-neutral-900"
+                  : "bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50"
+              }`}
+            >
+              {mode === "nightly" ? "Per Night" : "Per Hour"}
+            </button>
+          ))}
+        </div>
+        {billingMode === "hourly" && (
+          <div className="mt-3">
+            <label className="flex items-center gap-1.5 text-xs font-bold text-neutral-600 uppercase tracking-wider mb-2">
+              <Tag className="h-3.5 w-3.5 text-neutral-500" /> Hourly Rate ($)
+            </label>
+            <input
+              type="number"
+              required
+              min="0"
+              step="0.01"
+              value={hourlyRate}
+              onChange={(e) => setHourlyRate(e.target.value)}
+              className="premium-input"
+              style={{ fontWeight: 700, color: "#2563eb" }}
+              placeholder="Rate per hour"
+            />
+          </div>
+        )}
       </div>
 
       {/* Guest Names */}

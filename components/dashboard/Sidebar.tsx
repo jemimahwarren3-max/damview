@@ -16,6 +16,7 @@ import {
   Armchair,
   CalendarCheck,
   Waves,
+  Landmark,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -35,6 +36,7 @@ function SidebarComponent({
     { name: "Menu", href: "/admin/menu", icon: Utensils },
     { name: "Orders (KOT)", href: "/admin/orders", icon: ClipboardList },
     { name: "Billing", href: "/admin/billing", icon: Receipt },
+    { name: "Cash Recon", href: "/admin/reconciliation", icon: Landmark },
     { name: "History", href: "/admin/history", icon: History },
   ];
 
@@ -47,6 +49,7 @@ function SidebarComponent({
     { name: "Menu", href: "/superadmin/menu", icon: Utensils },
     { name: "Orders", href: "/superadmin/orders", icon: ClipboardList },
     { name: "Billing", href: "/superadmin/billing", icon: Receipt },
+    { name: "Cash Recon", href: "/admin/reconciliation", icon: Landmark },
     { name: "Reports", href: "/superadmin/reports", icon: FileBarChart },
     { name: "History", href: "/superadmin/history", icon: History },
     { name: "Settings", href: "/superadmin/settings", icon: Settings },
@@ -58,6 +61,7 @@ function SidebarComponent({
     { name: "Rooms", href: "/admin/rooms", icon: BedDouble },
     { name: "Guests", href: "/admin/guests", icon: Users },
     { name: "Billing", href: "/admin/billing", icon: Receipt },
+    { name: "Cash Recon", href: "/admin/reconciliation", icon: Landmark },
   ];
 
   const kitchenLinks = [

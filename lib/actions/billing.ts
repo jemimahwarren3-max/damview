@@ -15,6 +15,7 @@ export async function processCheckout(
   gstAmount: number,
   totalAmount: number,
   paymentMode: string,
+  amountPaid?: number,
 ) {
   if (totalAmount < 0 || roomCharges < 0 || foodCharges < 0)
     return { error: "Invalid amounts. Charges cannot be negative." };
@@ -22,6 +23,9 @@ export async function processCheckout(
     return { error: "Room charges cannot be zero. Please verify the billing calculation." };
   if (!["Cash", "EcoCash", "Bank Transfer", "Pending", ""].includes(paymentMode))
     return { error: "Invalid payment mode." };
+  const paid = amountPaid !== undefined ? Math.min(amountPaid, totalAmount) : totalAmount;
+  if (paid < 0) return { error: "Amount paid cannot be negative." };
+  const outstandingBalance = Math.round((totalAmount - paid) * 100) / 100;
 
   const { supabase } = await requireAuth(["admin", "superadmin", "manager", "cashier"]);
 
@@ -57,6 +61,8 @@ export async function processCheckout(
   if (!updatedGuest)
     return { error: "This guest has already been checked out. Refresh the page." };
 
+  const paymentStatus = outstandingBalance > 0 ? "partial" : "paid";
+
   const { error: billError } = await supabase.from("bills").insert({
     guest_id: guestId,
     room_charges: roomCharges,
@@ -66,8 +72,10 @@ export async function processCheckout(
     extra_charges_details: extraChargesDetails,
     gst_amount: gstAmount,
     total_amount: totalAmount,
-    payment_status: "pending",
-    payment_mode: "Cash",
+    amount_paid: paid,
+    outstanding_balance: outstandingBalance,
+    payment_status: paymentStatus,
+    payment_mode: paymentMode || "Cash",
   });
 
   if (billError) {

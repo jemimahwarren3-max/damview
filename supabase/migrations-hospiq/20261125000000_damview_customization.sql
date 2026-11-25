@@ -222,7 +222,39 @@ CREATE POLICY "Staff can manage restaurant bills"
   ON public.restaurant_bills FOR ALL
   TO authenticated USING (public.is_staff());
 
+-- ── 12. PARTIAL PAYMENTS: track amount_paid and outstanding on bills ──
+ALTER TABLE public.bills ADD COLUMN IF NOT EXISTS amount_paid NUMERIC(10, 2);
+ALTER TABLE public.bills ADD COLUMN IF NOT EXISTS outstanding_balance NUMERIC(10, 2) NOT NULL DEFAULT 0;
+
+-- Allow 'partial' as a payment_status value (existing enum: pending, paid)
+ALTER TYPE public.payment_status ADD VALUE IF NOT EXISTS 'partial';
+
+-- ── 13. AUDIT LOG ────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS public.audit_log (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES public.users ON DELETE SET NULL,
+  action TEXT NOT NULL,
+  entity_type TEXT NOT NULL,
+  entity_id UUID,
+  details JSONB,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_audit_log_created ON public.audit_log(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_log_entity ON public.audit_log(entity_type, entity_id);
+
+ALTER TABLE public.audit_log ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Staff can read audit log"
+  ON public.audit_log FOR SELECT
+  TO authenticated USING (public.is_staff());
+
+CREATE POLICY "Staff can insert audit log"
+  ON public.audit_log FOR INSERT
+  TO authenticated WITH CHECK (public.is_staff());
+
 -- Analyze new tables
 ANALYZE public.reservations;
 ANALYZE public.activities;
 ANALYZE public.activity_bookings;
+ANALYZE public.audit_log;

@@ -17,7 +17,7 @@ export default async function SuperadminBillingPage({
 
   const supabase = await createClient();
   const ACTIVE_GUEST_FIELDS =
-    "id, room_id, name, guest_code, check_in, rate, gst_percent, rooms:room_id ( room_number, type )";
+    "id, room_id, name, guest_code, check_in, rate, gst_percent, billing_mode, hourly_rate, rooms:room_id ( room_number, type )";
   const RECENT_CHECKOUT_FIELDS =
     "id, room_id, name, guest_code, check_in, check_out, rooms:room_id ( room_number, type )";
   const RECENT_CHECKOUT_LIMIT = 40;

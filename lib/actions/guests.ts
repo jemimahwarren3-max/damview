@@ -19,7 +19,12 @@ export async function checkInGuest(formData: FormData) {
   const gstPercent = parseFloat(formData.get("gst_percent") as string);
   const gstNumber = (formData.get("gst_number") as string || "").trim() || null;
   const email = (formData.get("email") as string || "").trim() || null;
+  const billingMode = (formData.get("billing_mode") as string) || "nightly";
+  const hourlyRateStr = formData.get("hourly_rate") as string;
+  const hourlyRate = hourlyRateStr ? parseFloat(hourlyRateStr) : null;
 
+  if (billingMode === "hourly" && (hourlyRate === null || isNaN(hourlyRate) || hourlyRate < 0))
+    return { error: "Hourly rate is required for hourly billing." };
   if (isNaN(rate) || rate < 0 || rate > 100000)
     return { error: "Invalid rate. Must be between $0 and $100,000." };
   if (isNaN(gstPercent) || gstPercent < 0 || gstPercent > 100)
@@ -81,6 +86,8 @@ export async function checkInGuest(formData: FormData) {
         id_proof_number: idProofNumber.trim(),
         people_count: peopleCount,
         rate,
+        billing_mode: billingMode,
+        hourly_rate: hourlyRate,
         gst_percent: gstPercent,
         is_active: true,
         guest_code: createGuestCode(),
