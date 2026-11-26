@@ -110,6 +110,14 @@ export async function processCheckout(
   if (cancelOrdersError)
     console.error("Failed to cancel pending orders on checkout:", cancelOrdersError);
 
+  if ((updatedGuest as any).reservation_id) {
+    await supabase
+      .from("reservations")
+      .update({ status: "completed" })
+      .eq("id", (updatedGuest as any).reservation_id)
+      .eq("status", "checked_in");
+  }
+
   revalidatePath("/admin/billing");
   revalidatePath("/admin/guests");
   revalidatePath("/admin/rooms");

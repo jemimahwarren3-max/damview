@@ -218,6 +218,32 @@ export async function checkInFromReservation(reservationId: string) {
   return { success: true, guestId: guest?.id };
 }
 
+export async function markNoShow(reservationId: string) {
+  const { supabase } = await requireAuth(["admin", "superadmin", "manager"]);
+
+  const { data, error } = await supabase
+    .from("reservations")
+    .update({ status: "no_show" })
+    .eq("id", reservationId)
+    .eq("status", "confirmed")
+    .select("room_id")
+    .maybeSingle();
+
+  if (error) return { error: error.message };
+  if (!data) return { error: "Reservation not found or already processed." };
+
+  await supabase
+    .from("rooms")
+    .update({ status: "available" })
+    .eq("id", data.room_id)
+    .eq("status", "reserved");
+
+  revalidatePath("/admin/reservations");
+  revalidatePath("/admin/rooms");
+  await bumpCacheVersions(["rooms", "guests", "dashboard"]);
+  return { success: true };
+}
+
 export async function getReservations(filters?: {
   status?: string;
   date?: string;

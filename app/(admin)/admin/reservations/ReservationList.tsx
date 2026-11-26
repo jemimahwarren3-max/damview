@@ -20,6 +20,7 @@ import {
   createReservation,
   cancelReservation,
   checkInFromReservation,
+  markNoShow,
 } from "@/lib/actions/reservations";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 
@@ -119,6 +120,17 @@ export default function ReservationList({
     setActionLoading(null);
     if (result.error) return toast.error(result.error);
     toast.success("Reservation cancelled");
+    startTransition(() => router.refresh());
+  }
+
+  async function handleNoShow(id: string) {
+    const ok = await confirm("Mark this reservation as a no-show?");
+    if (!ok) return;
+    setActionLoading(id);
+    const result = await markNoShow(id);
+    setActionLoading(null);
+    if (result.error) return toast.error(result.error);
+    toast.success("Marked as no-show");
     startTransition(() => router.refresh());
   }
 
@@ -452,6 +464,14 @@ export default function ReservationList({
                         <ArrowRight className="h-3 w-3" />
                       )}
                       Check In
+                    </button>
+                    <button
+                      onClick={() => handleNoShow(r.id)}
+                      disabled={actionLoading === r.id}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 hover:bg-amber-100 transition-all disabled:opacity-50"
+                    >
+                      <Clock className="h-3 w-3" />
+                      No Show
                     </button>
                     <button
                       onClick={() => handleCancel(r.id)}
