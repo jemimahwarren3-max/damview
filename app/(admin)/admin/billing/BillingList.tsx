@@ -648,11 +648,15 @@ export default function BillingList({
                     <button
                       onClick={() => {
                         const calc = calculateAmounts(guest, foodCharges);
+                        const stay = getStayInfo(guest);
                         printFinalBill({
                           customerName: guest.name,
                           guestCode: guest.guest_code || "N/A",
                           roomNumber: guest.rooms?.room_number || 0,
                           checkIn: guest.check_in,
+                          billingMode: guest.billing_mode === "hourly" ? "hourly" : "nightly",
+                          stayLabel: stay.stayLabel,
+                          rateLabel: stay.rateLabel,
                           items: [],
                           roomCharges: calc.roomCharges,
                           foodCharges: foodCharges,
@@ -663,6 +667,8 @@ export default function BillingList({
                           gstPercent: guest.gst_percent,
                           totalAmount: calc.totalAmount,
                           paymentMode: calc.paymentMode,
+                          amountPaid: calc.amountPaid,
+                          outstandingBalance: Math.max(0, calc.totalAmount - calc.amountPaid),
                         });
                       }}
                       disabled={loadingId === guest.id}

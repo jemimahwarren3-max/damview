@@ -32,7 +32,7 @@ export async function getDamsideActivities(): Promise<Activity[]> {
   const supabase = getSupabaseClient();
   if (!supabase) return FALLBACK_DAMSIDE;
 
-  const { data, error } = await supabase.from("activities").select("*").eq("category", "damside").order("id");
+  const { data, error } = await supabase.from("website_activities").select("*").eq("category", "damside").order("id");
   if (error) return FALLBACK_DAMSIDE;
   return data.map(mapActivity);
 }
@@ -42,7 +42,7 @@ export async function getRecreationalActivities(): Promise<Activity[]> {
   const supabase = getSupabaseClient();
   if (!supabase) return FALLBACK_RECREATIONAL;
 
-  const { data, error } = await supabase.from("activities").select("*").eq("category", "recreational").order("id");
+  const { data, error } = await supabase.from("website_activities").select("*").eq("category", "recreational").order("id");
   if (error) return FALLBACK_RECREATIONAL;
   return data.map(mapActivity);
 }

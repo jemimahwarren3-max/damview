@@ -60,7 +60,7 @@ export default function AdminDashboardPage() {
 
     Promise.all([supabase.rpc("release_expired_holds"), supabase.rpc("release_expired_bookings")]).then(() => {
       supabase
-        .from("rooms")
+        .from("website_rooms")
         .select("status")
         .then(({ data }) => {
           if (!data) return;

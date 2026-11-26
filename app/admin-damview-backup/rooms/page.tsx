@@ -36,7 +36,7 @@ export default function AdminRoomsPage() {
 
     Promise.all([supabase.rpc("release_expired_holds"), supabase.rpc("release_expired_bookings")]).then(() => {
       supabase
-        .from("rooms")
+        .from("website_rooms")
         .select("id, block_id, number, status")
         .order("number")
         .then(({ data, error }) => {
@@ -71,7 +71,7 @@ export default function AdminRoomsPage() {
 
     const supabase = getSupabaseBrowserClient();
     if (!supabase) return;
-    await supabase.from("rooms").update({ status: next }).eq("id", room.id);
+    await supabase.from("website_rooms").update({ status: next }).eq("id", room.id);
   };
 
   const checkOut = async (room: RoomRow) => {
@@ -82,7 +82,7 @@ export default function AdminRoomsPage() {
     const { error } = await supabase.rpc("check_out_room", { p_room_id: room.id });
     if (error) {
       // migration not applied yet - fall back to a plain status update
-      await supabase.from("rooms").update({ status: "available" }).eq("id", room.id);
+      await supabase.from("website_rooms").update({ status: "available" }).eq("id", room.id);
     }
   };
 
@@ -91,7 +91,7 @@ export default function AdminRoomsPage() {
 
     const supabase = getSupabaseBrowserClient();
     if (!supabase) return;
-    await supabase.from("rooms").update({ status: "maintenance" }).eq("id", room.id);
+    await supabase.from("website_rooms").update({ status: "maintenance" }).eq("id", room.id);
   };
 
   const saveRate = async (blockId: string) => {

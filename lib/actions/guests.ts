@@ -5,7 +5,7 @@ import { requireAuth } from "@/lib/auth-guard";
 import { bumpCacheVersions } from "@/lib/cache/redis";
 
 export async function checkInGuest(formData: FormData) {
-  const { supabase } = await requireAuth(["admin", "superadmin", "manager", "cashier"]);
+  const { supabase, user } = await requireAuth(["admin", "superadmin", "manager", "cashier"]);
 
   const roomId = formData.get("room_id") as string;
   const name = formData.get("name") as string;
@@ -107,6 +107,22 @@ export async function checkInGuest(formData: FormData) {
     await supabase.from("rooms").update({ status: "available" }).eq("id", roomId);
     return { error: guestError.message };
   }
+
+  await supabase.from("audit_log").insert({
+    user_id: user.id,
+    action: "check_in",
+    entity_type: "guest",
+    entity_id: guest.id,
+    details: {
+      guest_name: name.trim(),
+      room_id: roomId,
+      room_number: reservedRoom.room_number,
+      billing_mode: billingMode,
+      rate,
+      hourly_rate: hourlyRate,
+      people_count: peopleCount,
+    },
+  });
 
   revalidatePath("/admin/guests");
   revalidatePath("/admin/rooms");

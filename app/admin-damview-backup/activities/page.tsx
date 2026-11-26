@@ -21,7 +21,7 @@ export default function AdminActivitiesPage() {
     if (!supabase) return;
 
     supabase
-      .from("activities")
+      .from("website_activities")
       .select("id, category, name, description, price_amount, price_unit, image")
       .order("id")
       .then(({ data, error }) => {
@@ -77,7 +77,7 @@ export default function AdminActivitiesPage() {
 
     const supabase = getSupabaseBrowserClient();
     if (!supabase) return;
-    await supabase.from("activities").update({ price_amount: amount, price_unit: "per_person" }).eq("id", activityId);
+    await supabase.from("website_activities").update({ price_amount: amount, price_unit: "per_person" }).eq("id", activityId);
   };
 
   return (

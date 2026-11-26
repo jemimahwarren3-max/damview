@@ -17,6 +17,7 @@ import {
   CalendarCheck,
   Waves,
   Landmark,
+  BarChart3,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -37,6 +38,7 @@ function SidebarComponent({
     { name: "Orders (KOT)", href: "/admin/orders", icon: ClipboardList },
     { name: "Billing", href: "/admin/billing", icon: Receipt },
     { name: "Cash Recon", href: "/admin/reconciliation", icon: Landmark },
+    { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
     { name: "History", href: "/admin/history", icon: History },
   ];
 
@@ -50,6 +52,7 @@ function SidebarComponent({
     { name: "Orders", href: "/superadmin/orders", icon: ClipboardList },
     { name: "Billing", href: "/superadmin/billing", icon: Receipt },
     { name: "Cash Recon", href: "/admin/reconciliation", icon: Landmark },
+    { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
     { name: "Reports", href: "/superadmin/reports", icon: FileBarChart },
     { name: "History", href: "/superadmin/history", icon: History },
     { name: "Settings", href: "/superadmin/settings", icon: Settings },

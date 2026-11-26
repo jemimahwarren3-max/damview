@@ -27,7 +27,7 @@ export async function processCheckout(
   if (paid < 0) return { error: "Amount paid cannot be negative." };
   const outstandingBalance = Math.round((totalAmount - paid) * 100) / 100;
 
-  const { supabase } = await requireAuth(["admin", "superadmin", "manager", "cashier"]);
+  const { supabase, user } = await requireAuth(["admin", "superadmin", "manager", "cashier"]);
 
   // Server-side guard: block checkout if there are unserved orders for this room
   const { count: unservedCount } = await supabase
@@ -82,6 +82,24 @@ export async function processCheckout(
     await supabase.from("guests").update({ is_active: true, check_out: null }).eq("id", guestId);
     return { error: billError.message };
   }
+
+  await supabase.from("audit_log").insert({
+    user_id: user.id,
+    action: "checkout",
+    entity_type: "guest",
+    entity_id: guestId,
+    details: {
+      guest_name: (updatedGuest as any).name,
+      room_id: roomId,
+      room_charges: roomCharges,
+      food_charges: foodCharges,
+      total_amount: totalAmount,
+      amount_paid: paid,
+      outstanding_balance: outstandingBalance,
+      payment_mode: paymentMode,
+      payment_status: paymentStatus,
+    },
+  });
 
   const [{ error: roomError }, { error: cancelOrdersError }] = await Promise.all([
     supabase.from("rooms").update({ status: "cleaning" }).eq("id", roomId),

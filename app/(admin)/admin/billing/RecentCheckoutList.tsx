@@ -1,9 +1,55 @@
 "use client";
+import { useState } from "react";
 import { differenceInDays, startOfDay } from "date-fns";
-import { FileDown, Printer, Receipt } from "lucide-react";
+import { FileDown, Printer, Receipt, Plus, Undo2 } from "lucide-react";
 import { printFinalBill } from "@/lib/printing";
+import { processRefund, recordAdditionalPayment } from "@/lib/actions/extensions";
+import toast from "react-hot-toast";
+
+const PAYMENT_MODES = ["Cash", "EcoCash", "Bank Transfer"] as const;
 
 export default function RecentCheckoutList({ guests }: { guests: any[] }) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [action, setAction] = useState<"refund" | "payment" | null>(null);
+  const [amount, setAmount] = useState("");
+  const [reason, setReason] = useState("");
+  const [payMode, setPayMode] = useState<string>("Cash");
+  const [loading, setLoading] = useState(false);
+
+  const resetForm = () => {
+    setExpandedId(null);
+    setAction(null);
+    setAmount("");
+    setReason("");
+    setPayMode("Cash");
+  };
+
+  const openAction = (billId: string, type: "refund" | "payment") => {
+    setExpandedId(billId);
+    setAction(type);
+    setAmount("");
+    setReason("");
+  };
+
+  const handleSubmit = async (billId: string) => {
+    const val = parseFloat(amount);
+    if (!val || val <= 0) { toast.error("Enter a valid amount."); return; }
+    setLoading(true);
+    try {
+      if (action === "refund") {
+        if (!reason.trim()) { toast.error("Refund reason is required."); setLoading(false); return; }
+        const res = await processRefund(billId, val, reason);
+        if (res.error) toast.error(res.error);
+        else toast.success("Refund processed.");
+      } else {
+        const res = await recordAdditionalPayment(billId, val, payMode);
+        if (res.error) toast.error(res.error);
+        else toast.success("Payment recorded.");
+      }
+      resetForm();
+    } catch { toast.error("Something went wrong."); }
+    setLoading(false);
+  };
   const generatePdf = async (guest: any) => {
     const bill = Array.isArray(guest.bills) ? guest.bills[0] : guest.bills;
     if (!bill) return;
@@ -140,13 +186,17 @@ export default function RecentCheckoutList({ guests }: { guests: any[] }) {
                     </span>
                   )}
                 </div>
-                {bill.payment_status === "pending" ? (
+                {bill.payment_status === "partial" ? (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-600 text-[10px] font-bold uppercase">
-                    Pending ⏳
+                    Partial
+                  </span>
+                ) : bill.payment_status === "pending" ? (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-red-50 border border-red-200 text-red-600 text-[10px] font-bold uppercase">
+                    Pending
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 text-[10px] font-bold uppercase">
-                    Paid ✓
+                    Paid
                   </span>
                 )}
               </div>
@@ -192,6 +242,18 @@ export default function RecentCheckoutList({ guests }: { guests: any[] }) {
                     ${Number(bill.total_amount).toLocaleString("en-US")}
                   </span>
                 </div>
+                {bill.amount_paid != null && (
+                  <div className="flex justify-between text-xs text-neutral-500">
+                    <span>Paid</span>
+                    <span>${Number(bill.amount_paid).toLocaleString("en-US")}</span>
+                  </div>
+                )}
+                {Number(bill.outstanding_balance || 0) > 0 && (
+                  <div className="flex justify-between text-xs font-semibold text-amber-600">
+                    <span>Outstanding</span>
+                    <span>${Number(bill.outstanding_balance).toLocaleString("en-US")}</span>
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-2">
@@ -208,6 +270,77 @@ export default function RecentCheckoutList({ guests }: { guests: any[] }) {
                   <Printer className="h-3.5 w-3.5" /> Print Bill
                 </button>
               </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                {Number(bill.outstanding_balance || 0) > 0 && (
+                  <button
+                    onClick={() => openAction(bill.id, "payment")}
+                    className="inline-flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-all"
+                  >
+                    <Plus className="h-3.5 w-3.5" /> Add Payment
+                  </button>
+                )}
+                <button
+                  onClick={() => openAction(bill.id, "refund")}
+                  className="inline-flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 hover:bg-rose-100 transition-all"
+                >
+                  <Undo2 className="h-3.5 w-3.5" /> Refund
+                </button>
+              </div>
+
+              {expandedId === bill.id && action && (
+                <div className="bg-neutral-50 rounded-xl p-3 space-y-2 border border-neutral-200">
+                  <p className="text-xs font-bold text-neutral-700 uppercase">
+                    {action === "refund" ? "Process Refund" : "Record Payment"}
+                  </p>
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    placeholder="Amount (USD)"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm"
+                  />
+                  {action === "refund" && (
+                    <input
+                      type="text"
+                      placeholder="Reason for refund"
+                      value={reason}
+                      onChange={(e) => setReason(e.target.value)}
+                      className="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm"
+                    />
+                  )}
+                  {action === "payment" && (
+                    <select
+                      value={payMode}
+                      onChange={(e) => setPayMode(e.target.value)}
+                      className="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm"
+                    >
+                      {PAYMENT_MODES.map((m) => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
+                    </select>
+                  )}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleSubmit(bill.id)}
+                      disabled={loading}
+                      className={`flex-1 py-2 rounded-lg text-xs font-bold text-white transition-all disabled:opacity-50 ${
+                        action === "refund" ? "bg-rose-600 hover:bg-rose-700" : "bg-emerald-600 hover:bg-emerald-700"
+                      }`}
+                    >
+                      {loading ? "Processing..." : "Confirm"}
+                    </button>
+                    <button
+                      onClick={resetForm}
+                      className="px-4 py-2 rounded-lg text-xs font-bold text-neutral-600 bg-white border border-neutral-200 hover:bg-neutral-50"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         );

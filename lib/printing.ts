@@ -15,6 +15,9 @@ type PrintBillData = {
     roomNumber: number
     checkIn: string
     checkOut?: string
+    billingMode?: 'nightly' | 'hourly'
+    stayLabel?: string
+    rateLabel?: string
     items: OrderItem[]
     roomCharges: number
     foodCharges: number
@@ -25,6 +28,8 @@ type PrintBillData = {
     gstPercent: number
     totalAmount: number
     paymentMode: string
+    amountPaid?: number
+    outstandingBalance?: number
 }
 
 function getStyles() {
@@ -144,7 +149,10 @@ export function printFinalBill(data: PrintBillData) {
             <div class="item-row"><span>Guest:</span><span class="bold">${data.customerName}</span></div>
             <div class="item-row"><span>Guest Code:</span><span>${data.guestCode}</span></div>
             <div class="item-row"><span>Room No:</span><span class="bold" style="font-size:14px">${data.roomNumber}</span></div>
+            <div class="item-row"><span>Check-In:</span><span>${new Date(data.checkIn).toLocaleDateString('en-US')} ${new Date(data.checkIn).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span></div>
             ${data.checkOut ? `<div class="item-row"><span>Check-Out:</span><span>${new Date(data.checkOut).toLocaleDateString('en-US')} ${new Date(data.checkOut).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span></div>` : ''}
+            ${data.stayLabel ? `<div class="item-row"><span>Stay:</span><span class="bold">${data.stayLabel}</span></div>` : ''}
+            ${data.billingMode === 'hourly' ? '<div class="item-row"><span>Billing:</span><span>Hourly</span></div>' : ''}
             <div class="double-line"></div>
 
             ${data.items.length > 0 ? `
@@ -161,7 +169,7 @@ export function printFinalBill(data: PrintBillData) {
                 <div class="line"></div>
             ` : ''}
 
-            <div class="total-row"><span>Room Charges:</span><span>$${data.roomCharges.toFixed(2)}</span></div>
+            <div class="total-row"><span>Room Charges${data.rateLabel ? ` (${data.rateLabel})` : ''}:</span><span>$${data.roomCharges.toFixed(2)}</span></div>
             <div class="total-row"><span>Food Charges:</span><span>$${data.foodCharges.toFixed(2)}</span></div>
 
             ${(data.extraChargesDetails && data.extraChargesDetails.length > 0) ?
@@ -176,6 +184,9 @@ export function printFinalBill(data: PrintBillData) {
 
             <div class="double-line"></div>
             <div class="total-row grand-total"><span>TOTAL:</span><span>$${data.totalAmount.toFixed(2)}</span></div>
+            <div class="item-row"><span>Payment Mode:</span><span class="bold">${data.paymentMode}</span></div>
+            ${data.amountPaid !== undefined ? `<div class="total-row"><span>Amount Paid:</span><span>$${data.amountPaid.toFixed(2)}</span></div>` : ''}
+            ${(data.outstandingBalance ?? 0) > 0 ? `<div class="total-row" style="color:red"><span>OUTSTANDING:</span><span>$${data.outstandingBalance!.toFixed(2)}</span></div>` : ''}
             <div class="line"></div>
 
             <div class="double-line"></div>
