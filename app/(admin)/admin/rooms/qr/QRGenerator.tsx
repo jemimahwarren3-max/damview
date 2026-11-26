@@ -27,7 +27,7 @@ export default function QRGenerator({
   tables?: Table[];
 }) {
   const [activeTab, setActiveTab] = useState<"rooms" | "tables">("rooms");
-  const baseUrl = "https://hotel.codepathway.in";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://damviewresort.example";
 
   const handlePrintAll = () => window.print();
 
