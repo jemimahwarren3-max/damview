@@ -18,6 +18,11 @@ import {
   Waves,
   Landmark,
   BarChart3,
+  PartyPopper,
+  Images,
+  CreditCard,
+  FileText,
+  Dumbbell,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -41,6 +46,15 @@ function SidebarComponent({
     { name: "Cash Recon", href: "/admin/reconciliation", icon: Landmark },
     { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
     { name: "History", href: "/admin/history", icon: History },
+    { name: "Bookings", href: "/admin/bookings", icon: CalendarCheck },
+    { name: "Events", href: "/admin/events", icon: PartyPopper },
+    { name: "Gallery", href: "/admin/gallery", icon: Images },
+    { name: "Activities", href: "/admin/activities", icon: Dumbbell },
+    { name: "Gym", href: "/admin/gym", icon: Dumbbell },
+    { name: "Payments", href: "/admin/payments", icon: CreditCard },
+    { name: "Invoices", href: "/admin/invoices", icon: FileText },
+    { name: "Staff", href: "/admin/staff", icon: ShieldCheck },
+    { name: "Settings", href: "/admin/settings", icon: Settings },
   ];
 
   const superadminLinks = [
@@ -57,6 +71,13 @@ function SidebarComponent({
     { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
     { name: "Reports", href: "/superadmin/reports", icon: FileBarChart },
     { name: "History", href: "/superadmin/history", icon: History },
+    { name: "Bookings", href: "/admin/bookings", icon: CalendarCheck },
+    { name: "Events", href: "/admin/events", icon: PartyPopper },
+    { name: "Gallery", href: "/admin/gallery", icon: Images },
+    { name: "Activities", href: "/admin/activities", icon: Dumbbell },
+    { name: "Gym", href: "/admin/gym", icon: Dumbbell },
+    { name: "Payments", href: "/admin/payments", icon: CreditCard },
+    { name: "Invoices", href: "/admin/invoices", icon: FileText },
     { name: "Settings", href: "/superadmin/settings", icon: Settings },
   ];
 
@@ -68,6 +89,8 @@ function SidebarComponent({
     { name: "Tables", href: "/admin/tables", icon: Armchair },
     { name: "Billing", href: "/admin/billing", icon: Receipt },
     { name: "Cash Recon", href: "/admin/reconciliation", icon: Landmark },
+    { name: "Bookings", href: "/admin/bookings", icon: CalendarCheck },
+    { name: "Payments", href: "/admin/payments", icon: CreditCard },
   ];
 
   const kitchenLinks = [
