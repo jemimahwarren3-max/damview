@@ -11,6 +11,6 @@ export async function getIsAdmin(supabase: SupabaseClient): Promise<boolean> {
 
   // is_active is a newer column that may not be live yet - fetched separately
   // so a missing column can never break admin access before the migration runs.
-  const { data: activeRow } = await supabase.from("staff_profiles").select("is_active").eq("user_id", userData.user.id).maybeSingle();
+  const { data: activeRow } = await (supabase.from("staff_profiles") as any).select("is_active").eq("user_id", userData.user.id).maybeSingle();
   return activeRow?.is_active ?? true;
 }

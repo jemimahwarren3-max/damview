@@ -12,7 +12,7 @@ export default async function SuperadminRoomsPage() {
       const supabase = await createClient();
       const { data, error } = await supabase
         .from("rooms")
-        .select("id, room_number, type, status, base_price, created_at")
+        .select("id, room_number, type, status, base_price, created_at, description, label, max_occupancy")
         .order("room_number", { ascending: true });
       return { rooms: data || [], error: error?.message || null };
     },

@@ -5,7 +5,7 @@ import { bumpCacheVersions } from "@/lib/cache/redis";
 
 export async function updateRoomStatus(
   roomId: string,
-  status: "available" | "occupied" | "cleaning",
+  status: "available" | "occupied" | "cleaning" | "reserved" | "maintenance",
 ) {
   const { supabase } = await requireAuth(["admin", "superadmin", "manager", "cashier"]);
 
