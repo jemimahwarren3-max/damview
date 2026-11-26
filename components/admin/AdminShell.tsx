@@ -56,9 +56,7 @@ export function AdminShell({ title, children }: { title: string; children: React
         setProfileCheck("missing");
         return;
       }
-      // is_active is a newer column that may not be live yet - fetched
-      // separately so a missing column can never lock everyone out.
-      const { data: activeRow } = await (supabase.from("staff_profiles") as any).select("is_active").eq("user_id", data.user.id).maybeSingle();
+      const { data: activeRow } = await supabase.from("staff_profiles").select("is_active").eq("user_id", data.user.id).maybeSingle();
       setProfileCheck(activeRow?.is_active === false ? "deactivated" : "ok");
     });
   }, []);

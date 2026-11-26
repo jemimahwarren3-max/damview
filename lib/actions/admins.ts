@@ -31,6 +31,8 @@ export async function toggleAdminStatus(userId: string, currentRole: string) {
     const { error } = await supabase.from("users").update({ role: restoreRole as any }).eq("id", userId);
     if (error) return { error: error.message };
 
+    await supabase.from("staff_profiles").update({ is_active: true }).eq("user_id", userId);
+
     await supabase.from("audit_log").insert({
       user_id: user.id,
       action: "enable_account",
@@ -42,6 +44,8 @@ export async function toggleAdminStatus(userId: string, currentRole: string) {
     await supabaseAdmin.auth.admin.updateUserById(userId, { user_metadata: { previous_role: currentRole } });
     const { error } = await supabase.from("users").update({ role: "disabled" as any }).eq("id", userId);
     if (error) return { error: error.message };
+
+    await supabase.from("staff_profiles").update({ is_active: false }).eq("user_id", userId);
 
     await supabase.from("audit_log").insert({
       user_id: user.id,
