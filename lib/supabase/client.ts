@@ -1,4 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient as createPlainClient } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
 import type { Database } from "@/types/supabase";
 
 /**
@@ -19,5 +20,16 @@ export function getSupabaseClient() {
     return null;
   }
 
-  return createClient<Database>(url, anonKey);
+  return createPlainClient<Database>(url, anonKey);
+}
+
+/**
+ * Hospiq-compatible SSR browser client (singleton). Used by admin UI
+ * components that need auth-aware Supabase access in the browser.
+ */
+export function createClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+  return createBrowserClient(url, anonKey, { isSingleton: true });
 }

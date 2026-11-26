@@ -15,7 +15,7 @@ export async function getRoomBlocks(): Promise<RoomBlock[]> {
     .order("id");
   if (blocksError) return FALLBACK_ROOM_BLOCKS;
 
-  const { data: rooms, error: roomsError } = await supabase.from("rooms").select("block_id, number").order("number");
+  const { data: rooms, error: roomsError } = await supabase.from("website_rooms").select("block_id, number").order("number");
   if (roomsError) return FALLBACK_ROOM_BLOCKS;
 
   return blocks.map((block) => ({

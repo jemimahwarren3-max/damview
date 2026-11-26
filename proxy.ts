@@ -1,47 +1,63 @@
-import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseUrl =
+    process.env.SUPABASE_SERVER_URL?.trim() ||
+    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
-  // No Supabase configured yet (e.g. a fresh deploy) — let the static admin
-  // placeholder pages through rather than locking everyone out.
-  if (!url || !anonKey) {
-    return NextResponse.next();
+  if (!supabaseUrl || !supabaseAnonKey) {
+    // No Supabase configured yet — let pages through rather than locking out.
+    return NextResponse.next({ request });
   }
 
-  let response = NextResponse.next({ request });
+  const { pathname } = request.nextUrl;
+  const isProtectedRoute =
+    (pathname.startsWith("/admin") &&
+      !pathname.startsWith("/admin/login") &&
+      !pathname.startsWith("/admin/setup")) ||
+    pathname.startsWith("/superadmin");
 
-  const supabase = createServerClient(url, anonKey, {
+  if (!isProtectedRoute) {
+    return NextResponse.next({ request });
+  }
+
+  let supabaseResponse = NextResponse.next({ request });
+
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() {
         return request.cookies.getAll();
       },
       setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-        response = NextResponse.next({ request });
-        cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
+        cookiesToSet.forEach(({ name, value }) =>
+          request.cookies.set(name, value),
+        );
+        supabaseResponse = NextResponse.next({ request });
+        cookiesToSet.forEach(({ name, value, options }) =>
+          supabaseResponse.cookies.set(name, value, options),
+        );
       },
     },
   });
 
-  const { data } = await supabase.auth.getUser();
-  const isLoginPage = request.nextUrl.pathname === "/admin";
+  // getSession() reads cookies locally (< 1ms) — no network round-trip.
+  // Full JWT verification happens in getCachedAuth() via getUser(), which
+  // is deduplicated per request by React cache().
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  if (!data.user && !isLoginPage) {
-    const loginUrl = new URL("/admin", request.url);
-    return NextResponse.redirect(loginUrl);
+  if (!session?.user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/admin/login";
+    return NextResponse.redirect(url);
   }
 
-  if (data.user && isLoginPage) {
-    const dashboardUrl = new URL("/admin/dashboard", request.url);
-    return NextResponse.redirect(dashboardUrl);
-  }
-
-  return response;
+  return supabaseResponse;
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/superadmin/:path*"],
 };
