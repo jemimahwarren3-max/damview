@@ -34,6 +34,7 @@ function SidebarComponent({
     { name: "Reservations", href: "/admin/reservations", icon: CalendarCheck },
     { name: "Rooms", href: "/admin/rooms", icon: BedDouble },
     { name: "Guests", href: "/admin/guests", icon: Users },
+    { name: "Tables", href: "/admin/tables", icon: Armchair },
     { name: "Menu", href: "/admin/menu", icon: Utensils },
     { name: "Orders (KOT)", href: "/admin/orders", icon: ClipboardList },
     { name: "Billing", href: "/admin/billing", icon: Receipt },
@@ -48,6 +49,7 @@ function SidebarComponent({
     { name: "Reservations", href: "/admin/reservations", icon: CalendarCheck },
     { name: "Rooms", href: "/superadmin/rooms", icon: BedDouble },
     { name: "Guests", href: "/superadmin/guests", icon: Users },
+    { name: "Tables", href: "/admin/tables", icon: Armchair },
     { name: "Menu", href: "/superadmin/menu", icon: Utensils },
     { name: "Orders", href: "/superadmin/orders", icon: ClipboardList },
     { name: "Billing", href: "/superadmin/billing", icon: Receipt },
@@ -63,6 +65,7 @@ function SidebarComponent({
     { name: "Reservations", href: "/admin/reservations", icon: CalendarCheck },
     { name: "Rooms", href: "/admin/rooms", icon: BedDouble },
     { name: "Guests", href: "/admin/guests", icon: Users },
+    { name: "Tables", href: "/admin/tables", icon: Armchair },
     { name: "Billing", href: "/admin/billing", icon: Receipt },
     { name: "Cash Recon", href: "/admin/reconciliation", icon: Landmark },
   ];
