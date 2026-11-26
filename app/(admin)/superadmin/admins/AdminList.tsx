@@ -6,6 +6,7 @@ import {
   toggleAdminStatus,
   deleteAdmin,
   resetAdminPassword,
+  changeRole,
 } from "@/lib/actions/admins";
 import {
   ShieldCheck,
@@ -74,6 +75,18 @@ export default function AdminList({ initialUsers }: { initialUsers: any[] }) {
     setLoadingId(null);
   };
 
+  const handleRoleChange = async (userId: string, newRole: string) => {
+    setLoadingId(userId);
+    const { error } = await changeRole(userId, newRole as any);
+    if (error) {
+      toast.error(error);
+    } else {
+      toast.success(`Role updated to ${roleLabels[newRole] || newRole}`);
+      router.refresh();
+    }
+    setLoadingId(null);
+  };
+
   const handleResetPassword = async (userId: string) => {
     const newPassword = await prompt({
       title: "Reset Admin Password",
@@ -102,6 +115,7 @@ export default function AdminList({ initialUsers }: { initialUsers: any[] }) {
     superadmin: "Admin",
     admin: "Manager 1",
     manager: "Manager 2",
+    cashier: "Cashier",
     kitchen: "Kitchen",
     disabled: "Disabled",
   };
@@ -130,6 +144,13 @@ export default function AdminList({ initialUsers }: { initialUsers: any[] }) {
       border: "border-blue-200",
       icon: Shield,
       glow: "shadow-blue-100",
+    },
+    cashier: {
+      bg: "bg-violet-50",
+      text: "text-violet-700",
+      border: "border-violet-200",
+      icon: Shield,
+      glow: "shadow-violet-100",
     },
     kitchen: {
       bg: "bg-amber-50",
@@ -199,6 +220,18 @@ export default function AdminList({ initialUsers }: { initialUsers: any[] }) {
             <div className="flex items-center gap-3 flex-shrink-0">
               {!isSuperadmin ? (
                 <>
+                  <select
+                    value={user.role}
+                    onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                    disabled={isLoading || user.role === "disabled"}
+                    className="rounded-lg border border-neutral-200 bg-white px-2 py-1.5 text-xs font-medium text-neutral-700 disabled:opacity-50"
+                  >
+                    <option value="admin">Manager 1</option>
+                    <option value="manager">Manager 2</option>
+                    <option value="cashier">Cashier</option>
+                    <option value="kitchen">Kitchen</option>
+                  </select>
+
                   <button
                     onClick={() => handleResetPassword(user.id)}
                     disabled={isLoading}

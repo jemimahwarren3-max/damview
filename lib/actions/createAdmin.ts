@@ -7,7 +7,7 @@ import { bumpCacheVersions } from "@/lib/cache/redis";
 export async function createAdminAccount(
   email: string,
   password?: string,
-  role: "admin" | "manager" | "kitchen" = "admin",
+  role: "admin" | "manager" | "cashier" | "kitchen" = "admin",
 ) {
   // Only superadmin can create new admin accounts
   await requireAuth(["superadmin"]);
@@ -59,8 +59,6 @@ export async function createAdminAccount(
 
   if (createError) return { error: createError.message };
   await bumpCacheVersions(["managers", "dashboard"]);
-  return {
-    success: true,
-    message: `${role === "manager" ? "Manager 2" : role === "kitchen" ? "Kitchen" : "Manager 1"} created successfully.`,
-  };
+  const roleLabel = { admin: "Manager 1", manager: "Manager 2", cashier: "Cashier", kitchen: "Kitchen" }[role];
+  return { success: true, message: `${roleLabel} created successfully.` };
 }

@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getOrSetVersionedCache } from "@/lib/cache/redis";
 import AdminList from "./AdminList";
 import CreateAdminFormWrapper from "./CreateAdminFormWrapper";
-import { ShieldCheck, Users } from "lucide-react";
+import { ShieldCheck, Users, Wallet } from "lucide-react";
 
 
 export default async function ManageAdminsPage() {
@@ -30,6 +30,7 @@ export default async function ManageAdminsPage() {
 
   const admins = (users || []).filter((u: any) => u.role === "admin");
   const superadmins = (users || []).filter((u: any) => u.role === "superadmin");
+  const cashiers = (users || []).filter((u: any) => u.role === "cashier");
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -42,20 +43,7 @@ export default async function ManageAdminsPage() {
         </p>
       </div>
 
-      <div className="kpi-grid grid-cols-2">
-        <div className="kpi-cell flex items-center gap-3">
-          <div className="bg-neutral-100 p-2.5 rounded-xl">
-            <Users className="h-5 w-5 text-neutral-900" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-              Admins
-            </p>
-            <p className="text-2xl font-semibold text-neutral-900">
-              {admins.length}
-            </p>
-          </div>
-        </div>
+      <div className="kpi-grid grid-cols-3">
         <div className="kpi-cell flex items-center gap-3">
           <div className="bg-neutral-100 p-2.5 rounded-xl">
             <ShieldCheck className="h-5 w-5 text-neutral-900" />
@@ -66,6 +54,32 @@ export default async function ManageAdminsPage() {
             </p>
             <p className="text-2xl font-semibold text-neutral-900">
               {superadmins.length}
+            </p>
+          </div>
+        </div>
+        <div className="kpi-cell flex items-center gap-3">
+          <div className="bg-neutral-100 p-2.5 rounded-xl">
+            <Users className="h-5 w-5 text-neutral-900" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+              Managers
+            </p>
+            <p className="text-2xl font-semibold text-neutral-900">
+              {admins.length}
+            </p>
+          </div>
+        </div>
+        <div className="kpi-cell flex items-center gap-3">
+          <div className="bg-violet-50 p-2.5 rounded-xl">
+            <Wallet className="h-5 w-5 text-violet-700" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+              Cashiers
+            </p>
+            <p className="text-2xl font-semibold text-neutral-900">
+              {cashiers.length}
             </p>
           </div>
         </div>

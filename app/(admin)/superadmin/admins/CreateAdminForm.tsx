@@ -7,7 +7,7 @@ import { Eye, EyeOff, UserPlus, CheckCircle, AlertCircle } from 'lucide-react'
 export default function CreateAdminForm({ onCreated }: { onCreated: () => void }) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [role, setRole] = useState<'admin' | 'manager' | 'kitchen'>('admin')
+    const [role, setRole] = useState<'admin' | 'manager' | 'cashier' | 'kitchen'>('admin')
     const [showPassword, setShowPassword] = useState(false)
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState('')
@@ -19,7 +19,8 @@ export default function CreateAdminForm({ onCreated }: { onCreated: () => void }
         if (password.length < 6) { setMessage('Error: Password must be at least 6 characters.'); setLoading(false); return }
         const { error } = await createAdminAccount(email, password, role)
         if (error) { setMessage(`Error: ${error}`) } else {
-            setMessage(`${role === 'manager' ? 'Manager 2' : role === 'kitchen' ? 'Kitchen' : 'Manager 1'} added successfully!`)
+            const label = { admin: 'Manager 1', manager: 'Manager 2', cashier: 'Cashier', kitchen: 'Kitchen' }[role]
+            setMessage(`${label} added successfully!`)
             setEmail(''); setPassword(''); onCreated()
         }
         setLoading(false)
@@ -54,10 +55,11 @@ export default function CreateAdminForm({ onCreated }: { onCreated: () => void }
                 </div>
                 <div className="flex-shrink-0 w-full sm:w-36">
                     <label className="block text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-1.5">Role</label>
-                    <select value={role} onChange={e => setRole(e.target.value as 'admin' | 'manager' | 'kitchen')}
+                    <select value={role} onChange={e => setRole(e.target.value as 'admin' | 'manager' | 'cashier' | 'kitchen')}
                         className="premium-select">
                         <option value="admin">Manager 1</option>
                         <option value="manager">Manager 2</option>
+                        <option value="cashier">Cashier</option>
                         <option value="kitchen">Kitchen</option>
                     </select>
                 </div>
