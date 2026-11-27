@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { getCachedAuth } from "@/lib/supabase/cached-auth";
 import { getOrSetVersionedCache } from "@/lib/cache/redis";
 import { redirect } from "next/navigation";
 import RoomList from "./RoomList";
+
+export const metadata: Metadata = { title: "Rooms" };
 import { BedDouble, CheckCircle, Loader } from "lucide-react";
 
 

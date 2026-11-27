@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { getCachedAuth } from "@/lib/supabase/cached-auth";
 import { getOrSetVersionedCache } from "@/lib/cache/redis";
 import { redirect } from "next/navigation";
 import GuestList from "@/components/admin/GuestList";
+
+export const metadata: Metadata = { title: "Guests" };
 import CheckInForm from "@/app/(admin)/admin/guests/CheckInForm";
 import { Users, Clock, BedDouble } from "lucide-react";
 
