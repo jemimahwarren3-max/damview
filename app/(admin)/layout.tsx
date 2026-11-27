@@ -11,6 +11,7 @@ import "@/app/hospiq-globals.css";
 export const instant = false;
 
 export const metadata: Metadata = {
+  title: { default: "Damview Resort", template: "%s — Damview Resort" },
   manifest: "/admin-manifest.json",
   other: { "mobile-web-app-capable": "yes", "apple-mobile-web-app-capable": "yes" },
 };

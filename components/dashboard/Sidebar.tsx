@@ -3,7 +3,6 @@
 import {
   LayoutDashboard,
   BedDouble,
-  QrCode,
   Users,
   Utensils,
   ClipboardList,
@@ -15,7 +14,6 @@ import {
   FileBarChart,
   Armchair,
   CalendarCheck,
-  Waves,
   Landmark,
   BarChart3,
   PartyPopper,
@@ -23,10 +21,23 @@ import {
   CreditCard,
   FileText,
   Dumbbell,
+  MessageSquare,
+  type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { memo } from "react";
+
+interface NavItem {
+  name: string;
+  href: string;
+  icon: LucideIcon;
+}
+
+interface NavSection {
+  label?: string;
+  items: NavItem[];
+}
 
 function SidebarComponent({
   role,
@@ -34,78 +45,170 @@ function SidebarComponent({
   role: "admin" | "superadmin" | "manager" | "kitchen" | "cashier";
 }) {
   const pathname = usePathname();
-  const adminLinks = [
-    { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-    { name: "Reservations", href: "/admin/reservations", icon: CalendarCheck },
-    { name: "Rooms", href: "/admin/rooms", icon: BedDouble },
-    { name: "Guests", href: "/admin/guests", icon: Users },
-    { name: "Tables", href: "/admin/tables", icon: Armchair },
-    { name: "Menu", href: "/admin/menu", icon: Utensils },
-    { name: "Orders (KOT)", href: "/admin/orders", icon: ClipboardList },
-    { name: "Billing", href: "/admin/billing", icon: Receipt },
-    { name: "Cash Recon", href: "/admin/reconciliation", icon: Landmark },
-    { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-    { name: "History", href: "/admin/history", icon: History },
-    { name: "Bookings", href: "/admin/bookings", icon: CalendarCheck },
-    { name: "Events", href: "/admin/events", icon: PartyPopper },
-    { name: "Gallery", href: "/admin/gallery", icon: Images },
-    { name: "Activities", href: "/admin/activities", icon: Dumbbell },
-    { name: "Gym", href: "/admin/gym", icon: Dumbbell },
-    { name: "Payments", href: "/admin/payments", icon: CreditCard },
-    { name: "Invoices", href: "/admin/invoices", icon: FileText },
-    { name: "Staff", href: "/admin/staff", icon: ShieldCheck },
-    { name: "Settings", href: "/admin/settings", icon: Settings },
+
+  const adminSections: NavSection[] = [
+    {
+      items: [
+        { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+      ],
+    },
+    {
+      label: "Front Desk",
+      items: [
+        { name: "Bookings", href: "/admin/bookings", icon: CalendarCheck },
+        { name: "Reservations", href: "/admin/reservations", icon: CalendarCheck },
+        { name: "Rooms", href: "/admin/rooms", icon: BedDouble },
+        { name: "Guests", href: "/admin/guests", icon: Users },
+        { name: "Events", href: "/admin/events", icon: PartyPopper },
+      ],
+    },
+    {
+      label: "Restaurant",
+      items: [
+        { name: "Tables", href: "/admin/tables", icon: Armchair },
+        { name: "Menu", href: "/admin/menu", icon: Utensils },
+        { name: "Orders (KOT)", href: "/admin/orders", icon: ClipboardList },
+      ],
+    },
+    {
+      label: "Finance",
+      items: [
+        { name: "Billing", href: "/admin/billing", icon: Receipt },
+        { name: "Payments", href: "/admin/payments", icon: CreditCard },
+        { name: "Invoices", href: "/admin/invoices", icon: FileText },
+        { name: "Cash Recon", href: "/admin/reconciliation", icon: Landmark },
+      ],
+    },
+    {
+      label: "Facilities",
+      items: [
+        { name: "Activities", href: "/admin/activities", icon: Dumbbell },
+        { name: "Gym", href: "/admin/gym", icon: Dumbbell },
+        { name: "Gallery", href: "/admin/gallery", icon: Images },
+        { name: "Reviews", href: "/admin/reviews", icon: MessageSquare },
+      ],
+    },
+    {
+      label: "Reports",
+      items: [
+        { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+        { name: "History", href: "/admin/history", icon: History },
+      ],
+    },
+    {
+      items: [
+        { name: "Staff", href: "/admin/staff", icon: ShieldCheck },
+        { name: "Settings", href: "/admin/settings", icon: Settings },
+      ],
+    },
   ];
 
-  const superadminLinks = [
-    { name: "Dashboard", href: "/superadmin/dashboard", icon: LayoutDashboard },
-    { name: "Staff", href: "/superadmin/admins", icon: ShieldCheck },
-    { name: "Reservations", href: "/admin/reservations", icon: CalendarCheck },
-    { name: "Rooms", href: "/superadmin/rooms", icon: BedDouble },
-    { name: "Guests", href: "/superadmin/guests", icon: Users },
-    { name: "Tables", href: "/admin/tables", icon: Armchair },
-    { name: "Menu", href: "/superadmin/menu", icon: Utensils },
-    { name: "Orders", href: "/superadmin/orders", icon: ClipboardList },
-    { name: "Billing", href: "/superadmin/billing", icon: Receipt },
-    { name: "Cash Recon", href: "/admin/reconciliation", icon: Landmark },
-    { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-    { name: "Reports", href: "/superadmin/reports", icon: FileBarChart },
-    { name: "History", href: "/superadmin/history", icon: History },
-    { name: "Bookings", href: "/admin/bookings", icon: CalendarCheck },
-    { name: "Events", href: "/admin/events", icon: PartyPopper },
-    { name: "Gallery", href: "/admin/gallery", icon: Images },
-    { name: "Activities", href: "/admin/activities", icon: Dumbbell },
-    { name: "Gym", href: "/admin/gym", icon: Dumbbell },
-    { name: "Payments", href: "/admin/payments", icon: CreditCard },
-    { name: "Invoices", href: "/admin/invoices", icon: FileText },
-    { name: "Settings", href: "/superadmin/settings", icon: Settings },
+  const superadminSections: NavSection[] = [
+    {
+      items: [
+        { name: "Dashboard", href: "/superadmin/dashboard", icon: LayoutDashboard },
+        { name: "Staff", href: "/superadmin/admins", icon: ShieldCheck },
+      ],
+    },
+    {
+      label: "Front Desk",
+      items: [
+        { name: "Bookings", href: "/admin/bookings", icon: CalendarCheck },
+        { name: "Reservations", href: "/admin/reservations", icon: CalendarCheck },
+        { name: "Rooms", href: "/superadmin/rooms", icon: BedDouble },
+        { name: "Guests", href: "/superadmin/guests", icon: Users },
+        { name: "Events", href: "/admin/events", icon: PartyPopper },
+      ],
+    },
+    {
+      label: "Restaurant",
+      items: [
+        { name: "Tables", href: "/admin/tables", icon: Armchair },
+        { name: "Menu", href: "/superadmin/menu", icon: Utensils },
+        { name: "Orders", href: "/superadmin/orders", icon: ClipboardList },
+      ],
+    },
+    {
+      label: "Finance",
+      items: [
+        { name: "Billing", href: "/superadmin/billing", icon: Receipt },
+        { name: "Payments", href: "/admin/payments", icon: CreditCard },
+        { name: "Invoices", href: "/admin/invoices", icon: FileText },
+        { name: "Cash Recon", href: "/admin/reconciliation", icon: Landmark },
+      ],
+    },
+    {
+      label: "Facilities",
+      items: [
+        { name: "Activities", href: "/admin/activities", icon: Dumbbell },
+        { name: "Gym", href: "/admin/gym", icon: Dumbbell },
+        { name: "Gallery", href: "/admin/gallery", icon: Images },
+        { name: "Reviews", href: "/admin/reviews", icon: MessageSquare },
+      ],
+    },
+    {
+      label: "Reports",
+      items: [
+        { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+        { name: "Reports", href: "/superadmin/reports", icon: FileBarChart },
+        { name: "History", href: "/superadmin/history", icon: History },
+      ],
+    },
+    {
+      items: [
+        { name: "Settings", href: "/superadmin/settings", icon: Settings },
+      ],
+    },
   ];
 
-  const cashierLinks = [
-    { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-    { name: "Reservations", href: "/admin/reservations", icon: CalendarCheck },
-    { name: "Rooms", href: "/admin/rooms", icon: BedDouble },
-    { name: "Guests", href: "/admin/guests", icon: Users },
-    { name: "Tables", href: "/admin/tables", icon: Armchair },
-    { name: "Billing", href: "/admin/billing", icon: Receipt },
-    { name: "Cash Recon", href: "/admin/reconciliation", icon: Landmark },
-    { name: "Bookings", href: "/admin/bookings", icon: CalendarCheck },
-    { name: "Payments", href: "/admin/payments", icon: CreditCard },
+  const cashierSections: NavSection[] = [
+    {
+      items: [
+        { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+      ],
+    },
+    {
+      label: "Front Desk",
+      items: [
+        { name: "Bookings", href: "/admin/bookings", icon: CalendarCheck },
+        { name: "Reservations", href: "/admin/reservations", icon: CalendarCheck },
+        { name: "Rooms", href: "/admin/rooms", icon: BedDouble },
+        { name: "Guests", href: "/admin/guests", icon: Users },
+      ],
+    },
+    {
+      label: "Restaurant",
+      items: [
+        { name: "Tables", href: "/admin/tables", icon: Armchair },
+      ],
+    },
+    {
+      label: "Finance",
+      items: [
+        { name: "Billing", href: "/admin/billing", icon: Receipt },
+        { name: "Payments", href: "/admin/payments", icon: CreditCard },
+        { name: "Cash Recon", href: "/admin/reconciliation", icon: Landmark },
+      ],
+    },
   ];
 
-  const kitchenLinks = [
-    { name: "Menu", href: "/admin/menu", icon: Utensils },
-    { name: "Orders (KOT)", href: "/admin/orders", icon: ClipboardList },
+  const kitchenSections: NavSection[] = [
+    {
+      items: [
+        { name: "Menu", href: "/admin/menu", icon: Utensils },
+        { name: "Orders (KOT)", href: "/admin/orders", icon: ClipboardList },
+      ],
+    },
   ];
 
-  const links =
+  const sections =
     role === "superadmin"
-      ? superadminLinks
+      ? superadminSections
       : role === "kitchen"
-        ? kitchenLinks
+        ? kitchenSections
         : role === "cashier"
-          ? cashierLinks
-          : adminLinks;
+          ? cashierSections
+          : adminSections;
 
   return (
     <div className="flex h-screen w-64 flex-col justify-between bg-neutral-50 border-r border-neutral-200 z-20 sticky top-0 sidebar-hw-accel">
@@ -136,36 +239,47 @@ function SidebarComponent({
         </div>
 
         {/* Navigation */}
-        <nav className="space-y-0.5">
-          {links.map((link) => {
-            const isQRPattern =
-              pathname.startsWith("/admin/rooms/qr") ||
-              pathname.startsWith("/superadmin/rooms/qr");
-            const isActive = link.href.endsWith("/rooms")
-              ? pathname === link.href ||
-                (pathname.startsWith(link.href + "/") && !isQRPattern)
-              : pathname === link.href || pathname.startsWith(link.href + "/");
-            return (
-              <Link
-                key={link.name}
-                href={link.href}
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors group ${
-                  isActive
-                    ? "bg-white text-neutral-900 border border-neutral-200 shadow-sm"
-                    : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 border border-transparent"
-                }`}
-              >
-                <link.icon
-                  className={`h-[18px] w-[18px] flex-shrink-0 ${
-                    isActive
-                      ? "text-neutral-900"
-                      : "text-neutral-400 group-hover:text-neutral-700"
-                  }`}
-                />
-                <span className="truncate">{link.name}</span>
-              </Link>
-            );
-          })}
+        <nav className="space-y-4">
+          {sections.map((section, si) => (
+            <div key={si}>
+              {section.label && (
+                <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-widest text-neutral-400">
+                  {section.label}
+                </p>
+              )}
+              <div className="space-y-0.5">
+                {section.items.map((link) => {
+                  const isQRPattern =
+                    pathname.startsWith("/admin/rooms/qr") ||
+                    pathname.startsWith("/superadmin/rooms/qr");
+                  const isActive = link.href.endsWith("/rooms")
+                    ? pathname === link.href ||
+                      (pathname.startsWith(link.href + "/") && !isQRPattern)
+                    : pathname === link.href || pathname.startsWith(link.href + "/");
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors group ${
+                        isActive
+                          ? "bg-white text-neutral-900 border border-neutral-200 shadow-sm"
+                          : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 border border-transparent"
+                      }`}
+                    >
+                      <link.icon
+                        className={`h-[18px] w-[18px] flex-shrink-0 ${
+                          isActive
+                            ? "text-neutral-900"
+                            : "text-neutral-400 group-hover:text-neutral-700"
+                        }`}
+                      />
+                      <span className="truncate">{link.name}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
       </div>
 

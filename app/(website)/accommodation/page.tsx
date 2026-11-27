@@ -71,7 +71,7 @@ export default async function AccommodationPage() {
           <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
             {REAL_ROOM_PHOTOS.map((src) => (
               <div key={src} className="relative aspect-[3/4] overflow-hidden rounded-xl">
-                <Image src={src} alt="Inside a Damview lodge room" fill className="object-cover" />
+                <Image src={src} alt="Inside a Damview lodge room" fill className="object-cover object-[center_30%]" />
               </div>
             ))}
           </div>

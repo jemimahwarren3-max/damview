@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { X, Upload } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
-import { GALLERY_ITEMS } from "@/lib/data/admin-fallback";
 import type { GalleryItem } from "@/types";
 
 const CATEGORIES: GalleryItem["category"][] = [
@@ -19,7 +18,8 @@ const CATEGORIES: GalleryItem["category"][] = [
 ];
 
 export default function AdminGalleryPage() {
-  const [items, setItems] = useState<GalleryItem[]>(GALLERY_ITEMS);
+  const [items, setItems] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [configured] = useState(() => getSupabaseBrowserClient() !== null);
   const [category, setCategory] = useState<GalleryItem["category"]>("general");
   const [caption, setCaption] = useState("");
@@ -47,6 +47,7 @@ export default function AdminGalleryPage() {
             }))
           );
         }
+        setLoading(false);
       });
   }, []);
 
@@ -101,10 +102,15 @@ export default function AdminGalleryPage() {
 
   return (
     <>
-      {!configured && (
+      {loading && (
+        <div className="flex items-center justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-neutral-200 border-t-neutral-600" />
+        </div>
+      )}
+
+      {!configured && !loading && (
         <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
-          Supabase isn&apos;t configured yet, so this is showing sample data only. Uploads and
-          removals here won&apos;t be saved.
+          Supabase isn&apos;t configured yet. Connect it to manage the gallery.
         </div>
       )}
 

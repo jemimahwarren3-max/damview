@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { getCachedAuth } from "@/lib/supabase/cached-auth";
 import { redirect } from "next/navigation";
 import ReservationList from "./ReservationList";
+
+export const metadata: Metadata = { title: "Reservations" };
 
 export default async function ReservationsPage({
   searchParams,

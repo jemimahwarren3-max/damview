@@ -36,11 +36,6 @@ export default function AdminStaffPage() {
     const { data } = await supabase.from("staff_profiles").select("*").order("full_name");
     if (!data) return;
 
-    // is_active is a newer column that may not be live yet - fetched
-    // separately so a missing column never breaks the rest of the list.
-    const { data: activeRows } = await supabase.from("staff_profiles").select("user_id, is_active");
-    const activeByUserId = new Map(activeRows?.map((row) => [row.user_id, row.is_active]));
-
     setStaff(
       data.map((row) => ({
         userId: row.user_id,
@@ -48,7 +43,7 @@ export default function AdminStaffPage() {
         role: row.role,
         department: row.department,
         isAdmin: row.is_admin,
-        isActive: activeByUserId.get(row.user_id) ?? true,
+        isActive: row.is_active,
       }))
     );
     setIsAdmin(data.find((row) => row.user_id === userData.user?.id)?.is_admin ?? false);

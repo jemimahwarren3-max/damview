@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import { getCachedAuth } from "@/lib/supabase/cached-auth";
 import { redirect } from "next/navigation";
 import ReconciliationClient from "./ReconciliationClient";
+
+export const metadata: Metadata = { title: "Cash Reconciliation" };
 
 export default async function ReconciliationPage() {
   const { role } = await getCachedAuth();

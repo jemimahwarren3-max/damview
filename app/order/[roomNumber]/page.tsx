@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import MenuOrder from "../MenuOrder";
 
 export default async function RoomOrderPage({
@@ -7,6 +8,7 @@ export default async function RoomOrderPage({
 }: {
   params: Promise<{ roomNumber: string }>;
 }) {
+  await connection();
   const { roomNumber } = await params;
   const num = parseInt(roomNumber, 10);
   if (isNaN(num)) notFound();

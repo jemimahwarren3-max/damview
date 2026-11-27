@@ -12,14 +12,14 @@ import { recordDocument } from "@/lib/documents";
 import { generateInvoicePdf, type InvoiceData } from "@/lib/pdf/invoice";
 import { getIsAdmin } from "@/lib/staff";
 import { upsertCustomerByPhone } from "@/lib/customers";
-import { SAMPLE_LODGE_ENQUIRIES } from "@/lib/data/admin-mock";
 import { ROOM_BLOCKS } from "@/lib/data/admin-fallback";
 import type { EnquiryStatus, LodgeEnquiry } from "@/types";
 
 const STATUS_FLOW: EnquiryStatus[] = ["new", "contacted"];
 
 export default function AdminBookingsPage() {
-  const [enquiries, setEnquiries] = useState<LodgeEnquiry[]>(SAMPLE_LODGE_ENQUIRIES);
+  const [enquiries, setEnquiries] = useState<LodgeEnquiry[]>([]);
+  const [loading, setLoading] = useState(true);
   const [paymentRefs, setPaymentRefs] = useState<Record<string, string>>({});
   const [paymentLinks, setPaymentLinks] = useState<Record<string, string>>({});
   const [configured] = useState(() => getSupabaseBrowserClient() !== null);
@@ -55,23 +55,25 @@ export default function AdminBookingsPage() {
       .select("*")
       .order("created_at", { ascending: false })
       .then(({ data, error }) => {
-        if (error || !data) return;
-        setEnquiries(
-          data.map((row) => ({
-            id: row.id,
-            name: row.name,
-            phone: row.phone,
-            email: row.email ?? undefined,
-            message: row.message ?? undefined,
-            status: row.status as EnquiryStatus,
-            createdAt: row.created_at,
-            blockId: row.block_id ?? undefined,
-            checkIn: row.check_in,
-            guests: row.guests,
-            roomId: row.room_id ?? undefined,
-            bookedHours: row.booked_hours ?? undefined,
-          }))
-        );
+        if (!error && data) {
+          setEnquiries(
+            data.map((row) => ({
+              id: row.id,
+              name: row.name,
+              phone: row.phone,
+              email: row.email ?? undefined,
+              message: row.message ?? undefined,
+              status: row.status as EnquiryStatus,
+              createdAt: row.created_at,
+              blockId: row.block_id ?? undefined,
+              checkIn: row.check_in,
+              guests: row.guests,
+              roomId: row.room_id ?? undefined,
+              bookedHours: row.booked_hours ?? undefined,
+            }))
+          );
+        }
+        setLoading(false);
       });
 
     getIsAdmin(supabase).then(setIsAdmin);
@@ -248,10 +250,15 @@ export default function AdminBookingsPage() {
 
   return (
     <>
-      {!configured && (
+      {loading && (
+        <div className="flex items-center justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-neutral-200 border-t-neutral-600" />
+        </div>
+      )}
+
+      {!configured && !loading && (
         <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
-          Supabase isn&apos;t configured yet, so this is showing sample data only. Status changes
-          here won&apos;t be saved.
+          Supabase isn&apos;t configured yet. Connect it to manage bookings.
         </div>
       )}
 

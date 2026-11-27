@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
-import { SAMPLE_ACTIVITY_ENQUIRIES } from "@/lib/data/admin-mock";
 import { DAMSIDE_ACTIVITIES, RECREATIONAL_ACTIVITIES } from "@/lib/data/admin-fallback";
 import type { Activity, ActivityEnquiry, EnquiryStatus, PricingUnit } from "@/types";
 
@@ -12,7 +11,7 @@ const FALLBACK_ACTIVITIES = [...DAMSIDE_ACTIVITIES, ...RECREATIONAL_ACTIVITIES];
 export default function AdminActivitiesPage() {
   const [activities, setActivities] = useState<Activity[]>(FALLBACK_ACTIVITIES);
   const [priceDrafts, setPriceDrafts] = useState<Record<string, string>>({});
-  const [enquiries, setEnquiries] = useState<ActivityEnquiry[]>(SAMPLE_ACTIVITY_ENQUIRIES);
+  const [enquiries, setEnquiries] = useState<ActivityEnquiry[]>([]);
   const [configured] = useState(() => getSupabaseBrowserClient() !== null);
 
   useEffect(() => {

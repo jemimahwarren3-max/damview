@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { getCachedAuth } from "@/lib/supabase/cached-auth";
 import { getOrSetVersionedCache, stableCacheKey } from "@/lib/cache/redis";
 import { redirect } from "next/navigation";
 import HistoryList from "@/components/admin/HistoryList";
+
+export const metadata: Metadata = { title: "History" };
 import HistoryTabs from "@/components/admin/HistoryTabs";
 import TableHistoryList from "@/components/admin/TableHistoryList";
 import { DollarSign, Users } from "lucide-react";

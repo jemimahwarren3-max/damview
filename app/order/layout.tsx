@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+export const instant = false;
+
 export const metadata: Metadata = {
   title: "Order Food — Damview Resort",
   description: "Browse the menu and place your food order.",

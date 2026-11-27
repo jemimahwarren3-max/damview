@@ -11,7 +11,6 @@ import { generateAccessSecret, hashAccessSecret } from "@/lib/payments/token";
 import { recordDocument } from "@/lib/documents";
 import { generateInvoicePdf, type InvoiceData } from "@/lib/pdf/invoice";
 import { getIsAdmin } from "@/lib/staff";
-import { SAMPLE_EVENT_ENQUIRIES } from "@/lib/data/admin-mock";
 import type { EnquiryStatus, EventEnquiry } from "@/types";
 
 const STATUS_OPTIONS: EnquiryStatus[] = ["new", "contacted", "declined"];
@@ -23,7 +22,8 @@ function badgeStatus(status: EnquiryStatus) {
 }
 
 export default function AdminEventsPage() {
-  const [enquiries, setEnquiries] = useState<EventEnquiry[]>(SAMPLE_EVENT_ENQUIRIES);
+  const [enquiries, setEnquiries] = useState<EventEnquiry[]>([]);
+  const [loading, setLoading] = useState(true);
   const [quoteDrafts, setQuoteDrafts] = useState<Record<string, string>>({});
   const [paymentRefs, setPaymentRefs] = useState<Record<string, string>>({});
   const [paymentLinks, setPaymentLinks] = useState<Record<string, string>>({});
@@ -58,25 +58,27 @@ export default function AdminEventsPage() {
       .select("*")
       .order("created_at", { ascending: false })
       .then(({ data, error }) => {
-        if (error || !data) return;
-        setEnquiries(
-          data.map((row) => ({
-            id: row.id,
-            name: row.name,
-            phone: row.phone,
-            email: row.email ?? undefined,
-            message: row.message ?? undefined,
-            status: row.status as EnquiryStatus,
-            createdAt: row.created_at,
-            eventType: row.event_type as EventEnquiry["eventType"],
-            proposedDate: row.proposed_date,
-            expectedGuests: row.expected_guests,
-            facilitiesRequired: row.facilities_required,
-            cateringRequired: row.catering_required,
-            accommodationRequired: row.accommodation_required,
-            quotedAmount: row.quoted_amount ?? undefined,
-          }))
-        );
+        if (!error && data) {
+          setEnquiries(
+            data.map((row) => ({
+              id: row.id,
+              name: row.name,
+              phone: row.phone,
+              email: row.email ?? undefined,
+              message: row.message ?? undefined,
+              status: row.status as EnquiryStatus,
+              createdAt: row.created_at,
+              eventType: row.event_type as EventEnquiry["eventType"],
+              proposedDate: row.proposed_date,
+              expectedGuests: row.expected_guests,
+              facilitiesRequired: row.facilities_required,
+              cateringRequired: row.catering_required,
+              accommodationRequired: row.accommodation_required,
+              quotedAmount: row.quoted_amount ?? undefined,
+            }))
+          );
+        }
+        setLoading(false);
       });
 
     getIsAdmin(supabase).then(setIsAdmin);
@@ -181,10 +183,15 @@ export default function AdminEventsPage() {
 
   return (
     <>
-      {!configured && (
+      {loading && (
+        <div className="flex items-center justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-neutral-200 border-t-neutral-600" />
+        </div>
+      )}
+
+      {!configured && !loading && (
         <div className="mb-6 rounded-lg border border-dv-gold/40 bg-dv-sunshine/20 px-4 py-3 text-sm text-dv-black">
-          Supabase isn&apos;t configured yet, so this is showing sample data only. Status changes
-          here won&apos;t be saved.
+          Supabase isn&apos;t configured yet. Connect it to manage event enquiries.
         </div>
       )}
 

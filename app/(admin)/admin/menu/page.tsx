@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { getOrSetVersionedCache } from "@/lib/cache/redis";
 import MenuList from "./MenuList";
+
+export const metadata: Metadata = { title: "Menu" };
 import { Utensils, Package, AlertTriangle } from "lucide-react";
 
 

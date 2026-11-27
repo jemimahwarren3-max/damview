@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { getCachedAuth } from "@/lib/supabase/cached-auth";
 import { getOrSetVersionedCache } from "@/lib/cache/redis";
 import { redirect } from "next/navigation";
 import BillingList from "./BillingList";
+
+export const metadata: Metadata = { title: "Billing" };
 import { Receipt, DollarSign, Clock } from "lucide-react";
 import RecentCheckoutList from "./RecentCheckoutList";
 import RestaurantBillingList from "./RestaurantBillingList";
