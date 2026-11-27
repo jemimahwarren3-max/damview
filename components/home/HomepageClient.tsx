@@ -15,6 +15,7 @@ const ROOMS = [
     price: 25,
     img: "/images/accommodation/real/room-1.jpg",
     alt: "Garden Room interior",
+    pos: "center 25%",
   },
   {
     id: "b",
@@ -23,6 +24,7 @@ const ROOMS = [
     price: 30,
     img: "/images/accommodation/real/room-4.jpg",
     alt: "Poolside Room interior",
+    pos: "center 20%",
   },
   {
     id: "f",
@@ -31,6 +33,7 @@ const ROOMS = [
     price: 35,
     img: "/images/accommodation/real/room-3.jpg",
     alt: "Premier Room interior",
+    pos: "center 30%",
   },
   {
     id: "r",
@@ -39,6 +42,7 @@ const ROOMS = [
     price: 25,
     img: "/images/accommodation/real/room-2.jpg",
     alt: "Riverside Room interior",
+    pos: "center 25%",
   },
 ];
 
@@ -314,6 +318,7 @@ export default function HomepageClient() {
                   alt={room.alt}
                   fill
                   className="object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-105"
+                  style={{ objectPosition: room.pos }}
                   sizes="(min-width: 640px) 50vw, 100vw"
                 />
                 <div
