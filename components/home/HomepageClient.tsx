@@ -5,9 +5,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowDown, MapPin, MessageCircle, Phone, Clock, Navigation, CalendarCheck } from "lucide-react";
 import { LOCATION, CONTACT_NUMBERS, ENTRANCE_FEE, SOCIAL_LINKS } from "@/lib/constants";
-import { FacebookIcon } from "@/components/shared/FacebookIcon";
-import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+
+function FacebookIcon({ size = 17 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.1 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12Z" />
+    </svg>
+  );
+}
 
 // Scroll experiences — left text, right image cycling
 const SCROLL_SCENES = [
@@ -501,10 +507,15 @@ export default function HomepageClient() {
                   <Navigation size={16} />
                   Get Directions
                 </a>
-                <WhatsAppButton
-                  label="Make a Booking"
-                  className="rounded-full border border-white/40 bg-[#173d2b]/30 px-7 py-3.5 text-sm font-semibold text-white backdrop-blur-sm hover:border-white/80 hover:bg-[#173d2b]/50"
-                />
+                <a
+                  href={buildWhatsAppUrl(CONTACT_NUMBERS.secondary, "Hi, I'd like to make a booking at Damview Resort.")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-[#173d2b]/30 px-7 py-3.5 text-sm font-semibold text-white backdrop-blur-sm hover:border-white/80 hover:bg-[#173d2b]/50"
+                >
+                  <MessageCircle size={16} />
+                  Make a Booking
+                </a>
               </div>
             </div>
 
