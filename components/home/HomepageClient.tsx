@@ -3,8 +3,10 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowDown, MapPin, MessageCircle, Phone } from "lucide-react";
-import { LOCATION, CONTACT_NUMBERS } from "@/lib/constants";
+import { ArrowRight, ArrowDown, MapPin, MessageCircle, Phone, Clock, Navigation, CalendarCheck } from "lucide-react";
+import { LOCATION, CONTACT_NUMBERS, ENTRANCE_FEE, SOCIAL_LINKS } from "@/lib/constants";
+import { FacebookIcon } from "@/components/shared/FacebookIcon";
+import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 // Scroll experiences — left text, right image cycling
@@ -174,30 +176,21 @@ export default function HomepageClient() {
           }}
         />
 
-        {/* BLOOM-style: huge "DAMVIEW" with the photo visible through it */}
+        {/* Huge "Damview" — one word, white */}
         <div className="absolute inset-0 flex flex-col items-center justify-center select-none pointer-events-none">
-          {/* The image-clipped text layer */}
-          <div
-            aria-hidden="true"
+          <h1
+            className="text-white text-center"
             style={{
-              backgroundImage: "url(/images/resort/damview-dam-panorama.jpg)",
-              backgroundSize: "cover",
-              backgroundPosition: "center 55%",
-              WebkitBackgroundClip: "text",
-              backgroundClip: "text",
-              color: "transparent",
-              fontSize: "clamp(5.5rem, 20vw, 18rem)",
+              fontSize: "clamp(5rem, 18vw, 16rem)",
               fontFamily: "var(--font-serif, Georgia, serif)",
               fontWeight: "300",
-              lineHeight: "0.88",
+              lineHeight: "1",
               letterSpacing: "-0.02em",
-              filter: "brightness(1.6) saturate(1.2)",
+              textShadow: "0 2px 40px rgba(0,0,0,0.25)",
             }}
           >
-            Dam
-            <br />
-            view
-          </div>
+            Damview
+          </h1>
         </div>
 
         {/* Top label */}
@@ -439,62 +432,152 @@ export default function HomepageClient() {
         </div>
       </section>
 
-      {/* ══ EVENTS banner ════════════════════════════════════════════════════ */}
-      <section className="bg-[#173d2b] py-16">
+      {/* ══ GALLERY ══════════════════════════════════════════════════════════ */}
+      <section className="bg-[#f4ebdd] py-24 lg:py-36">
         <div className="mx-auto max-w-6xl px-6 lg:px-12">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div data-reveal>
-              <p className="mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-[#c8923a]">Functions &amp; Events</p>
-              <h2 className="font-serif text-2xl font-light text-[#faf6ee] lg:text-3xl">
-                Weddings, birthdays, graduations &amp; braais.
-              </h2>
+          <div className="mb-14 text-center">
+            <div data-reveal className="mx-auto mb-5 flex w-fit items-center gap-3">
+              <span className="h-px w-10 bg-[#c8923a]" />
+              <span className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-[#173d2b]">Gallery</span>
+              <span className="h-px w-10 bg-[#c8923a]" />
             </div>
-            <Link data-reveal href="/events" className="inline-flex w-fit items-center gap-2.5 rounded-full border border-[#faf6ee]/40 px-8 py-3.5 text-sm font-semibold text-[#faf6ee] transition-all hover:bg-white/10 whitespace-nowrap">
-              Plan an event <ArrowRight size={14} />
+            <h2 data-reveal className="font-serif text-3xl font-light text-[#173d2b] lg:text-[2.6rem]">
+              A glimpse of Damview.
+            </h2>
+          </div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {[
+              { caption: "Our rooms", image: "/images/accommodation/real/room-1.jpg" },
+              { caption: "The pool", image: "/images/resort/damview-pool.jpg" },
+              { caption: "On the water", image: "/images/resort/damview-water-1.jpg" },
+              { caption: "Pool tables", image: "/images/activities/real/pool-tables.jpg" },
+              { caption: "Our rooms", image: "/images/accommodation/real/room-2.jpg" },
+              { caption: "Sunset on the dam", image: "/images/resort/damview-water-2.jpg" },
+              { caption: "Our rooms", image: "/images/accommodation/real/room-4.jpg" },
+              { caption: "Dam Food Bar", image: "/images/restaurant/real/interior.jpg" },
+            ].map((item) => (
+              <figure key={item.image} data-reveal className="group relative aspect-square overflow-hidden rounded-sm">
+                <Image src={item.image} alt={item.caption} fill className="object-cover transition-transform duration-[1.3s] ease-out group-hover:scale-110" />
+                <div className="absolute inset-0 bg-[#173d2b]/0 transition-colors duration-500 group-hover:bg-[#173d2b]/15" />
+                <figcaption className="absolute inset-x-0 bottom-0 bg-[#173d2b]/60 px-2 py-1.5 text-center text-xs font-medium text-white">
+                  {item.caption}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+          <div className="mt-8 text-center">
+            <Link href="/gallery" className="inline-flex items-center gap-2 text-sm font-semibold text-[#527c48] hover:text-[#173d2b]">
+              See the full gallery &amp; reviews <ArrowRight size={15} />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ══ BOOK A STAY ══════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden bg-[#0a1b12] py-32 lg:py-44">
-        <Image src="/images/resort/damview-water-2.jpg" alt="" fill aria-hidden="true" className="object-cover object-center opacity-40" sizes="100vw" />
-        <div className="absolute inset-0 bg-[#0a1b12]/50" />
-        <div className="relative mx-auto max-w-xl px-6 text-center">
-          <div data-reveal className="mb-5 flex items-center justify-center gap-4">
-            <span className="h-px w-10 bg-[#c8923a]" />
-            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-[#c8923a]">Book a stay</span>
-            <span className="h-px w-10 bg-[#c8923a]" />
+      {/* ══ LOCATION & CONTACT ═══════════════════════════════════════════════ */}
+      <section id="contact" className="relative overflow-hidden bg-[#173d2b]">
+        <div className="absolute inset-0 opacity-20">
+          <Image src="/images/resort/damview-water-2.jpg" alt="" fill className="object-cover" aria-hidden="true" />
+        </div>
+        <div className="relative mx-auto max-w-6xl px-6 py-24 lg:px-12 lg:py-36">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-20">
+            <div>
+              <div data-reveal className="mb-5 flex items-center gap-3">
+                <span className="h-px w-10 bg-[#c8923a]" />
+                <span className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-[#f4ebdd]/70">Visit Damview</span>
+              </div>
+              <h2 data-reveal className="font-serif text-3xl font-light leading-[1.1] text-white text-balance sm:text-4xl lg:text-[3.2rem]">
+                Your next good day<br />starts here.
+              </h2>
+              <p data-reveal className="mt-6 max-w-md text-lg leading-relaxed text-white/80">
+                Come through, bring your people and experience Damview.
+              </p>
+              <div data-reveal className="mt-9 flex flex-col gap-3 sm:flex-row">
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(LOCATION)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[#f4ebdd] px-7 py-3.5 text-sm font-semibold text-[#173d2b] transition-all hover:bg-white hover:shadow-xl"
+                >
+                  <Navigation size={16} />
+                  Get Directions
+                </a>
+                <WhatsAppButton
+                  label="Make a Booking"
+                  className="rounded-full border border-white/40 bg-[#173d2b]/30 px-7 py-3.5 text-sm font-semibold text-white backdrop-blur-sm hover:border-white/80 hover:bg-[#173d2b]/50"
+                />
+              </div>
+            </div>
+
+            <div data-reveal className="flex items-center">
+              <div className="w-full rounded-sm border border-white/15 bg-white/[0.06] p-7 backdrop-blur-md lg:p-9">
+                <div className="mb-7 flex items-start gap-4 border-b border-white/15 pb-7">
+                  <MapPin size={20} className="mt-0.5 shrink-0 text-[#c8923a]" />
+                  <div>
+                    <div className="text-xs uppercase tracking-[0.18em] text-white/60">Location</div>
+                    <p className="mt-1.5 text-sm leading-relaxed text-white">{LOCATION}</p>
+                  </div>
+                </div>
+                <ul className="space-y-5">
+                  <li className="flex items-center gap-4">
+                    <Phone size={18} className="shrink-0 text-[#c8923a]" />
+                    <a href={`tel:+${CONTACT_NUMBERS.primary}`} className="text-sm text-white transition-colors hover:text-[#c8923a]">077 444 6001</a>
+                  </li>
+                  <li className="flex items-center gap-4">
+                    <MessageCircle size={18} className="shrink-0 text-[#c8923a]" />
+                    <a
+                      href={buildWhatsAppUrl(CONTACT_NUMBERS.secondary, "Hi, I'd like to enquire about Damview Resort.")}
+                      target="_blank" rel="noopener noreferrer"
+                      className="text-sm text-white transition-colors hover:text-[#c8923a]"
+                    >
+                      WhatsApp 077 444 6004
+                    </a>
+                  </li>
+                  <li className="flex items-center gap-4">
+                    <Clock size={18} className="shrink-0 text-[#c8923a]" />
+                    <span className="text-sm text-white">Open 24 hours, every day</span>
+                  </li>
+                  <li className="flex items-center gap-4">
+                    <CalendarCheck size={18} className="shrink-0 text-[#c8923a]" />
+                    <span className="text-sm text-white">Entrance ${ENTRANCE_FEE.weekday} weekdays, ${ENTRANCE_FEE.weekend} weekends</span>
+                  </li>
+                  <li className="flex items-center gap-4">
+                    <span className="shrink-0 text-[#c8923a]"><FacebookIcon size={18} /></span>
+                    <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer" className="text-sm text-white transition-colors hover:text-[#c8923a]">
+                      Follow us on Facebook
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
-          <h2 data-reveal className="font-serif text-3xl font-light text-white text-balance lg:text-[2.8rem]">
-            Come when you&apos;re ready.
-          </h2>
-          <p data-reveal className="mt-6 text-base leading-[1.8] text-white/65">
-            Rooms from $25 per 12-hour stay. Walk-ins welcome — or message us on WhatsApp.
-          </p>
-          <div data-reveal className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <Link href="/accommodation" className="inline-flex items-center gap-2.5 rounded-full bg-white px-8 py-4 text-sm font-bold text-[#0a1b12] transition-all hover:bg-[#f4ebdd]">
-              Check availability <ArrowRight size={15} />
+
+          <div data-reveal className="mt-12 overflow-hidden rounded-sm border border-white/15">
+            <iframe
+              title="Damview Resort on Google Maps"
+              src={`https://www.google.com/maps?q=${encodeURIComponent(LOCATION)}&output=embed`}
+              width="100%"
+              height="320"
+              style={{ border: 0 }}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ══ EVENTS banner ════════════════════════════════════════════════════ */}
+      <section className="bg-[#f9f7f1] py-16">
+        <div className="mx-auto max-w-6xl px-6 lg:px-12">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div data-reveal>
+              <p className="mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-[#c8923a]">Functions &amp; Events</p>
+              <h2 className="font-serif text-2xl font-light text-[#173d2b] lg:text-3xl">
+                Weddings, birthdays, graduations &amp; braais.
+              </h2>
+            </div>
+            <Link data-reveal href="/events" className="inline-flex w-fit items-center gap-2.5 rounded-full bg-[#173d2b] px-8 py-3.5 text-sm font-semibold text-white transition-all hover:bg-[#527c48] whitespace-nowrap">
+              Plan an event <ArrowRight size={14} />
             </Link>
-            <a
-              href={buildWhatsAppUrl(CONTACT_NUMBERS.primary, "Hi, I'd like to book a stay at Damview Resort.")}
-              target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 rounded-full border border-white/35 px-8 py-4 text-sm font-semibold text-white transition-all hover:border-white/70 hover:bg-white/10"
-            >
-              <MessageCircle size={14} /> WhatsApp us
-            </a>
-          </div>
-          <p data-reveal className="mt-10 flex items-center justify-center gap-1.5 text-xs text-white/40">
-            <MapPin size={11} />{LOCATION}
-          </p>
-          <div data-reveal className="mt-6 flex items-center justify-center gap-6">
-            <a href={`tel:+${CONTACT_NUMBERS.primary}`} className="flex items-center gap-2 text-xs text-white/50 hover:text-white/80">
-              <Phone size={12} />077 444 6001
-            </a>
-            <span className="h-3 w-px bg-white/20" />
-            <a href={`tel:+${CONTACT_NUMBERS.secondary}`} className="flex items-center gap-2 text-xs text-white/50 hover:text-white/80">
-              <Phone size={12} />077 444 6004
-            </a>
           </div>
         </div>
       </section>
